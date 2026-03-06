@@ -1,0 +1,65 @@
+import os
+import json
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+import os
+from os import getenv
+
+# ==========================================
+# CONFIGURACION DE BASE DE DATOS Y RUTAS
+# ==========================================
+RAW_DATA_PATH = "data/raw/spotify_raw_data.json"
+MONGO_URI = getenv("MONGO_URI")
+DB_NAME = "music_recommendator_db"
+COLLECTION_NAME = "songs"
+
+def process_and_load_data():
+    print("Iniciando carga de datos en MongoDB...")
+
+    # 1. Lectura de datos crudos
+    if not os.path.exists(RAW_DATA_PATH):
+        print(f"ERROR: No se encuentra el archivo de datos en {RAW_DATA_PATH}")
+        return
+
+    with open(RAW_DATA_PATH, 'r', encoding='utf-8') as file:
+        try:
+            dataset = json.load(file)
+        except json.JSONDecodeError as e:
+            print(f"ERROR al decodificar el archivo JSON: {e}")
+            return
+    
+    print(f"Leidos {len(dataset)} registros del archivo fuente.")
+
+    # 2. Conexion a la base de datos
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.admin.command('ping')
+        print("Conexion establecida correctamente con MongoDB.")
+    except ConnectionFailure:
+        print("ERROR: No se ha podido conectar a MongoDB. Comprueba que el servicio o contenedor esta en ejecucion.")
+        return
+
+    db = client[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    # 3. Limpieza de coleccion (Drop)
+    print("Limpiando estado anterior de la coleccion...")
+    collection.drop()
+
+    # 4. Insercion masiva (Bulk Insert)
+    if dataset:
+        try:
+            result = collection.insert_many(dataset)
+            print(f"Insertados {len(result.inserted_ids)} documentos en la coleccion '{COLLECTION_NAME}'.")
+            
+            # 5. Optimizacion: Creacion de indices
+            collection.create_index("emocion")
+            print("Indice creado sobre el campo 'emocion'.")
+            
+        except Exception as e:
+            print(f"ERROR durante la insercion de datos: {e}")
+    else:
+        print("ADVERTENCIA: El dataset esta vacio. No se ha insertado ningun registro.")
+
+if __name__ == "__main__":
+    process_and_load_data()
