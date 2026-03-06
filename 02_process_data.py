@@ -8,8 +8,8 @@ from os import getenv
 # CONFIGURACION DE BASE DE DATOS Y RUTAS
 # ==========================================
 RAW_DATA_PATH = "data/raw/spotify_raw_data.json"
-MONGO_URI = getenv("MONGO_URI")
-DB_NAME = "recommender_db"
+MONGO_URI = "mongodb://admin:admin123@127.0.0.1:27018/music_recommendation_db?authSource=admin"
+DB_NAME = "music_recommendation_db"
 COLLECTION_NAME = "songs"
 
 def process_and_load_data():
