@@ -1,77 +1,67 @@
 import os
 import json
-import pandas as pd
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+from os import getenv
 
 # ==========================================
-# CONFIGURACIÓN DEL DATASET
+# CONFIGURACION DE BASE DE DATOS Y RUTAS
 # ==========================================
-CSV_PATH = "data/source/dataset_spotify.csv"
+RAW_DATA_PATH = "data/raw/spotify_raw_data.json"
+MONGO_URI = getenv("MONGO_URI")
+DB_NAME = "recommender_db"
+COLLECTION_NAME = "songs"
 
-GENRE_MAP = {
-    "Alegre": ["happy", "pop", "dance", "ska", "party"],
-    "Triste": ["sad", "acoustic", "emo", "piano", "romance"],
-    "Energico": ["hardstyle", "heavy-metal", "gym", "workout", "drum-and-bass"]
-}
+def process_and_load_data():
+    print("Iniciando carga de datos en MongoDB...")
 
-def ingest_from_csv():
-    print(f"Iniciando ingesta masiva desde: {CSV_PATH}")
-    
-    if not os.path.exists(CSV_PATH):
-        print(f"ERROR: No se encuentra el archivo {CSV_PATH}.")
-        print("Por favor, descarga el dataset de Kaggle y ponlo en esa ruta.")
+    # 1. Lectura de datos crudos
+    if not os.path.exists(RAW_DATA_PATH):
+        print(f"ERROR: No se encuentra el archivo de datos en {RAW_DATA_PATH}")
         return
 
-    # 1. Leer el archivo masivo 
+    with open(RAW_DATA_PATH, 'r', encoding='utf-8') as file:
+        try:
+            dataset = json.load(file)
+        except json.JSONDecodeError as e:
+            print(f"ERROR al decodificar el archivo JSON: {e}")
+            return
+    
+    print(f"Leidos {len(dataset)} registros del archivo fuente.")
+
+    # 2. Conexion a la base de datos
     try:
-        df = pd.read_csv(CSV_PATH)
-        print(f"Dataset cargado. Total de canciones iniciales: {len(df)}")
-    except Exception as e:
-        print(f"Error al leer el CSV: {e}")
+        # Añadimos un timeout corto para que falle rapido si Mongo no esta encendido
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.admin.command('ping')
+        print("Conexion establecida correctamente con MongoDB.")
+    except ConnectionFailure:
+        print("ERROR: No se ha podido conectar a MongoDB. Comprueba que el servicio o contenedor esta en ejecucion.")
         return
 
-    dataset_final = []
-    ids_procesados = set()
+    db = client[DB_NAME]
+    collection = db[COLLECTION_NAME]
 
-    # 2. Filtrar y clasificar por emociones
-    for emocion, generos in GENRE_MAP.items():
-        # Filtramos el dataframe para quedarnos solo con las filas cuyo género esté en nuestra lista
-        df_filtrado = df[df['track_genre'].isin(generos)]
-        
-        print(f"\n--- Procesando Emoción: {emocion} ---")
-        print(f"Encontradas {len(df_filtrado)} canciones potenciales.")
+    # 3. Limpieza de coleccion (Drop)
+    # En fase de desarrollo vaciamos la coleccion antes de insertar para evitar duplicados
+    print("Limpiando estado anterior de la coleccion...")
+    collection.drop()
 
-        for _, row in df_filtrado.iterrows():
-            track_id = str(row['track_id'])
+    # 4. Insercion masiva (Bulk Insert)
+    if dataset:
+        try:
+            result = collection.insert_many(dataset)
+            print(f"Insertados {len(result.inserted_ids)} documentos en la coleccion '{COLLECTION_NAME}'.")
             
-            # Evitar duplicados (una misma canción puede estar etiquetada como 'pop' y 'party')
-            if track_id not in ids_procesados:
-                ids_procesados.add(track_id)
-                
-                # Construimos nuestro diccionario limpio tal cual lo necesita la BD
-                cancion = {
-                    "track_id": track_id,
-                    "name": str(row.get('track_name', 'Unknown')),
-                    "artist": str(row.get('artists', 'Unknown')),
-                    "emocion": emocion,
-                    "danceability": float(row.get('danceability', 0.0)),
-                    "energy": float(row.get('energy', 0.0)),
-                    "valence": float(row.get('valence', 0.0)),
-                    "tempo": float(row.get('tempo', 0.0)),
-                    "acousticness": float(row.get('acousticness', 0.0))
-                }
-                dataset_final.append(cancion)
-
-    print(f"\nExtracción completada. Canciones únicas clasificadas: {len(dataset_final)}")
-
-    # 3. Guardado de Datos (Capa Bronze)
-    output_dir = "data/raw"
-    os.makedirs(output_dir, exist_ok=True)
-    output_file = os.path.join(output_dir, "spotify_raw_data.json")
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(dataset_final, f, ensure_ascii=False, indent=4)
-        
-    print(f" Finalizado y guardado en: {output_file}")
+            # 5. Optimizacion: Creacion de indices
+            # Creamos un indice en el campo 'emocion' para acelerar los filtros del recomendador
+            collection.create_index("emocion")
+            print("Indice creado sobre el campo 'emocion'.")
+            
+        except Exception as e:
+            print(f"ERROR durante la insercion de datos: {e}")
+    else:
+        print("ADVERTENCIA: El dataset esta vacio. No se ha insertado ningun registro.")
 
 if __name__ == "__main__":
-    ingest_from_csv()
+    process_and_load_data()
