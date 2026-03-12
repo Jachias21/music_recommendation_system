@@ -1,0 +1,6 @@
+streamlit
+pandas
+pymongo
+scikit-learn
+mkdocs
+mkdocs-material
