@@ -1,0 +1,13 @@
+[project]
+name = "music-recommendation-system"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.5",
+    "pandas>=2.3.3",
+    "pymongo>=4.16.0",
+    "scikit-learn>=1.8.0",
+    "streamlit>=1.55.0",
+]
