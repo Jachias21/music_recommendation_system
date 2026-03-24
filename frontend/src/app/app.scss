@@ -1,0 +1,20 @@
+.main-content {
+  margin-top: 70px;     /* navbar height */
+  margin-left: 320px;   /* sidebar width */
+  padding: 24px 32px;
+  min-height: calc(100vh - 70px);
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 280px;
+    padding: 20px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+}

@@ -1,0 +1,72 @@
+<aside class="sidebar glass">
+  <!-- Search -->
+  <div class="sidebar-section">
+    <h3 class="section-title"><span class="section-icon" [innerHTML]="icons.SEARCH"></span> Buscar Música</h3>
+    <input
+      class="input search-input"
+      type="text"
+      placeholder="Canción o artista..."
+      [value]="searchQuery()"
+      (input)="onSearch($event)" />
+  </div>
+
+  <!-- Search Results -->
+  @if (searchResults().length > 0) {
+    <div class="sidebar-section results-section">
+      <h4 class="section-subtitle">Resultados</h4>
+      <div class="results-list">
+        @for (song of searchResults(); track song.id) {
+          <app-song-card
+            [song]="song"
+            [compact]="true"
+            [disabled]="cart.isFull() || cart.songs().some(s => s.id === song.id)"
+            [actionIcon]="cart.songs().some(s => s.id === song.id) ? '✓' : '＋'"
+            (action)="addToCart($event)" />
+        }
+      </div>
+    </div>
+  }
+
+  @if (isSearching()) {
+    <div class="sidebar-section">
+      <div class="loading-indicator">
+        <span class="spinner"></span>
+        <span>Buscando...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Cart -->
+  <div class="sidebar-section cart-section">
+    <h3 class="section-title">
+      <span class="section-icon" [innerHTML]="icons.MUSIC_NOTE"></span> Tu Selección
+      <span class="cart-count">{{ cart.count() }}/3</span>
+    </h3>
+
+    <!-- Progress bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="cart.progress() * 100"></div>
+    </div>
+
+    @if (cart.count() === 0) {
+      <div class="empty-cart">
+        <p>Busca y añade 3 canciones que te gusten para descubrir música nueva.</p>
+      </div>
+    } @else {
+      <div class="cart-list">
+        @for (song of cart.songs(); track song.id; let i = $index) {
+          <div class="cart-item">
+            <span class="cart-index">{{ i + 1 }}</span>
+            <div class="cart-info">
+              <p class="cart-song-name">{{ song.name }}</p>
+              <p class="cart-song-artist">{{ song.artist }}</p>
+            </div>
+            <button class="btn-remove" (click)="removeFromCart(song.id)" title="Quitar">
+              ✕
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</aside>

@@ -1,0 +1,238 @@
+.playlist {
+  padding: 24px 0;
+}
+
+/* ── Header ────────────────────────────── */
+.playlist-header {
+  position: relative;
+  padding: 48px 40px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.header-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-dark), var(--bg-elevated), var(--primary-dark));
+  background-size: 200% 200%;
+  animation: gradientShift 10s ease infinite;
+  opacity: 0.35;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.back-btn {
+  margin-bottom: 16px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+.playlist-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.playlist-meta {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.emotion-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(180, 78, 224, 0.15);
+  color: var(--primary-light);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+/* ── Recommendations ───────────────────── */
+.recs-section {
+  margin-bottom: 40px;
+}
+
+.recs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rec-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+
+  &:hover {
+    background: var(--bg-elevated);
+    border-color: rgba(180, 78, 224, 0.15);
+    transform: translateX(6px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.rec-rank {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.rec-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(180, 78, 224, 0.25);
+
+  .note {
+    font-size: 1.2rem;
+    color: white;
+  }
+}
+
+.rec-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rec-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rec-artist {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ── Score Ring ─────────────────────────── */
+.rec-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.score-ring {
+  position: relative;
+  width: 48px;
+  height: 48px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--bg-elevated);
+  stroke-width: 3;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--transition-slow);
+}
+
+.score-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.score-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Actions ───────────────────────────── */
+.actions-section {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 0 40px;
+}
+
+/* ── Empty State ───────────────────────── */
+.empty-playlist {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.empty-playlist h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.empty-playlist p {
+  color: var(--text-secondary);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .playlist-header {
+    padding: 32px 20px;
+  }
+
+  .playlist-title {
+    font-size: 1.6rem;
+  }
+
+  .rec-card {
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .actions-section {
+    flex-direction: column;
+    align-items: center;
+  }
+}

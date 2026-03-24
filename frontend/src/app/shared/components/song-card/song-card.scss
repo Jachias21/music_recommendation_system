@@ -1,0 +1,130 @@
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  cursor: default;
+
+  &:hover {
+    background: var(--bg-elevated);
+    border-color: rgba(180, 78, 224, 0.2);
+    box-shadow: 0 0 20px rgba(180, 78, 224, 0.08);
+    transform: translateY(-2px);
+  }
+
+  &.compact {
+    padding: 10px 14px;
+    gap: 10px;
+
+    .song-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 0.9rem;
+    }
+
+    .song-name {
+      font-size: 0.85rem;
+    }
+
+    .song-artist {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.song-visual {
+  flex-shrink: 0;
+}
+
+.song-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(180, 78, 224, 0.25);
+
+  .note-icon {
+    font-size: 1.2rem;
+    color: white;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+  }
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-features {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+
+  .feature {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    background: var(--bg-elevated);
+    border-radius: 20px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+}
+
+.btn-action {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  color: var(--bg-base);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

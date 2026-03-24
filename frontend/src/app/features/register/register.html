@@ -1,0 +1,82 @@
+<div class="register-page">
+  <div class="bg-glow bg-glow--1"></div>
+  <div class="bg-glow bg-glow--2"></div>
+  <div class="bg-glow bg-glow--3"></div>
+
+  <div class="register-card glass">
+    <div class="register-brand">
+      <span class="register-logo">🎵</span>
+      <h1 class="gradient-text">Crear cuenta</h1>
+      <p class="register-subtitle">Únete a SoundWave y descubre nueva música</p>
+    </div>
+
+    <div class="register-divider"></div>
+
+    <form class="register-form" (ngSubmit)="register()">
+      @if (errorMessage) {
+        <div class="form-error">
+          <span>⚠️</span> {{ errorMessage }}
+        </div>
+      }
+
+      <div class="form-group">
+        <input
+          type="text"
+          class="input"
+          placeholder="Nombre completo"
+          [(ngModel)]="name"
+          name="name"
+          id="register-name"
+          autocomplete="name"
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="email"
+          class="input"
+          placeholder="Correo electrónico"
+          [(ngModel)]="email"
+          name="email"
+          id="register-email"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          class="input"
+          placeholder="Contraseña (mín. 6 caracteres)"
+          [(ngModel)]="password"
+          name="password"
+          id="register-password"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="password"
+          class="input"
+          placeholder="Confirmar contraseña"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          id="register-confirm-password"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary register-submit" [disabled]="isLoading" id="register-submit-btn">
+        @if (isLoading) {
+          <span class="btn-spinner"></span>
+        }
+        Crear cuenta
+      </button>
+    </form>
+
+    <p class="register-footer">
+      ¿Ya tienes cuenta? <a routerLink="/login" class="link-accent">Inicia sesión aquí</a>
+    </p>
+  </div>
+</div>

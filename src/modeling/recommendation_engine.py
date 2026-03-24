@@ -5,26 +5,98 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from src.process_data import MONGO_URI, DB_NAME, COLLECTION_NAME
 
+# ── Genre → Emotion mapping ──────────────────────────────────
+GENRE_EMOTION_MAP = {
+    # Energetic
+    "edm": "energetic", "dance": "energetic", "electronic": "energetic",
+    "house": "energetic", "techno": "energetic", "drum-and-bass": "energetic",
+    "dubstep": "energetic", "hardstyle": "energetic", "trance": "energetic",
+    "club": "energetic", "party": "energetic", "power-pop": "energetic",
+    # Happy
+    "pop": "happy", "latin": "happy", "reggaeton": "happy", "salsa": "happy",
+    "funk": "happy", "disco": "happy", "ska": "happy", "samba": "happy",
+    "afrobeat": "happy", "k-pop": "happy", "j-pop": "happy",
+    "indie-pop": "happy", "pop-film": "happy",
+    # Sad
+    "blues": "sad", "emo": "sad", "gospel": "sad", "grunge": "sad",
+    "singer-songwriter": "sad", "soul": "sad",
+    # Calm
+    "acoustic": "calm", "ambient": "calm", "chill": "calm",
+    "classical": "calm", "folk": "calm", "jazz": "calm",
+    "new-age": "calm", "piano": "calm", "sleep": "calm",
+    "study": "calm", "world-music": "calm", "bossanova": "calm",
+    "guitar": "calm", "indie": "calm", "indie-pop": "calm",
+    # Aggressive
+    "metal": "aggressive", "hard-rock": "aggressive", "punk": "aggressive",
+    "punk-rock": "aggressive", "death-metal": "aggressive",
+    "black-metal": "aggressive", "heavy-metal": "aggressive",
+    "metalcore": "aggressive", "hardcore": "aggressive",
+    "industrial": "aggressive",
+    # Romantic
+    "r-n-b": "romantic", "romance": "romantic",
+}
+
+def _map_genre_to_emotion(genre: str) -> str:
+    """Map a track_genre to a simplified emotion label."""
+    if not isinstance(genre, str):
+        return "happy"
+    return GENRE_EMOTION_MAP.get(genre.lower().strip(), "happy")
 
 
 def get_mongodb_data(mongo_uri=None, db_name=None, collection_name=None):
     """
     Se conecta a la base de datos MongoDB local, extrae todos los documentos
     de la colección y los devuelve en un DataFrame de Pandas.
+    Si falla la conexión a MongoDB, hace fallback al archivo JSON y luego al CSV.
     """
-    uri = mongo_uri or os.getenv("MONGO_URI", MONGO_URI_DEFAULT)
-    db_n = db_name or os.getenv("DB_NAME", DB_NAME_DEFAULT)
-    col_n = collection_name or os.getenv("COLLECTION_NAME", COLLECTION_NAME_DEFAULT)
+    uri = mongo_uri or os.getenv("MONGO_URI", "mongodb://admin:admin123@127.0.0.1:27018/music_recommendation_db?authSource=admin")
+    db_n = db_name or os.getenv("DB_NAME", "music_recommendation_db")
+    col_n = collection_name or os.getenv("COLLECTION_NAME", "songs")
     
-    # Timeout corto para fallar rápidamente si hay error
-    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
-    db = client[db_n]
-    collection = db[col_n]
+    df = pd.DataFrame()
     
-    # Extraer todos los documentos
-    cursor = collection.find({})
-    df = pd.DataFrame(list(cursor))
+    # ── Intento 1: MongoDB ──
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=2000)
+        client.admin.command('ping')
+        db = client[db_n]
+        collection = db[col_n]
+        cursor = collection.find({})
+        df = pd.DataFrame(list(cursor))
+        print(f"[Engine] Leídas {len(df)} canciones desde MongoDB.")
+    except Exception as e:
+        print(f"[Engine] MongoDB no disponible ({e}).")
     
+    # ── Intento 2: JSON local ──
+    if df.empty:
+        json_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "raw", "spotify_raw_data.json")
+        try:
+            import json
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            df = pd.DataFrame(data)
+            print(f"[Engine] Fallback JSON exitoso. Leídas {len(df)} canciones.")
+        except Exception as json_err:
+            print(f"[Engine] JSON no disponible ({json_err}).")
+
+    # ── Intento 3: CSV dataset ──
+    if df.empty:
+        csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "source", "dataset_spotify.csv")
+        try:
+            df = pd.read_csv(csv_path)
+            # Normalizar columnas al formato esperado por la app
+            rename_map = {"track_id": "id", "artists": "artist", "track_name": "name"}
+            df.rename(columns=rename_map, inplace=True)
+            # Generar columna de emoción a partir del género
+            if "track_genre" in df.columns and "emocion" not in df.columns:
+                df["emocion"] = df["track_genre"].apply(_map_genre_to_emotion)
+            # Eliminar columna index si existe
+            if "Unnamed: 0" in df.columns:
+                df.drop(columns=["Unnamed: 0"], inplace=True)
+            print(f"[Engine] Fallback CSV exitoso. Leídas {len(df)} canciones.")
+        except Exception as csv_err:
+            print(f"[Engine] Error leyendo CSV: {csv_err}")
+            
     if df.empty:
         return df
         

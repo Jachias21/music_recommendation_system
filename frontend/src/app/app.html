@@ -1,0 +1,8 @@
+@if (auth.isLoggedIn()) {
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+}
+
+<main [class.main-content]="auth.isLoggedIn()" [@routeAnimation]="getRouteAnimationData()">
+  <router-outlet></router-outlet>
+</main>
