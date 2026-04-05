@@ -1,77 +1,221 @@
-# 🚀 Guía de Configuración para Desarrolladores
+# 🎵 SoundWave — Sistema de Recomendación Musical
 
-Bienvenido al repositorio del Sistema de Recomendación de Música. Este es un manual rápido para que los desarrolladores del equipo puedan configurar el entorno local, levantar los servicios necesarios y empezar a programar sin fricciones.
+Sistema de recomendación de música basado en audio features y similitud coseno, con frontend en Angular 21, backend FastAPI y base de datos MongoDB.
 
-## 📋 1. Requisitos Previos
+---
 
-Asegúrate de tener instalado en tu sistema de desarrollo:
-- **Python 3.10+** (o versiones compatibles)
-- **Docker** y **Docker Compose**
-- **uv** (Opcional pero altamente recomendado por su extrema velocidad en la gestión de paquetes en Python).
+## 📋 Requisitos Previos
 
-## 🛠️ 2. Entorno Virtual y Dependencias
+Asegúrate de tener instalado en tu máquina:
 
-Abre tu terminal y ubícate en la raíz del proyecto.
+| Herramienta | Versión mínima | Notas |
+|---|---|---|
+| **Python** | 3.13+ | Requerido por `pyproject.toml` |
+| **Node.js / npm** | npm 11+ | Para el frontend Angular |
+| **Docker** + **Docker Compose** | Cualquier reciente | Para levantar MongoDB |
+| **uv** | Cualquier reciente | Recomendado; alternativa: `pip` |
 
-### Si utilizas `uv` (Recomendado)
-Puedes crear el entorno o correr cosas al vuelo, pero para tener todo instalado:
+Instalar `uv` si no lo tienes:
 ```bash
-# Sincroniza o instala todo el árbol de dependencias
-uv sync
-
-# (Opcional) Activar el entorno de manera clásica:
-source .venv/bin/activate
+curl -Ls https://astral.sh/uv/install.sh | sh
 ```
 
-### Si utilizas `pip` tradicional
-```bash
-python -m venv venv
-source venv/bin/activate  # (En Windows: venv\Scripts\activate)
-pip install -r requirements.txt
-```
+---
 
-### Variables de Entorno (`.env`)
-En la raíz del proyecto, debes crear un archivo llamado `.env` e introducir las credenciales de desarrollo. Puedes solicitar las claves exactas al propietario del proyecto:
+## 🗄️ 1. Levantar MongoDB (Docker)
 
-```env
-SPOTIPY_CLIENT_ID=solicitar_acceso (no necesario actualmente)
-SPOTIPY_CLIENT_SECRET=solicitar_acceso (no necesario actualmente)
-```
-
-## 🗄️ 3. Base de Datos en Local (MongoDB)
-
-Para no emsuciar tu máquina local, la base de datos corre dockerizada. Asegúrate de tener Docker abierto y ejecuta:
+La base de datos corre en un contenedor Docker para no ensuciar tu máquina local. Arráncala antes de cualquier otro paso:
 
 ```bash
 docker-compose up -d
 ```
-*Tip: Para destruirla al terminar el día y liberar puertos usa `docker-compose down`.*
 
-## 📖 4. Consultar y Editar la Documentación
+Esto levanta MongoDB en el puerto `27018` con usuario `admin` / contraseña `admin123`.
 
-La documentación técnica, de arquitectura y módulos vive separada en la ruta `/docs` usando **MkDocs**. Es la fuente de la verdad para consultar las dependencias de los módulos (como el Motor de Recomendación).
+> Para pararlo al terminar: `docker-compose down`
 
-Para levantar el servidor web local con "hot-reload" (refresque en vivo), abre una pestaña de terminal y corre:
+---
+
+## 📦 2. Instalar dependencias Python
+
+Desde la raíz del proyecto:
 
 ```bash
-cd docs
+# Opción recomendada (uv — muy rápido)
+uv sync
+
+# Opción alternativa (pip clásico)
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+---
+
+## 🎵 3. Descargar el Dataset
+
+> ⚠️ **El dataset NO está incluido en el repositorio** (>300 MB). Debes descargarlo manualmente.
+
+### Fuente
+**Kaggle — Spotify 1.2M+ Songs**
+🔗 [https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs](https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs)
+
+### Pasos
+1. Inicia sesión en Kaggle (o regístrate, es gratis)
+2. Descarga el archivo `tracks_features.csv`
+3. Renómbralo a `dataset_spotify.csv`
+4. Colócalo en la ruta exacta:
+
+```
+music_recommendation_system/
+└── data/
+    └── source/
+        └── dataset_spotify.csv   ← aquí
+```
+
+Crea la carpeta si no existe:
+```bash
+mkdir -p data/source
+```
+
+---
+
+## 🔄 4. Pipeline de Datos (ejecutar en orden)
+
+Una vez descargado el CSV, ejecuta los scripts en este orden para poblar la base de datos:
+
+### Paso 1 — Ingesta y clasificación
+Lee el CSV, clasifica cada canción por emoción usando sus audio features y genera un JSON intermedio en `data/raw/`.
+
+```bash
+source .venv/bin/activate
+python3 src/ingest_data.py
+```
+
+**Output esperado:**
+```
+Dataset cargado:   1,204,022 filas
+Tras limpiar nulos y duplicados:  1,204,022 filas
+
+Clasificación completada. Distribución por emoción:
+  Neutro    :  532,439  (44.2%)
+  Triste    :  320,909  (26.7%)
+  Alegre    :  212,351  (17.6%)
+  Energico  :  138,323  (11.5%)
+
+✅ Finalizado. Datos guardados en: data/raw/spotify_raw_data.json
+```
+
+### Paso 2 — Carga en MongoDB
+Lee el JSON generado e inserta todos los documentos en la colección `songs` de MongoDB.
+
+```bash
+python3 src/process_data.py
+```
+
+**Output esperado:**
+```
+Leidos 1,204,022 registros del archivo fuente.
+Conexion establecida correctamente con MongoDB.
+Insertados 1,204,022 documentos en la coleccion 'songs'.
+Indice creado sobre el campo 'emocion'.
+```
+
+> ⏱️ La ingesta tarda ~30-60 segundos. La carga en MongoDB puede tardar 2-5 minutos dependiendo de tu máquina.
+
+---
+
+## 🚀 5. Arrancar la Aplicación
+
+El sistema necesita **dos servicios corriendo simultáneamente** en terminales separadas:
+
+### Terminal 1 — Backend FastAPI (puerto 8000)
+```bash
+source .venv/bin/activate
+python -m uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Espera hasta ver:
+```
+[API] Loaded 1,204,022 songs from data source.
+INFO:     Application startup complete.
+```
+
+### Terminal 2 — Frontend Angular (puerto 4200)
+```bash
+cd frontend
+npm install        # solo la primera vez
+npm start
+```
+
+Espera hasta ver:
+```
+Application bundle generation complete.
+➜  Local:   http://127.0.0.1:4200/
+```
+
+### Acceder a la app
+**⚠️ Importante:** Usa siempre `http://127.0.0.1:4200` (no `localhost:4200`).
+El flujo OAuth de Spotify está configurado con esa URI exacta.
+
+---
+
+## 🔑 6. Autenticación con Spotify
+
+El login con Spotify usa **OAuth 2.0 con PKCE** (sin backend propio para el token).
+
+- La `redirect_uri` registrada en el Spotify Developer Dashboard es: `http://127.0.0.1:4200/callback`
+- Si quieres añadir tu cuenta de Spotify como usuario de prueba, contacta al propietario de la app en el Dashboard
+
+> El login con email/contraseña funciona sin configuración adicional (almacenamiento local).
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+music_recommendation_system/
+├── api.py                          # FastAPI — capa REST principal
+├── pyproject.toml                  # Dependencias Python (uv)
+├── requirements.txt                # Dependencias Python (pip)
+├── docker-compose.yml              # MongoDB dockerizado
+├── data/
+│   ├── source/                     # ← Aquí va el CSV de Kaggle (no en git)
+│   └── raw/                        # ← JSON generado por ingest_data.py (no en git)
+├── src/
+│   ├── ingest_data.py              # Paso 1: Lee CSV, clasifica emociones
+│   ├── process_data.py             # Paso 2: Carga datos en MongoDB
+│   └── modeling/
+│       └── recommendation_engine.py # Motor ML (similitud coseno)
+├── frontend/                       # Angular 21 SPA
+│   ├── src/app/
+│   │   ├── core/services/          # auth.service, api.service, spotify.service
+│   │   └── features/               # login, dashboard, discover, playlist, callback
+│   └── package.json
+└── docs/                           # Documentación MkDocs
+```
+
+---
+
+## 🧠 Lógica de Clasificación de Emociones
+
+El nuevo dataset no incluye género musical, por lo que la emoción se infiere automáticamente de las **audio features** de Spotify:
+
+| Emoción | Condición |
+|---|---|
+| **Energico** | `energy ≥ 0.75` AND `tempo ≥ 130 BPM` |
+| **Alegre** | `valence ≥ 0.60` AND `danceability ≥ 0.55` |
+| **Triste** | `valence ≤ 0.35` AND `acousticness ≥ 0.30` AND `energy ≤ 0.55` |
+| **Neutro** | El resto |
+
+---
+
+## 📖 Documentación técnica
+
+Para consultar la arquitectura y los módulos:
+
+```bash
 uv run mkdocs serve
 ```
 
-## 💻 5. Flujo Operativo y Testing Local
-
-Cuando vayas a probar el código o hacer QA de todo el *pipeline* del proyecto, los scripts deben ejecutarse en este orden extricto:
-
-1. **Ingesta:** Extrae la música usando la API de Spotify.
-   ```bash
-   uv run python ingest_data.py
-   ```
-2. **Transformación & Carga:** Limpia e inserta masivamente los diccionarios a tu Mongo local.
-   ```bash
-   uv run python process_data.py
-   ```
-3. **Motor ML (Recomendador):** Ejecuta la simulación de prueba del "Cold Start" y la predicción del coseno de Scikit-Learn.
-   ```bash
-   uv run python src/modeling/recommendation_engine.py
-   ```
-
+Abre `http://localhost:8000` (o el puerto que indique).
