@@ -27,5 +27,9 @@
     "@angular/compiler-cli": "^21.2.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "picomatch": "4.0.4",
+    "undici": "7.24.6"
   }
 }

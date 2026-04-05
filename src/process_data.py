@@ -2,12 +2,12 @@ import os
 import json
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
-from os import getenv
 
 # ==========================================
 # CONFIGURACION DE BASE DE DATOS Y RUTAS
 # ==========================================
-RAW_DATA_PATH = "data/raw/spotify_raw_data.json"
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RAW_DATA_PATH = os.path.join(_BASE_DIR, "data", "raw", "spotify_raw_data.json")
 MONGO_URI = "mongodb://admin:admin123@127.0.0.1:27018/music_recommendation_db?authSource=admin"
 DB_NAME = "music_recommendation_db"
 COLLECTION_NAME = "songs"

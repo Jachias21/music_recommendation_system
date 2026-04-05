@@ -1,8 +1,44 @@
-.env
-.venv
+# ─── Entornos virtuales ───────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ─── Python ────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Variables de entorno ──────────────────────────────────────
+.env
+.env.*
+
+# ─── Datos (ficheros grandes, no van al repo) ──────────────────
+# Los compañeros deben descargar/generar los datos localmente.
+# Ver README para instrucciones.
+data/source/
+data/raw/
+data/processed/
+
+# ─── Jupyter ───────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── IDEs y SO ──────────────────────────────────────────────────
 .DS_Store
-data
-.vscode
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Frontend: Angular / Node ───────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# ─── Logs ───────────────────────────────────────────────────────
+*.log
+npm-debug.log*
