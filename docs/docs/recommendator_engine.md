@@ -1,17 +1,18 @@
-# Fase 3 completada: Motor de Recomendación
+# Motor de Recomendación (Filtrado Contextual)
 
-He implementado el motor de recomendación de acuerdo con las especificaciones y plan arquitectónico aprobados.
+El motor de recomendación matemático está codificado íntegramente en `src/modeling/recommendation_engine.py` actuando como núcleo duro de procesamiento bajo demanda servido mediante API.
 
-## Cambios realizados
+## Funciones Core
 
-- **[NEW]** Se ha creado el archivo `src/modeling/recommendation_engine.py`.
-- **Módulo 1: Extracción de datos**: Implementada la función `get_mongodb_data()` para conectarse a MongoDB y extraer los datos en un DataFrame de Pandas. Se ha aplicado explícitamente el escalado de la característica `tempo` usando el `MinMaxScaler` de Scikit-Learn.
-- **Módulo 2: Perfil de usuario (Cold Start)**: Implementada la función `create_user_profile(user_favorite_song_ids, df)` que recibe 3 IDs de canciones y genera un vector matemático centroide de 5 dimensiones (ADN musical del usuario) derivado de los promedios de `danceability`, `energy`, `valence`, `tempo` y `acousticness`.
-- **Módulo 3: Motor de Recomendación y Contexto**: Desarrollada la función `get_contextual_recommendations(user_vector, target_emotion, dataframe_base, top_n)`. Ésta filtra el dataset base para coincidir con la emoción objetivo (ahorrando tiempo computacional), emplea `cosine_similarity` sobre la matriz de características resultante, y devuelve el Top 5 ordenado en un formato JSON-like compuesto por diccionarios con la estructura: nombre, artista, ID y score de similitud.
+- **Módulo 1: Extracción de datos en caché**: Implementada la función `get_mongodb_data()`. Invoca Pymongo, retorna un DataFrame nativo Pandas para los cálculos algebraicos y escala en el momento la columna `tempo` usando el `MinMaxScaler` estandarizándolo (`0` a `1`) con las otras features para evitar sesgos por amplitudes asimétricas en la métrica (BPM).
+  
+- **Módulo 2: Perfilado (ADN) y "Cold Start"**: Implementada la función `create_user_profile(user_favorite_song_ids, df)`. Recibe N IDs de canciones base (como las seleccionadas a mano, o las "Liked Songs" pasadas por Spotify) y agrupa mediante medias (.mean()) un vector matemático centroide de 5 dimensiones. Este es el perfil digital instantáneo de las preferencias acústicas y energéticas del usuario.
 
-## Pruebas y Validación (Automated Tests/Manual Verification)
+- **Módulo 3: Motor de Recomendación Contextual**: Desarrollada la función `get_contextual_recommendations(user_vector, target_emotion, dataframe_base, top_n)`.
+  1. Filtra primero todo el dataset MongoDB (usualmente 1.2M) exigiendo coincidir con la `emocion` elegida (Alegre, Triste, Energico, etc). Reduce considerablemente costes de búsqueda matricial de fuerza bruta T(N^2).
+  2. Emplea la técnica `cosine_similarity` extrayendo ángulos de similitud estricta entre el Perfil de Usuario con cada registro disponible habilitado.
+  3. Ordena los clústeres descendientemente, filtrando aquellos que ya incluyó el usuario (no recomendamos lo mismo de lo que ya somos fan o hemos pre-seleccionado) y devuelve un formato serializado JSON List.
 
-- Se probó localmente el archivo `recommendation_engine.py` mediante el Virtual Environment.
-- El script validó exitosamente la lógica interna, las importaciones, y la sintaxis.
-- La arquitectura empleada prevé la inactividad de las bases de datos externas configurando timeouts óptimos y capturando excepciones. El flujo de simulación `if __name__ == '__main__':` fue validado capturando el caso cuando el clúster MongoDB no está operativo, devolviendo mensajes con instrucciones limpias para resolver incidentes.
-- El módulo ya se encuentra completamente preparado para ser importado orgánicamente desde la futura interfaz del backend o el frontend sin interrupciones ni distorsión matemática.
+## Interfaz de Exposición
+
+Dado el diseño full-stack propuesto, el framework general (Angular) no llama directamante a este Python. Por el medio figura un orquestador (API Gateway desarrollado en FastAPI) que importa estas bases, maneja el cache global del Dataframe `_df` (para no re-golpear a Mongo repetidamente) y expone Web Endpoints asíncronos en el puerto `8000` devolviéndoselos al SPA Client.

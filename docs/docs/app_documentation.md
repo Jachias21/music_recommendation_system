@@ -1,47 +1,36 @@
-# Documentación de `app.py` (Interfaz de Usuario Principal)
+# Documentación de Frontend (Angular) y API (FastAPI)
 
-El archivo `app.py` es el punto de entrada principal para la interfaz de usuario de nuestro **Sistema de Recomendación Musical**. Está construido utilizando el framework **Streamlit** y se encarga de gestionar toda la interacción inicial con el usuario, su perfil de preferencias musicales (Onboarding) y la presentación final de las recomendaciones contextuales.
+El sistema presenta una arquitectura Web moderna de tres capas, que desacopla la lógica de interfaz de usuario, orquestación de negocio e inteligencia artificial. Está diseñado para ofrecer una experiencia fluida como Single Page Application (SPA).
 
-## Arquitectura y Conexiones del Archivo
+## 1. Servidor de Interfaz (Frontend - Localhost:4200)
 
-Para funcionar correctamente, `app.py` no existe de forma aislada, sino que actúa como el "orquestador visual" de los procesos y modelos construidos en el sistema.
+Totalmente construido con **Angular 21** con diseño *Standalone components*. La aplicación gestiona internamente la navegación (Router), estados y renderizados sin congelar al usuario mediante Observables (RxJS).
 
-### Dependencias y Archivos que Invoca:
-`app.py` realiza llamadas a toda la raíz del backend (directorio `src/`) para delegar el procesamiento de datos y la inteligencia de recomendación:
+### Pantallas Principales (Features):
+- **/login**: Portal de autenticación con integración Social. Incluye Flujo OAuth 2.0 Proof Key for Code Exchange (PKCE) nativo conectándose a los Accounts Web de Spotify.
+- **/callback**: El componente invisible al usuario final al que Spotify redirige con un Código de Intercambio (Code Challenge). Angular recoge este *uri state*, se vuelve a comunicar con Spotify, valida el token JWT asimétrico y recupera por primera vez los metadatos del usuario final.
+- **/dashboard**: El corazón de la app interactiva. Si se es usuario Spotify cargará la lógica `SpotifyService`, trayéndose canciones salvadas (`Saved Tracks`) comparándolas primero por ID en nuestro DB y luego haciendo fuzzy match por string (`match-names`). Para cuentas locales, carga el `CartService`. En ambas presenta el panel para inyectarle parámetros contextuales (Emoción Deseada).
+- **/discover**: Un explorador de toda la vida. Expone un Cuadro de entrada (Search Box) mapeado a un `Subject` de base reactiva con un `debounceTime(350ms)` controlando anti-flood en el servidor. Empaqueta un JSON y llena un carrito de la compra temporal al pulsar "Añadir".
+- **/playlist**: Renderiza las sugerencias calculadas ordenando los Top Rankings generados desde la matriz de similitud de Coseno.
 
-1. **`src/process_data.py`**
-   - **Variables importadas**: `MONGO_URI`, `DB_NAME`, `COLLECTION_NAME`.
-   - **Por qué lo llama**: `app.py` necesita saber dónde y cómo conectarse a la base de datos de MongoDB. En lugar de codificar ("hardcodear") estas credenciales en el archivo de interfaz, las importa de las variables de entorno centrales definidas en el archivo de procesamiento.
-
-2. **`src/modeling/recommendation_engine.py`**
-   - **Funciones importadas**: `get_mongodb_data`, `create_user_profile`, `get_contextual_recommendations`.
-   - **Por qué lo llama**: Constituye el núcleo o "cerebro" matemático importado en la vista.
-     - Utiliza `get_mongodb_data` para extraer el catálogo completo de canciones al inicializar la app y guardarlo en memoria caché (`@st.cache_data`) optimizando los tiempos de carga.
-     - Utiliza `create_user_profile` enviando las 3 canciones favoritas seleccionadas en la interfaz para que este módulo devuelva el "ADN Musical" (vector de 5 dimensiones).
-     - Utiliza `get_contextual_recommendations` enviando ese vector y la emoción elegida, devolviendo un Top 10 formateado para que `app.py` lo pinte en pantalla.
+### Servicios Base (Core Layer):
+- `AuthService`: Orquesta la JWT sessionStorage, las llamadas a `auth.spotify.com`, PKCE Generation local.
+- `ApiService`: Interface principal del cliente HttpClient de Angular para despachar los `HttpParams` formados por Angular a través del puerto 8000 a la de nuestra capa de servidores REST Python.
 
 ---
 
-## Dinámica Funcional y Diseño de la App
+## 2. API Gateway (FastAPI - Localhost:8000)
 
-La aplicación está dividida en tres lógicas principales de interacción (Fases):
+Desarrollada en `api.py` y servida usando un servidor ASGI de hiperrendimiento (`Uvicorn`).
 
-### 1. Gestión de Estado y Memoria (Session State)
-Streamlit, por defecto, se recarga por completo en cada interacción. `app.py` resuelve este problema empleando *Session State* (`st.session_state.selected_songs`).
-- Se inicializa un "carrito" o lista vacía `[]` la primera vez que arranca la aplicación.
-- Este estado sobrevive a los reinicios de Streamlit, permitiendo que la interfaz actúe verdaderamente como una Single Page Application (SPA).
+Este middleware sirve como **Traductor Universal** entre la reactividad asíncrona de JavaScript y el mundo sincrónico de Dataframes y Scikit-Learn. 
 
-### 2. Panel Lateral: Onboarding y Búsqueda Dinámica
-Para sustituir listas estáticas inmanejables, se ha programado un **Motor de Búsqueda Dinámico**:
-- **Búsqueda Avanzada**: El usuario usa un cuadro de texto (`st.sidebar.text_input`). A partir de los 2 caracteres, `app.py` lanza una consulta lógica usando Pandas (`str.contains`) sobre el catálogo musical cacheado detectando coincidencias de pista o artista, obviando mayúsculas y minúsculas.
-- **Paginación Eficiente**: El panel restringe las visualizaciones visuales a un `.head(10)` para no congestionar la interfaz web (DOM).
-- **Validación del Carrito**:
-  - Al pulsar "Añadir" en una canción buscada, el sistema valida que no esté duplicada.
-  - Verifica que no se exceda el cupo paramétrico de `len == 3`. Si es válido, lo inyecta a `st.session_state.selected_songs`.
-  - Provee una visualización en tiempo real de lo seleccionado con la posibilidad de "🗑️ Quitar" elementos, lo que elimina el elemento mediante comando `.pop()` y actualiza la página (`st.rerun()`). Una barra de progreso interactiva informa visualmente de cuán cerca se está del objetivo.
+### Características de Diseño Críticas
+1. **Cacheado In-Memory en Startup**: Al arrancar `uvicorn api:app`, ejecuta una rutina decorada como `@app.on_event("startup")` que invoca `get_mongodb_data()`. Descarga de MongoDB el catálogo musical y lo hospeda pre-compilado en una variable global estática en memoria RAM (`_df`).
+    - *Ventaja MvP*: Cuando Angular solicita búsquedas textuales o comparadores vectoriales cruzando tablas que afectarían duramente los I/O Disk de la base de datos Mongo (y por ende lentitud y bloqueos mutacionales), ahora simplemente lee esta Dataframe en memoria, despachando consultas en muy pocos milisegundos reales.
 
-### 3. Panel Central: Contexto y Generación Condicional
-El bloque principal asume el control cuando el usuario completó la Fase 2:
-- Expone un selector de emociones (Contexto emocional del usuario). Extrae las opciones directamente del formato dinámico de los metadatos parseados desde MongoDB.
-- **Bloqueo Inteligente**: El botón principal de llamado a la acción (`Generar Playlist Contextual`) incluye lógica de interbloqueo (`disabled=True`). Si el usuario no ha completado las 3 pistas exigidas para crear un Cold Start real, la app muestra un `st.warning` inhabilitando el botón.
-- **Generación Final**: Una vez completado, el clic desencadena toda la cadena del motor en el backend y formatea la respuesta mostrando listas ordenadas por el % de similitud de coseno devuelto, emparejado con nombre y artista de la recomendación.
+2. **Endpoints Modulares (Pydantic Mappers)**:
+   - `GET /api/songs/search`: Implementa máscaras binarias de base de textos (`str.contains`) sobre `name` y `artist` retonando los Top 20 resultados instantáneos al Angular Discover Component.
+   - `POST /api/recommendations`: Receptora oficial del flujo Offline/Local (Guest). Obtiene arrays con IDs y computa perfiles basales fijos (3 Tracks de límite base).
+   - `POST /api/recommendations/auto`: Receptora oficial de Spotify Session. Permite procesar N identificadores obtenidos del perfil del usuario (las Liked Tracks). Desata el módulo "Cold Start" vectorizando la "Media" centroide y devolviendo sugerencias contextuales.
+   - `POST /api/songs/match-names`: End-point de recuperación. Cuando un ID de track de una Spotify Library personal no encaja explícitamente en el corpus del ID local de nuestro Dataset de 1.2M Kaggle, ejecuta un barrido string coincidente exacto (`name.lower()`) simulando un Left-Join suave para recuperar las *audio features* relativas a esa popularidad.
