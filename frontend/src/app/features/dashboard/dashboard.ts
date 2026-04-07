@@ -114,8 +114,8 @@ export class Dashboard implements OnInit {
     if (!this.selectedEmotion()) return false;
     if (this.isGenerating()) return false;
 
-    if (this.isSpotifyUser()) {
-      return this.spotify.hasSpotifyData();
+    if (this.isSpotifyUser() && this.spotify.hasSpotifyData()) {
+      return true;
     }
     return this.cart.count() >= 3;
   }

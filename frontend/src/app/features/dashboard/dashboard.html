@@ -64,8 +64,8 @@
     </section>
   }
 
-  <!-- Status (only for non-Spotify users) -->
-  @if (!isSpotifyUser()) {
+  <!-- Status (only for non-Spotify users or if Spotify data is empty) -->
+  @if (!isSpotifyUser() || (isSpotifyUser() && !spotify.hasSpotifyData())) {
     <section class="status-section animate-fade-in-up">
       <div class="status-card glass">
         <div class="status-icon">
@@ -134,7 +134,7 @@
       }
     </button>
 
-    @if (!isSpotifyUser() && cart.count() < 3) {
+    @if ((!isSpotifyUser() || !spotify.hasSpotifyData()) && cart.count() < 3) {
       <p class="generate-hint">
         <span class="hint-icon" [innerHTML]="icons.WARNING"></span>
         Busca {{ 3 - cart.count() }} canción{{ cart.count() === 2 ? '' : 'es' }} más en la barra lateral
