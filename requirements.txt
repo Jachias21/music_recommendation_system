@@ -4,3 +4,4 @@ pymongo
 scikit-learn
 mkdocs
 mkdocs-material
+python-dotenv

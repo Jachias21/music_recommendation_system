@@ -7,10 +7,21 @@ from pymongo.errors import ConnectionFailure
 # CONFIGURACION DE BASE DE DATOS Y RUTAS
 # ==========================================
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Intentar cargar variables de entorno desde el archivo .env si existe
+env_path = os.path.join(_BASE_DIR, ".env")
+if os.path.exists(env_path):
+    with open(env_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
+
 RAW_DATA_PATH = os.path.join(_BASE_DIR, "data", "raw", "spotify_raw_data.json")
-MONGO_URI = "mongodb://admin:admin123@127.0.0.1:27018/music_recommendation_db?authSource=admin"
-DB_NAME = "music_recommendation_db"
-COLLECTION_NAME = "songs"
+MONGO_URI = os.environ.get("MONGO_URI")
+DB_NAME = os.environ.get("DB_NAME")
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME")
 
 def process_and_load_data():
     print("Iniciando carga de datos en MongoDB...")

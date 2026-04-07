@@ -49,9 +49,9 @@ def get_mongodb_data(mongo_uri=None, db_name=None, collection_name=None):
     de la colección y los devuelve en un DataFrame de Pandas.
     Si falla la conexión a MongoDB, hace fallback al archivo JSON y luego al CSV.
     """
-    uri = mongo_uri or os.getenv("MONGO_URI", "mongodb://admin:admin123@127.0.0.1:27018/music_recommendation_db?authSource=admin")
-    db_n = db_name or os.getenv("DB_NAME", "music_recommendation_db")
-    col_n = collection_name or os.getenv("COLLECTION_NAME", "songs")
+    uri = mongo_uri or os.getenv("MONGO_URI")
+    db_n = db_name or os.getenv("DB_NAME")
+    col_n = collection_name or os.getenv("COLLECTION_NAME")
     
     df = pd.DataFrame()
     
@@ -203,8 +203,8 @@ if __name__ == "__main__":
     print("Iniciando prueba del Motor de Recomendación...\n")
     
     # Usando la URI del archivo 02 para probar si hay datos cargados en esta base de datos local
-    test_uri = "mongodb://admin:admin123@127.0.0.1:27018/music_recommendation_db?authSource=admin"
-    test_db = "music_recommendation_db"
+    test_uri = os.getenv("MONGO_URI")
+    test_db = os.getenv("DB_NAME")
     
     try:
         df_songs = get_mongodb_data(mongo_uri=test_uri, db_name=test_db, collection_name="songs")
