@@ -99,11 +99,11 @@ export class SpotifyService {
 
       // If no ID matches, fallback to name matching
       if (matched.length === 0) {
-        const names = tracks.map(t => t.name);
+        const payload = tracks.map(t => ({ name: t.name, artist: t.artist }));
         const byNameRes = await fetch(`${this.BACKEND_API}/songs/match-names`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(names),
+          body: JSON.stringify(payload),
         });
 
         if (byNameRes.ok) {

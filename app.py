@@ -39,11 +39,15 @@ st.sidebar.header("1. Selecciona tu base musical (3 canciones)")
 search_query = st.sidebar.text_input("Busca una canción o artista:")
 
 if len(search_query) >= 2:
-    # Filtro lógico sobre el DataFrame base
-    filtered_df = df[
-        df['name'].str.contains(search_query, case=False, na=False) | 
-        df['artist'].str.contains(search_query, case=False, na=False)
-    ]
+    search_terms = search_query.lower().split()
+    mask = pd.Series([True]*len(df), index=df.index)
+    for term in search_terms:
+        mask = mask & (
+            df['name'].str.lower().str.contains(term, regex=False, na=False) | 
+            df['artist'].str.lower().str.contains(term, regex=False, na=False)
+        )
+    
+    filtered_df = df[mask]
     
     # Limitar a máximo 10 resultados
     results = filtered_df.head(10)
