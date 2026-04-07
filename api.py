@@ -12,6 +12,7 @@ from src.modeling.recommendation_engine import (
     get_mongodb_data,
     create_user_profile,
     get_contextual_recommendations,
+    FEATURES,
 )
 from src.process_data import MONGO_URI, DB_NAME, COLLECTION_NAME
 
@@ -116,6 +117,7 @@ def recommend(body: RecommendationRequest):
         target_emotion=body.emotion,
         dataframe_base=_df,
         top_n=10,
+        excluded_ids=body.song_ids,
     )
     return recs
 
@@ -162,9 +164,8 @@ def recommend_auto(body: AutoRecommendationRequest):
             detail="None of the provided tracks were found in the dataset.",
         )
 
-    # Build the user profile from ALL matched tracks (not just 3)
-    features = ["danceability", "energy", "valence", "tempo", "acousticness"]
-    present_features = [f for f in features if f in matched_df.columns]
+    # Build the user profile from ALL matched tracks using the shared 8-dim feature list
+    present_features = [f for f in FEATURES if f in matched_df.columns]
     user_vector = matched_df[present_features].mean().values.tolist()
 
     recs = get_contextual_recommendations(
@@ -172,5 +173,6 @@ def recommend_auto(body: AutoRecommendationRequest):
         target_emotion=body.emotion,
         dataframe_base=_df,
         top_n=10,
+        excluded_ids=body.track_ids,
     )
     return recs
