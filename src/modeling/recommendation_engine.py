@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from pymongo import MongoClient, DESCENDING
+from pymongo import MongoClient
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -9,9 +9,6 @@ FEATURES = [
     "danceability", "energy", "valence", "tempo",
     "acousticness", "instrumentalness", "liveness", "speechiness"
 ]
-
-# Columna de popularidad (puede variar según el origen del dataset)
-_POPULARITY_CANDIDATES = ["popularity", "track_popularity"]
 
 # ── Genre → Emotion mapping ──────────────────────────────────────────────────
 GENRE_EMOTION_MAP = {
@@ -59,15 +56,6 @@ def _get_mongo_client_and_col(uri: str, db_name: str, collection_name: str):
     return client, client[db_name][collection_name]
 
 
-def _detect_popularity_col(collection) -> str | None:
-    """Detecta cuál columna de popularidad existe en la colección."""
-    sample = collection.find_one({}, projection={c: 1 for c in _POPULARITY_CANDIDATES})
-    if sample:
-        for c in _POPULARITY_CANDIDATES:
-            if c in sample:
-                return c
-    return None
-
 
 def _normalize_df(df: pd.DataFrame) -> pd.DataFrame:
     """Convierte los campos numéricos a float y escala el tempo."""
@@ -105,7 +93,7 @@ def get_mongodb_data(mongo_uri=None, db_name=None, collection_name=None):
         print(f"[Engine] Leídas {len(df)} canciones desde MongoDB.")
     except Exception as e:
         print(f"[Engine] MongoDB no disponible ({e}).")
-
+"""
     # ── Intento 2: JSON local ──
     if df.empty:
         base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -138,26 +126,22 @@ def get_mongodb_data(mongo_uri=None, db_name=None, collection_name=None):
         return df
 
     return _normalize_df(df)
-
+"""
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pre-filtrado directo en MongoDB para recomendaciones
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _fetch_candidates_from_mongo(uri, db_n, col_n, target_emotion: str, pop_col: str, limit: int = 20_000) -> pd.DataFrame:
+def _fetch_candidates_from_mongo(uri, db_n, col_n, target_emotion: str, limit: int = 25_000) -> pd.DataFrame:
     """
-    Consulta MongoDB filtrando por emoción y popularidad mínima.
-    Devuelve un DataFrame con las `limit` canciones más populares de esa emoción.
+    Consulta MongoDB filtrando únicamente por emoción.
+    Devuelve un DataFrame con hasta `limit` canciones de esa emoción.
     """
     client, collection = _get_mongo_client_and_col(uri, db_n, col_n)
-    query = {"emocion": {"$regex": f"^{target_emotion}$", "$options": "i"}, pop_col: {"$gte": 20}}
-    projection = {f: 1 for f in FEATURES + ["id", "name", "artist", "emocion", pop_col]}
+    query = {"emocion": {"$regex": f"^{target_emotion}$", "$options": "i"}}
+    projection = {f: 1 for f in FEATURES + ["id", "name", "artist", "emocion"]}
     projection["_id"] = 0
-    cursor = (
-        collection.find(query, projection=projection)
-        .sort(pop_col, DESCENDING)
-        .limit(limit)
-    )
+    cursor = collection.find(query, projection=projection).limit(limit)
     df = pd.DataFrame(list(cursor))
     print(f"[Engine] Pre-filtrado MongoDB: {len(df)} candidatos para emoción '{target_emotion}'.")
     return df
@@ -197,16 +181,14 @@ def get_contextual_recommendations(
     collection_name: str = None,
 ) -> list:
     """
-    Recomienda canciones usando un scoring híbrido:
-      final_score = (cosine_similarity × 0.6) + (normalized_popularity × 0.4)
+    Recomienda canciones usando similitud del coseno pura (modelo Content-Based).
 
     Flujo:
-      1. Intenta obtener candidatos directamente de MongoDB (pre-filtrado).
+      1. Intenta obtener candidatos directamente de MongoDB (pre-filtrado por emoción).
       2. Fallback al dataframe_base si MongoDB no está disponible.
       3. Excluye las canciones semilla (blacklisting).
-      4. Calcula similitud del coseno con el vector de usuario.
-      5. Normaliza la popularidad y genera el final_score.
-      6. Devuelve el Top N ordenado por final_score.
+      4. Calcula similitud del coseno con el vector de usuario de 8 dimensiones.
+      5. Devuelve el Top N ordenado por similarity_score descendente.
     """
     uri   = mongo_uri        or os.getenv("MONGO_URI")
     db_n  = db_name          or os.getenv("DB_NAME")
@@ -217,11 +199,8 @@ def get_contextual_recommendations(
     # ── Paso 1: Pre-filtrado en MongoDB ──
     if uri and db_n and col_n:
         try:
-            client, collection = _get_mongo_client_and_col(uri, db_n, col_n)
-            pop_col = _detect_popularity_col(collection)
-            if pop_col:
-                filtered_df = _fetch_candidates_from_mongo(uri, db_n, col_n, target_emotion, pop_col)
-                filtered_df = _normalize_df(filtered_df)
+            filtered_df = _fetch_candidates_from_mongo(uri, db_n, col_n, target_emotion)
+            filtered_df = _normalize_df(filtered_df)
         except Exception as e:
             print(f"[Engine] Pre-filtrado MongoDB falló, usando dataframe_base ({e}).")
 
@@ -262,23 +241,8 @@ def get_contextual_recommendations(
     filtered_df = filtered_df.copy()
     filtered_df["similarity_score"] = similarities[0]
 
-    # ── Paso 5: Scoring híbrido ──
-    pop_col_df = next((c for c in _POPULARITY_CANDIDATES if c in filtered_df.columns), None)
-    if pop_col_df:
-        scaler = MinMaxScaler()
-        pop_values = pd.to_numeric(filtered_df[pop_col_df], errors="coerce").fillna(0).values.reshape(-1, 1)
-        filtered_df["norm_popularity"] = scaler.fit_transform(pop_values)
-        filtered_df["final_score"] = (
-            filtered_df["similarity_score"] * 0.6 +
-            filtered_df["norm_popularity"] * 0.4
-        )
-        sort_col = "final_score"
-    else:
-        # Sin columna de popularidad, usar solo similitud
-        sort_col = "similarity_score"
-
-    # ── Paso 6: Ranking y serialización ──
-    ranked_df = filtered_df.sort_values(by=sort_col, ascending=False).head(top_n)
+    # ── Paso 5: Ranking por similitud del coseno ──
+    ranked_df = filtered_df.sort_values(by="similarity_score", ascending=False).head(top_n)
 
     result = []
     for _, row in ranked_df.iterrows():
