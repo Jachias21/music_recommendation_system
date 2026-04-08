@@ -88,10 +88,13 @@ class RecommendationOut(BaseModel):
 @app.get("/api/songs/search", response_model=List[SongOut])
 def search_songs(q: str = Query(..., min_length=2)):
     """Full-text search by song name or artist (max 20 results)."""
-    mask = (
-        _df["name"].str.contains(q, case=False, na=False)
-        | _df["artist"].str.contains(q, case=False, na=False)
-    )
+    search_terms = q.lower().split()
+    mask = pd.Series([True] * len(_df), index=_df.index)
+    for term in search_terms:
+        mask = mask & (
+            _df["name"].str.lower().str.contains(term, regex=False, na=False) |
+            _df["artist"].str.lower().str.contains(term, regex=False, na=False)
+        )
     results = _df[mask].head(20)
     return results.to_dict(orient="records")
 
@@ -133,16 +136,28 @@ def get_songs_by_ids(track_ids: List[str]):
     return matched.to_dict(orient="records")
 
 
+class TrackMatch(BaseModel):
+    name: str
+    artist: str
+
 @app.post("/api/songs/match-names")
-def match_songs_by_names(names: List[str]):
-    """Match songs by name (case-insensitive). Used when Spotify track IDs
-    don't directly match the dataset — fallback to name matching."""
+def match_songs_by_names(tracks: List[TrackMatch]):
+    """Match songs by name and artist (case-insensitive). Used when Spotify track IDs
+    don't directly match the dataset — fallback to name+artist matching."""
     results = []
-    for name in names[:50]:  # Limit to 50 lookups
-        mask = _df["name"].str.lower() == name.lower()
-        matched = _df[mask].head(1)
-        if not matched.empty:
-            results.append(matched.iloc[0].to_dict())
+    for track in tracks[:50]:  # Limit to 50 lookups
+        mask_name = _df["name"].str.lower() == track.name.lower()
+        matched_name = _df[mask_name]
+        
+        if not matched_name.empty:
+            if track.artist:
+                artist_first = track.artist.split(',')[0].strip().lower()
+                mask_artist = matched_name["artist"].str.lower().str.contains(artist_first, regex=False, na=False)
+                matched_fully = matched_name[mask_artist]
+                if not matched_fully.empty:
+                    results.append(matched_fully.iloc[0].to_dict())
+            else:
+                results.append(matched_name.iloc[0].to_dict())
     return results
 
 

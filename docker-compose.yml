@@ -1,15 +1,15 @@
 services:
   mongodb:
     image: mongo:latest
-    container_name: mongodb-local
+    container_name: spotify
     restart: always
     ports:
       - "27018:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_ROOT_USERNAME: adminmsj
+      MONGO_INITDB_ROOT_PASSWORD: aA123456789!
     volumes:
-      - mongodb_data:/data/db 
+      - mongodb_data:/data/db
 
 volumes:
   mongodb_data:
