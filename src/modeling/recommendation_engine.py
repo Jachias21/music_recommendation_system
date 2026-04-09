@@ -93,7 +93,7 @@ def get_mongodb_data(mongo_uri=None, db_name=None, collection_name=None):
         print(f"[Engine] Leídas {len(df)} canciones desde MongoDB.")
     except Exception as e:
         print(f"[Engine] MongoDB no disponible ({e}).")
-"""
+
     # ── Intento 2: JSON local ──
     if df.empty:
         base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -126,7 +126,7 @@ def get_mongodb_data(mongo_uri=None, db_name=None, collection_name=None):
         return df
 
     return _normalize_df(df)
-"""
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pre-filtrado directo en MongoDB para recomendaciones
@@ -139,7 +139,7 @@ def _fetch_candidates_from_mongo(uri, db_n, col_n, target_emotion: str, limit: i
     """
     client, collection = _get_mongo_client_and_col(uri, db_n, col_n)
     query = {"emocion": {"$regex": f"^{target_emotion}$", "$options": "i"}}
-    projection = {f: 1 for f in FEATURES + ["id", "name", "artist", "emocion"]}
+    projection = {f: 1 for f in FEATURES + ["id", "track_id", "name", "artist", "emocion"]}
     projection["_id"] = 0
     cursor = collection.find(query, projection=projection).limit(limit)
     df = pd.DataFrame(list(cursor))
@@ -217,7 +217,7 @@ def get_contextual_recommendations(
         return []
 
     # ── Paso 3: Blacklisting ──
-    id_col = "id" if "id" in filtered_df.columns else "_id"
+    id_col = "id" if "id" in filtered_df.columns else ("track_id" if "track_id" in filtered_df.columns else "_id")
     if excluded_ids:
         filtered_df = filtered_df[~filtered_df[id_col].astype(str).isin([str(i) for i in excluded_ids])]
 

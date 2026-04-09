@@ -9,8 +9,8 @@ Totalmente construido con **Angular 21** con diseño *Standalone components*. La
 ### Pantallas Principales (Features):
 - **/login**: Portal de autenticación con integración Social. Incluye Flujo OAuth 2.0 Proof Key for Code Exchange (PKCE) nativo conectándose a los Accounts Web de Spotify.
 - **/callback**: El componente invisible al usuario final al que Spotify redirige con un Código de Intercambio (Code Challenge). Angular recoge este *uri state*, se vuelve a comunicar con Spotify, valida el token JWT asimétrico y recupera por primera vez los metadatos del usuario final.
-- **/dashboard**: El corazón de la app interactiva. Si se es usuario Spotify cargará la lógica `SpotifyService`, trayéndose canciones salvadas (`Saved Tracks`) comparándolas primero por ID en nuestro DB y luego haciendo fuzzy match por string (`match-names`). Para cuentas locales, carga el `CartService`. En ambas presenta el panel para inyectarle parámetros contextuales (Emoción Deseada).
-- **/discover**: Un explorador de toda la vida. Expone un Cuadro de entrada (Search Box) mapeado a un `Subject` de base reactiva con un `debounceTime(350ms)` controlando anti-flood en el servidor. Empaqueta un JSON y llena un carrito de la compra temporal al pulsar "Añadir".
+- **/dashboard**: El corazón de la app interactiva. Si se es usuario Spotify cargará la lógica `SpotifyService`, iterando a través de paginación para descargar hasta **150 canciones guardadas**, e invalidando la caché temporal del navegador para estar siempre actualizados. Luego cruza esos datos. Para cuentas locales, se usa el `CartService`.
+- **/discover**: Un explorador de toda la vida. Expone un Cuadro de entrada (Search Box) mapeado a un `Subject` de base reactiva con un `debounceTime(350ms)` controlando anti-flood en el servidor. Empaqueta un JSON y llena un carrito temporal al pulsar "Añadir".
 - **/playlist**: Renderiza las sugerencias calculadas ordenando los Top Rankings generados desde la matriz de similitud de Coseno.
 
 ### Servicios Base (Core Layer):
@@ -26,11 +26,11 @@ Desarrollada en `api.py` y servida usando un servidor ASGI de hiperrendimiento (
 Este middleware sirve como **Traductor Universal** entre la reactividad asíncrona de JavaScript y el mundo sincrónico de Dataframes y Scikit-Learn. 
 
 ### Características de Diseño Críticas
-1. **Cacheado In-Memory en Startup**: Al arrancar `uvicorn api:app`, ejecuta una rutina decorada como `@app.on_event("startup")` que invoca `get_mongodb_data()`. Descarga de MongoDB el catálogo musical y lo hospeda pre-compilado en una variable global estática en memoria RAM (`_df`).
-    - *Ventaja MvP*: Cuando Angular solicita búsquedas textuales o comparadores vectoriales cruzando tablas que afectarían duramente los I/O Disk de la base de datos Mongo (y por ende lentitud y bloqueos mutacionales), ahora simplemente lee esta Dataframe en memoria, despachando consultas en muy pocos milisegundos reales.
+1. **Cacheado y Limpieza de Texto In-Memory en Startup**: Al arrancar `uvicorn api:app`, ejecuta una rutina (`_load_data()`) que descarga de MongoDB el catálogo musical. A la vez, invoca la función `clean_text()` basada en Regex (Módulo `re`) para generar las columnas pre-computadas `clean_name` y `clean_artist`.
+    - *Ventaja MvP*: Cuando Angular solicita búsquedas, en vez de aplicar limpieza de strings en caliente a 1.2 millones de filas (bloqueando el hilo), el cruce de datos ocurre en memoria a latencias casi de tiempo constante (O(1)), eludiendo los ruidos de formato como "(feat. XYZ)" procedentes de los metadatos de Spotify.
 
 2. **Endpoints Modulares (Pydantic Mappers)**:
-   - `GET /api/songs/search`: Implementa máscaras binarias de base de textos (`str.contains`) sobre `name` y `artist` retonando los Top 20 resultados instantáneos al Angular Discover Component.
-   - `POST /api/recommendations`: Receptora oficial del flujo Offline/Local (Guest). Obtiene arrays con IDs y computa perfiles basales fijos (3 Tracks de límite base).
-   - `POST /api/recommendations/auto`: Receptora oficial de Spotify Session. Permite procesar N identificadores obtenidos del perfil del usuario (las Liked Tracks). Desata el módulo "Cold Start" vectorizando la "Media" centroide y devolviendo sugerencias contextuales.
-   - `POST /api/songs/match-names`: End-point de recuperación. Cuando un ID de track de una Spotify Library personal no encaja explícitamente en el corpus del ID local de nuestro Dataset de 1.2M Kaggle, ejecuta un barrido string coincidente exacto (`name.lower()`) simulando un Left-Join suave para recuperar las *audio features* relativas a esa popularidad.
+   - `GET /api/songs/search`: Implementa iteradores básicos de búsqueda local retornando sugerencias instantáneas.
+   - `POST /api/recommendations/auto`: Receptora oficial de Spotify Session. Pasa los hashes encontrados directamente al motor matemático para desencadenar el Cold Start.
+   - `POST /api/songs/match-names`: End-point de recuperación masiva. Busca emparejar la biblioteca del usuario haciendo correspondencias **exactas** sobre el texto ya pre-limpiado en las cachés de regex `clean_name` & `clean_artist`, erradicando falsos positivos.
+   - `POST /api/recommendations/by-names`: Soluciona el problema de carencia de IDs delegando en FastApi la resolución nativa de nombres/artistas introducidos sueltos y calculando automáticamente la similitud recomendando tracks nuevos.

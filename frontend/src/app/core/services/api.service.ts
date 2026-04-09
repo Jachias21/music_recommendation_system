@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Song, Recommendation, RecommendationRequest } from '../models/song.model';
+import { Song, Recommendation, RecommendationRequest, SongSeed } from '../models/song.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -34,5 +34,13 @@ export class ApiService {
   /** Find songs in dataset matching given track IDs */
   getSongsByIds(trackIds: string[]): Observable<Song[]> {
     return this.http.post<Song[]>(`${this.baseUrl}/songs/by-ids`, trackIds);
+  }
+
+  /** Get recommendations by song name + artist pairs (no local ID needed) */
+  getRecommendationsByNames(songs: SongSeed[], emotion: string): Observable<Recommendation[]> {
+    return this.http.post<Recommendation[]>(`${this.baseUrl}/recommendations/by-names`, {
+      songs,
+      emotion,
+    });
   }
 }

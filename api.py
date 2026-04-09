@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 import pandas as pd
+import re
 
 from src.modeling.recommendation_engine import (
     get_mongodb_data,
@@ -30,6 +31,18 @@ app.add_middleware(
 )
 
 # ────────────────────────────────────────────
+# Text cleaning for robust searching
+# ────────────────────────────────────────────
+def clean_text(text: str) -> str:
+    if not isinstance(text, str):
+        return ""
+    text = text.lower()
+    text = re.sub(r'\(.*?\)', '', text)  # remove text between parentheses
+    text = re.sub(r'-.*', '', text)      # remove text after dash (e.g. - Remastered)
+    return text.strip()
+
+
+# ────────────────────────────────────────────
 # Cache: load data once at startup
 # ────────────────────────────────────────────
 _df: pd.DataFrame = pd.DataFrame()
@@ -46,6 +59,13 @@ def _load_data():
     # Drop Mongo ObjectId column so it doesn't cause serialisation issues
     if "_id" in _df.columns:
         _df.drop(columns=["_id"], inplace=True)
+        
+    # Create clean lookup columns to speed up matching
+    if "name" in _df.columns:
+        _df["clean_name"] = _df["name"].apply(clean_text)
+    if "artist" in _df.columns:
+        _df["clean_artist"] = _df["artist"].apply(clean_text)
+        
     print(f"[API] Loaded {len(_df)} songs from data source.")
 
 
@@ -60,6 +80,18 @@ class RecommendationRequest(BaseModel):
 class AutoRecommendationRequest(BaseModel):
     """Request body for Spotify auto-profile recommendations."""
     track_ids: List[str]
+    emotion: str
+
+
+class SongSeed(BaseModel):
+    """A name+artist pair used to seed recommendations without needing a local ID."""
+    name: str
+    artist: str
+
+
+class NameBasedRecommendationRequest(BaseModel):
+    """Request body for text-based recommendations (name + artist)."""
+    songs: List[SongSeed]
     emotion: str
 
 
@@ -142,23 +174,26 @@ class TrackMatch(BaseModel):
 
 @app.post("/api/songs/match-names")
 def match_songs_by_names(tracks: List[TrackMatch]):
-    """Match songs by name and artist (case-insensitive). Used when Spotify track IDs
-    don't directly match the dataset — fallback to name+artist matching."""
+    """Match songs by name and artist using cleaned exact matches."""
     results = []
-    for track in tracks[:50]:  # Limit to 50 lookups
-        mask_name = _df["name"].str.lower() == track.name.lower()
-        matched_name = _df[mask_name]
+    
+    # Increase lookup limit to 100 max to catch more library tracks
+    for track in tracks[:100]:
+        c_name = clean_text(track.name)
+        c_artist = clean_text(track.artist)
         
-        if not matched_name.empty:
-            if track.artist:
-                artist_first = track.artist.split(',')[0].strip().lower()
-                mask_artist = matched_name["artist"].str.lower().str.contains(artist_first, regex=False, na=False)
-                matched_fully = matched_name[mask_artist]
-                if not matched_fully.empty:
-                    results.append(matched_fully.iloc[0].to_dict())
-            else:
-                results.append(matched_name.iloc[0].to_dict())
-    return results
+        mask = _df["clean_name"] == c_name
+        if c_artist:
+            # We strictly enforce artist match to avoid false positives (e.g. cover songs)
+            mask = mask & (_df["clean_artist"].str.contains(c_artist.split(',')[0].strip(), regex=False, na=False))
+            
+        matched = _df[mask]
+        if not matched.empty:
+            results.append(matched.iloc[0].to_dict())
+                
+    # Remove duplicates from the result list just in case multiple library matches hit the same local file
+    unique_results = {r["id"] if "id" in r else r.get("_id"): r for r in results}.values()
+    return list(unique_results)
 
 
 @app.post("/api/recommendations/auto", response_model=List[RecommendationOut])
@@ -189,5 +224,46 @@ def recommend_auto(body: AutoRecommendationRequest):
         dataframe_base=_df,
         top_n=10,
         excluded_ids=body.track_ids,
+    )
+    return recs
+@app.post("/api/recommendations/by-names", response_model=List[RecommendationOut])
+def recommend_by_names(body: NameBasedRecommendationRequest):
+    """
+    Acepta una lista de pares {name, artist} y resuelve cada uno contra el dataset
+    mediante búsqueda de texto pre-limpiado en caché.
+    Luego calcula el perfil de usuario y devuelve recomendaciones.
+    """
+    if not body.songs or len(body.songs) > 5:
+        raise HTTPException(status_code=400, detail="Provide 1-5 songs.")
+
+    id_col = "id" if "id" in _df.columns else "_id"
+    matched_ids: List[str] = []
+
+    for seed in body.songs:
+        c_name = clean_text(seed.name)
+        c_artist = clean_text(seed.artist)
+
+        mask = (_df["clean_name"] == c_name)
+        if c_artist:
+            mask = mask & (_df["clean_artist"].str.contains(c_artist.split(',')[0].strip(), regex=False, na=False))
+            
+        hit = _df[mask].head(1)
+
+        if not hit.empty:
+            matched_ids.append(str(hit.iloc[0][id_col]))
+
+    if not matched_ids:
+        raise HTTPException(
+            status_code=404,
+            detail="None of the songs were found in the dataset. Check name and artist spelling.",
+        )
+
+    user_vector = create_user_profile(matched_ids, _df)
+    recs = get_contextual_recommendations(
+        user_vector=user_vector,
+        target_emotion=body.emotion,
+        dataframe_base=_df,
+        top_n=10,
+        excluded_ids=matched_ids,
     )
     return recs
