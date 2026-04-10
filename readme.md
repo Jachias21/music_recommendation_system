@@ -181,19 +181,41 @@ music_recommendation_system/
 ├── docker-compose.yml              # MongoDB dockerizado
 ├── data/
 │   ├── source/                     # ← Aquí va el CSV de Kaggle (no en git)
-│   └── raw/                        # ← JSON generado por ingest_data.py (no en git)
+│   ├── raw/                        # ← JSON generado por ingest_data.py (no en git)
+│   └── processed/                  # ← Dataset de interacciones para NCF (no en git)
 ├── src/
 │   ├── ingest_data.py              # Paso 1: Lee CSV, clasifica emociones
 │   ├── process_data.py             # Paso 2: Carga datos en MongoDB
 │   └── modeling/
-│       └── recommendation_engine.py # Motor ML (similitud coseno)
+│       ├── recommendation_engine.py  # Motor de Contenido (Similitud Coseno)
+│       ├── ncf_model.py              # Arquitectura de Red Neuronal (PyTorch)
+│       ├── generate_interactions.py  # Generador de datos sintéticos (Negative Sampling)
+│       └── train_ncf.py              # Script de entrenamiento de Deep Learning
+├── models/                         # ← Pesos del modelo entrenado (.pth) y encoders
+├── logs/                           # ← Registro de ejecuciones y entrenamiento
 ├── frontend/                       # Angular 21 SPA
-│   ├── src/app/
-│   │   ├── core/services/          # auth.service, api.service, spotify.service
-│   │   └── features/               # login, dashboard, discover, playlist, callback
-│   └── package.json
 └── docs/                           # Documentación MkDocs
 ```
+
+---
+
+## 🧠 5. Modelo Avanzado: Neural Collaborative Filtering (NCF)
+
+Además del motor basado en contenido, el sistema incluye una implementación de **Deep Learning** para capturar patrones de preferencia latentes.
+
+### Paso 1 — Generar Interacciones
+Simula usuarios y sus preferencias (Likes/Dislikes) basándose en emociones para crear la matriz de entrenamiento.
+```bash
+python3 src/modeling/generate_interactions.py
+```
+**Output:** Crea `data/processed/ncf_interactions.csv` (~500k filas con ratio 1:4).
+
+### Paso 2 — Entrenar la Red Neuronal
+Entrena un modelo NCF (Embeddings + MLP) usando PyTorch.
+```bash
+python3 src/modeling/train_ncf.py
+```
+**Output:** Genera los pesos en `models/ncf_weights.pth` y guarda el log en `logs/train_ncf.log`.
 
 ---
 
