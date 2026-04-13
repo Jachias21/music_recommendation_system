@@ -6,12 +6,12 @@ El motor de recomendación matemático está codificado íntegramente en `src/mo
 
 - **Módulo 1: Extracción de datos en caché**: Implementada la función `get_mongodb_data()`. Invoca Pymongo, retorna un DataFrame nativo Pandas para los cálculos algebraicos y escala en el momento la columna `tempo` usando el `MinMaxScaler` estandarizándolo (`0` a `1`) con las otras features para evitar sesgos por amplitudes asimétricas en la métrica (BPM).
   
-- **Módulo 2: Perfilado (ADN) y "Cold Start"**: Implementada la función `create_user_profile(user_favorite_song_ids, df)`. Recibe N IDs de canciones base (como las seleccionadas a mano, o las "Liked Songs" pasadas por Spotify) y agrupa mediante medias (.mean()) un vector matemático centroide de 5 dimensiones. Este es el perfil digital instantáneo de las preferencias acústicas y energéticas del usuario.
+- **Módulo 2: Perfilado (ADN) y "Cold Start"**: Implementada la función `create_user_profile(user_favorite_song_ids, df)`. Recibe N IDs de canciones base y agrupa mediante medias (`.mean()`) un vector matemático centroide de **8 dimensiones** (`danceability`, `energy`, `valence`, `tempo`, `acousticness`, `instrumentalness`, `liveness`, `speechiness`). Este es el perfil digital instantáneo de las preferencias acústicas del usuario.
 
-- **Módulo 3: Motor de Recomendación Contextual**: Desarrollada la función `get_contextual_recommendations(user_vector, target_emotion, dataframe_base, top_n)`.
-  1. Filtra primero todo el dataset MongoDB (usualmente 1.2M) exigiendo coincidir con la `emocion` elegida (Alegre, Triste, Energico, etc). Reduce considerablemente costes de búsqueda matricial de fuerza bruta T(N^2).
-  2. Emplea la técnica `cosine_similarity` extrayendo ángulos de similitud estricta entre el Perfil de Usuario con cada registro disponible habilitado.
-  3. Ordena los clústeres descendientemente, filtrando aquellos que ya incluyó el usuario (no recomendamos lo mismo de lo que ya somos fan o hemos pre-seleccionado) y devuelve un formato serializado JSON List.
+- **Módulo 3: Motor de Recomendación Contextual**: Desarrollada la función `get_contextual_recommendations(...)`:
+  1. Filtra primero en MongoDB exigiendo coincidir estrictamente con la `emocion` elegida (Alegre, Triste, Energico, etc) con un límite topado a los **25.000 registros**. Esto previene colapsos de memoria generados por la base de datos completa de 1.2M iterando de forma nativa.
+  2. Emplea la técnica `cosine_similarity` extrayendo ángulos de similitud estricta entre el Perfil de Usuario de 8D con cada registro disponible habilitado.
+  3. Ordena los clústeres descendientemente, filtrando temporalmente aquellos IDs originales a través de *Blacklisting* controlado (usando `id` o `track_id` limpiamente procesado) para no recomendar canciones base. Devuelve un formato serializado JSON List.
 
 ## Interfaz de Exposición
 

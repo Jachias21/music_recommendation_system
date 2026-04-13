@@ -34,6 +34,7 @@ data/processed/
 *.swp
 *.swo
 
+
 # ─── Frontend: Angular / Node ───────────────────────────────────
 frontend/node_modules/
 frontend/dist/
@@ -42,3 +43,7 @@ frontend/.angular/
 # ─── Logs ───────────────────────────────────────────────────────
 *.log
 npm-debug.log*
+
+# ─── Docker ───────────────────────────────────────────────────────
+docker-compose.yml
+

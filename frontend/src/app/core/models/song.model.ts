@@ -24,3 +24,9 @@ export interface RecommendationRequest {
   song_ids: string[];
   emotion: string;
 }
+
+/** A name+artist pair for text-based recommendations */
+export interface SongSeed {
+  name: string;
+  artist: string;
+}
