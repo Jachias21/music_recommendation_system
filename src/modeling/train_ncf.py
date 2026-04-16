@@ -24,8 +24,8 @@ MODEL_WEIGHTS_PATH = os.path.join(MODELS_DIR, "ncf_weights.pth")
 USER_ENCODER_PATH = os.path.join(MODELS_DIR, "user_encoder.pkl")
 ITEM_ENCODER_PATH = os.path.join(MODELS_DIR, "item_encoder.pkl")
 
-BATCH_SIZE = 256
-EPOCHS = 10
+BATCH_SIZE = 4096
+EPOCHS = 5
 LEARNING_RATE = 0.001
 
 class NCFInteractionDataset(Dataset):

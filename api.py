@@ -46,16 +46,23 @@ def clean_text(text: str) -> str:
 # Cache: load data once at startup
 # ────────────────────────────────────────────
 _df: pd.DataFrame = pd.DataFrame()
+_ncf = None  # NCFRecommender instance — loaded at startup if weights exist
 
 
 @app.on_event("startup")
 def _load_data():
-    global _df
+    global _df, _ncf
     _df = get_mongodb_data(MONGO_URI, DB_NAME, COLLECTION_NAME)
-    if "_id" in _df.columns and "id" not in _df.columns:
-        _df["id"] = _df["_id"].astype(str)
-    elif "id" in _df.columns:
+    
+    # Priority for 'id': 1. existing 'id', 2. 'track_id', 3. '_id' (Mongo ObjectId)
+    if "id" not in _df.columns:
+        if "track_id" in _df.columns:
+            _df["id"] = _df["track_id"].astype(str)
+        elif "_id" in _df.columns:
+            _df["id"] = _df["_id"].astype(str)
+    else:
         _df["id"] = _df["id"].astype(str)
+
     # Drop Mongo ObjectId column so it doesn't cause serialisation issues
     if "_id" in _df.columns:
         _df.drop(columns=["_id"], inplace=True)
@@ -68,6 +75,14 @@ def _load_data():
         
     print(f"[API] Loaded {len(_df)} songs from data source.")
 
+    # Load NCF model (non-blocking: if weights missing, fall back to base model)
+    try:
+        from src.modeling.ncf_inference import NCFRecommender
+        _ncf = NCFRecommender()
+        print("[API] NCF model loaded successfully.")
+    except Exception as e:
+        print(f"[API] NCF model unavailable ({e}). Using base content model only.")
+
 
 # ────────────────────────────────────────────
 # Schemas
@@ -75,12 +90,14 @@ def _load_data():
 class RecommendationRequest(BaseModel):
     song_ids: List[str]
     emotion: str
+    model_type: str = "ncf"  # "ncf" | "base"
 
 
 class AutoRecommendationRequest(BaseModel):
     """Request body for Spotify auto-profile recommendations."""
     track_ids: List[str]
     emotion: str
+    model_type: str = "ncf"  # "ncf" | "base"
 
 
 class SongSeed(BaseModel):
@@ -142,10 +159,20 @@ def get_emotions():
 
 @app.post("/api/recommendations", response_model=List[RecommendationOut])
 def recommend(body: RecommendationRequest):
-    """Generate contextual recommendations based on seed songs + emotion."""
+    """Generate contextual recommendations based on seed songs + emotion.
+    Routes to the NCF model by default; pass model_type='base' to use content-based."""
     if len(body.song_ids) < 1 or len(body.song_ids) > 5:
         raise HTTPException(status_code=400, detail="Provide 1-5 song IDs.")
 
+    if body.model_type == "ncf" and _ncf is not None:
+        return _ncf.get_recommendations(
+            user_liked_song_ids=body.song_ids,
+            target_emotion=body.emotion,
+            candidate_df=_df,
+            top_n=10,
+        )
+
+    # Base model (Content-Based Filtering)
     user_vector = create_user_profile(body.song_ids, _df)
     recs = get_contextual_recommendations(
         user_vector=user_vector,
@@ -163,9 +190,13 @@ def recommend(body: RecommendationRequest):
 @app.post("/api/songs/by-ids", response_model=List[SongOut])
 def get_songs_by_ids(track_ids: List[str]):
     """Find songs in the dataset that match the given track IDs."""
-    id_col = "id" if "id" in _df.columns else "track_id"
-    matched = _df[_df[id_col].isin(track_ids)].head(50)
+    # Detect the available id column robustly
+    id_col = next((c for c in ["id", "track_id", "_id"] if c in _df.columns), None)
+    if id_col is None:
+        return []
+    matched = _df[_df[id_col].astype(str).isin(track_ids)].head(50)
     return matched.to_dict(orient="records")
+
 
 
 class TrackMatch(BaseModel):
@@ -177,34 +208,36 @@ def match_songs_by_names(tracks: List[TrackMatch]):
     """Match songs by name and artist using cleaned exact matches."""
     results = []
     
-    # Increase lookup limit to 100 max to catch more library tracks
     for track in tracks[:100]:
         c_name = clean_text(track.name)
         c_artist = clean_text(track.artist)
         
-        mask = _df["clean_name"] == c_name
-        if c_artist:
-            # We strictly enforce artist match to avoid false positives (e.g. cover songs)
-            mask = mask & (_df["clean_artist"].str.contains(c_artist.split(',')[0].strip(), regex=False, na=False))
+        matched_name = _df[_df["clean_name"] == c_name]
+        
+        if matched_name.empty:
+            continue
             
-        matched = _df[mask]
+        if c_artist:
+            artist_query = c_artist.split(',')[0].strip()
+            matched = matched_name[matched_name["clean_artist"].str.contains(artist_query, regex=False, na=False)]
+        else:
+            matched = matched_name
+            
         if not matched.empty:
             results.append(matched.iloc[0].to_dict())
                 
-    # Remove duplicates from the result list just in case multiple library matches hit the same local file
     unique_results = {r["id"] if "id" in r else r.get("_id"): r for r in results}.values()
     return list(unique_results)
 
 
 @app.post("/api/recommendations/auto", response_model=List[RecommendationOut])
 def recommend_auto(body: AutoRecommendationRequest):
-    """Generate recommendations using a list of Spotify track IDs as
-    the user profile. This replaces the manual 3-song selection for
-    users logged in via Spotify."""
+    """Generate recommendations using Spotify track IDs as the user profile.
+    Routes to NCF model by default; pass model_type='base' to use content-based."""
     if len(body.track_ids) < 1:
         raise HTTPException(status_code=400, detail="Provide at least 1 track ID.")
 
-    # Try to match by ID first, then use whatever we find
+    # Resolve local IDs from the cache
     id_col = "id" if "id" in _df.columns else "track_id"
     matched_df = _df[_df[id_col].isin(body.track_ids)]
 
@@ -214,18 +247,33 @@ def recommend_auto(body: AutoRecommendationRequest):
             detail="None of the provided tracks were found in the dataset.",
         )
 
-    # Build the user profile from ALL matched tracks using the shared 8-dim feature list
+    matched_ids = matched_df[id_col].astype(str).tolist()
+
+    # ── NCF route ──────────────────────────────────────────────────────
+    if body.model_type == "ncf" and _ncf is not None:
+        recs = _ncf.get_recommendations(
+            user_liked_song_ids=matched_ids,
+            target_emotion=body.emotion,
+            candidate_df=_df,
+            top_n=10,
+        )
+        if recs:  # If NCF has known embeddings for at least one seed, use NCF result
+            return recs
+        # Else silently fall through to base model
+        print("[API] NCF returned 0 results (all seeds OOV). Falling back to base model.")
+
+    # ── Base model (Content-Based Filtering) ───────────────────────────
     present_features = [f for f in FEATURES if f in matched_df.columns]
     user_vector = matched_df[present_features].mean().values.tolist()
-
     recs = get_contextual_recommendations(
         user_vector=user_vector,
         target_emotion=body.emotion,
         dataframe_base=_df,
         top_n=10,
-        excluded_ids=body.track_ids,
+        excluded_ids=matched_ids,
     )
     return recs
+
 @app.post("/api/recommendations/by-names", response_model=List[RecommendationOut])
 def recommend_by_names(body: NameBasedRecommendationRequest):
     """
@@ -243,11 +291,16 @@ def recommend_by_names(body: NameBasedRecommendationRequest):
         c_name = clean_text(seed.name)
         c_artist = clean_text(seed.artist)
 
-        mask = (_df["clean_name"] == c_name)
-        if c_artist:
-            mask = mask & (_df["clean_artist"].str.contains(c_artist.split(',')[0].strip(), regex=False, na=False))
+        matched_name = _df[_df["clean_name"] == c_name]
+        
+        if matched_name.empty:
+            continue
             
-        hit = _df[mask].head(1)
+        if c_artist:
+            artist_query = c_artist.split(',')[0].strip()
+            hit = matched_name[matched_name["clean_artist"].str.contains(artist_query, regex=False, na=False)].head(1)
+        else:
+            hit = matched_name.head(1)
 
         if not hit.empty:
             matched_ids.append(str(hit.iloc[0][id_col]))
