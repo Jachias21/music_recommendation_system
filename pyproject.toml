@@ -10,6 +10,7 @@ dependencies = [
     "pandas>=2.3.3",
     "pymongo>=4.16.0",
     "scikit-learn>=1.8.0",
+    "spotipy>=2.26.0",
     "streamlit>=1.55.0",
     "torch>=2.11.0",
     "uvicorn>=0.42.0",
