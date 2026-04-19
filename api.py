@@ -5,8 +5,11 @@ Does NOT modify any ML/backend logic.
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import pandas as pd
+from pymongo import MongoClient
+from bson import ObjectId
+from passlib.hash import bcrypt as pwd_context
 
 from src.modeling.recommendation_engine import (
     get_mongodb_data,
@@ -14,6 +17,7 @@ from src.modeling.recommendation_engine import (
     get_contextual_recommendations,
 )
 from src.process_data import MONGO_URI, DB_NAME, COLLECTION_NAME
+import src.modeling.node2vec_engine as _n2v
 
 # ────────────────────────────────────────────
 # App setup
@@ -32,11 +36,16 @@ app.add_middleware(
 # Cache: load data once at startup
 # ────────────────────────────────────────────
 _df: pd.DataFrame = pd.DataFrame()
+_users_col = None
 
 
 @app.on_event("startup")
 def _load_data():
-    global _df
+    global _df, _users_col
+    _client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+    _db = _client[DB_NAME]
+    _users_col = _db["users"]
+    _users_col.create_index("email", unique=True)
     _df = get_mongodb_data(MONGO_URI, DB_NAME, COLLECTION_NAME)
     if "_id" in _df.columns and "id" not in _df.columns:
         _df["id"] = _df["_id"].astype(str)
@@ -46,12 +55,43 @@ def _load_data():
     if "_id" in _df.columns:
         _df.drop(columns=["_id"], inplace=True)
     print(f"[API] Loaded {len(_df)} songs from data source.")
+    if _n2v.cache_valid(len(_df)):
+        _n2v.preload_embeddings(_df)
+        print("[API] node2vec embeddings loaded from cache.")
+    else:
+        print("[API] node2vec embeddings not cached — run `python -m src.modeling.node2vec_engine` to pre-build.")
+
+
+# ────────────────────────────────────────────
+# Emotion label mapping  (UI label → dataset value)
+# Dataset values: 'Alegre', 'Triste', 'Neutro', 'Energico'
+# ────────────────────────────────────────────
+EMOTION_MAP: dict[str, str] = {
+    # Spanish labels (match dataset exactly, case-insensitive)
+    "alegre": "Alegre",
+    "triste": "Triste",
+    "neutro": "Neutro",
+    "energico": "Energico",
+    "enérgico": "Energico",
+    "energetico": "Energico",
+    "enérgetico": "Energico",
+}
+
+
+def _resolve_emotion(emotion: str) -> str:
+    """Translate a UI emotion label to the internal dataset value (correct casing)."""
+    return EMOTION_MAP.get(emotion.lower().strip(), emotion)
 
 
 # ────────────────────────────────────────────
 # Schemas
 # ────────────────────────────────────────────
 class RecommendationRequest(BaseModel):
+    song_ids: List[str]
+    emotion: str
+
+
+class Node2VecRequest(BaseModel):
     song_ids: List[str]
     emotion: str
 
@@ -87,10 +127,13 @@ class RecommendationOut(BaseModel):
 @app.get("/api/songs/search", response_model=List[SongOut])
 def search_songs(q: str = Query(..., min_length=2)):
     """Full-text search by song name or artist (max 20 results)."""
-    mask = (
-        _df["name"].str.contains(q, case=False, na=False)
-        | _df["artist"].str.contains(q, case=False, na=False)
-    )
+    search_terms = q.lower().split()
+    mask = pd.Series([True] * len(_df), index=_df.index)
+    for term in search_terms:
+        mask = mask & (
+            _df["name"].str.lower().str.contains(term, regex=False, na=False) |
+            _df["artist"].str.lower().str.contains(term, regex=False, na=False)
+        )
     results = _df[mask].head(20)
     return results.to_dict(orient="records")
 
@@ -113,11 +156,28 @@ def recommend(body: RecommendationRequest):
     user_vector = create_user_profile(body.song_ids, _df)
     recs = get_contextual_recommendations(
         user_vector=user_vector,
-        target_emotion=body.emotion,
+        target_emotion=_resolve_emotion(body.emotion),
         dataframe_base=_df,
         top_n=10,
     )
     return recs
+
+
+@app.post("/api/recommendations/node2vec", response_model=List[RecommendationOut])
+def recommend_node2vec(body: Node2VecRequest):
+    """Graph-walk recommendations via node2vec embeddings."""
+    if _n2v._embeddings is None:
+        raise HTTPException(status_code=503, detail="Embeddings not ready yet.")
+    if not (1 <= len(body.song_ids) <= 5):
+        raise HTTPException(status_code=400, detail="Provide 1-5 song IDs.")
+    return _n2v.get_node2vec_recommendations(
+        seed_song_ids=body.song_ids,
+        target_emotion=_resolve_emotion(body.emotion),
+        df=_df,
+        embeddings=_n2v._embeddings,
+        song_ids=_n2v._song_ids,
+        top_n=10,
+    )
 
 
 # ────────────────────────────────────────────
@@ -131,16 +191,28 @@ def get_songs_by_ids(track_ids: List[str]):
     return matched.to_dict(orient="records")
 
 
+class TrackMatch(BaseModel):
+    name: str
+    artist: str
+
 @app.post("/api/songs/match-names")
-def match_songs_by_names(names: List[str]):
-    """Match songs by name (case-insensitive). Used when Spotify track IDs
-    don't directly match the dataset — fallback to name matching."""
+def match_songs_by_names(tracks: List[TrackMatch]):
+    """Match songs by name and artist (case-insensitive). Used when Spotify track IDs
+    don't directly match the dataset — fallback to name+artist matching."""
     results = []
-    for name in names[:50]:  # Limit to 50 lookups
-        mask = _df["name"].str.lower() == name.lower()
-        matched = _df[mask].head(1)
-        if not matched.empty:
-            results.append(matched.iloc[0].to_dict())
+    for track in tracks[:50]:  # Limit to 50 lookups
+        mask_name = _df["name"].str.lower() == track.name.lower()
+        matched_name = _df[mask_name]
+        
+        if not matched_name.empty:
+            if track.artist:
+                artist_first = track.artist.split(',')[0].strip().lower()
+                mask_artist = matched_name["artist"].str.lower().str.contains(artist_first, regex=False, na=False)
+                matched_fully = matched_name[mask_artist]
+                if not matched_fully.empty:
+                    results.append(matched_fully.iloc[0].to_dict())
+            else:
+                results.append(matched_name.iloc[0].to_dict())
     return results
 
 
@@ -169,8 +241,91 @@ def recommend_auto(body: AutoRecommendationRequest):
 
     recs = get_contextual_recommendations(
         user_vector=user_vector,
-        target_emotion=body.emotion,
+        target_emotion=_resolve_emotion(body.emotion),
         dataframe_base=_df,
         top_n=10,
     )
     return recs
+
+
+# ────────────────────────────────────────────
+# User auth endpoints
+# ────────────────────────────────────────────
+
+class UserRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+
+class OnboardingRequest(BaseModel):
+    seed_song_ids: List[str]
+
+
+class UserOut(BaseModel):
+    id: str
+    name: str
+    email: str
+    onboarding_complete: bool
+
+
+@app.post("/api/auth/register", response_model=UserOut)
+def register_user(body: UserRegister):
+    if _users_col.find_one({"email": body.email}):
+        raise HTTPException(status_code=409, detail="Ya existe una cuenta con ese correo electrónico.")
+    hashed = pwd_context.hash(body.password)
+    doc = {
+        "name": body.name,
+        "email": body.email,
+        "password_hash": hashed,
+        "onboarding_complete": False,
+        "seed_song_ids": [],
+    }
+    result = _users_col.insert_one(doc)
+    return UserOut(id=str(result.inserted_id), name=body.name, email=body.email, onboarding_complete=False)
+
+
+@app.post("/api/auth/login", response_model=UserOut)
+def login_user(body: UserLogin):
+    user = _users_col.find_one({"email": body.email})
+    if not user:
+        raise HTTPException(status_code=401, detail="No se encontró una cuenta con ese correo.")
+    if not pwd_context.verify(body.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Contraseña incorrecta.")
+    return UserOut(
+        id=str(user["_id"]),
+        name=user["name"],
+        email=user["email"],
+        onboarding_complete=user.get("onboarding_complete", False),
+    )
+
+
+@app.put("/api/users/{user_id}/onboarding")
+def complete_onboarding(user_id: str, body: OnboardingRequest):
+    if not (1 <= len(body.seed_song_ids) <= 5):
+        raise HTTPException(status_code=400, detail="Provide 1-5 seed song IDs.")
+    result = _users_col.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"onboarding_complete": True, "seed_song_ids": body.seed_song_ids}},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return {"ok": True}
+
+
+@app.get("/api/users/{user_id}", response_model=UserOut)
+def get_user(user_id: str):
+    user = _users_col.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return UserOut(
+        id=str(user["_id"]),
+        name=user["name"],
+        email=user["email"],
+        onboarding_complete=user.get("onboarding_complete", False),
+    )

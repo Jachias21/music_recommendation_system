@@ -31,7 +31,7 @@ export class Login {
     this.auth.loginWithGoogle();
   }
 
-  loginLocal(): void {
+  async loginLocal(): Promise<void> {
     this.errorMessage = '';
 
     if (!this.email || !this.password) {
@@ -40,11 +40,12 @@ export class Login {
     }
 
     this.isLoading = true;
-    const result = this.auth.loginLocal(this.email, this.password);
+    const result = await this.auth.loginLocal(this.email, this.password);
     this.isLoading = false;
 
     if (result.success) {
-      this.router.navigate(['/dashboard']);
+      const target = this.auth.needsOnboarding() ? '/onboarding' : '/dashboard';
+      this.router.navigate([target]);
     } else {
       this.errorMessage = result.error || 'Error al iniciar sesión.';
     }

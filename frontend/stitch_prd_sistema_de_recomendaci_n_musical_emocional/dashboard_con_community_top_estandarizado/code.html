@@ -1,0 +1,369 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Sound Lens | Mood Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffd2c8",
+              "inverse-on-surface": "#555458",
+              "tertiary": "#aebaff",
+              "error-dim": "#d53d18",
+              "surface-container": "#19191d",
+              "tertiary-container": "#9facf4",
+              "surface-container-low": "#131316",
+              "primary": "#ff9157",
+              "tertiary-dim": "#929fe6",
+              "on-tertiary-fixed-variant": "#263474",
+              "surface-bright": "#2c2c30",
+              "on-secondary-fixed-variant": "#006069",
+              "on-surface": "#f0edf1",
+              "outline": "#767579",
+              "primary-fixed": "#ff7a2c",
+              "inverse-surface": "#fcf8fd",
+              "inverse-primary": "#a04200",
+              "on-primary-fixed-variant": "#4f1d00",
+              "secondary-fixed": "#89e9f6",
+              "on-error": "#450900",
+              "on-surface-variant": "#acaaae",
+              "on-secondary-container": "#e6fcff",
+              "on-primary-fixed": "#000000",
+              "secondary": "#89e9f6",
+              "on-secondary": "#00555d",
+              "on-primary": "#531e00",
+              "surface-container-highest": "#25252a",
+              "primary-fixed-dim": "#f46800",
+              "on-tertiary-fixed": "#000f4f",
+              "surface": "#0e0e11",
+              "secondary-container": "#006972",
+              "secondary-dim": "#7adae7",
+              "surface-container-lowest": "#000000",
+              "on-tertiary": "#283575",
+              "surface-dim": "#0e0e11",
+              "primary-container": "#ff7a2c",
+              "error": "#ff7351",
+              "secondary-fixed-dim": "#7adae7",
+              "primary-dim": "#ff7520",
+              "surface-container-high": "#1f1f23",
+              "surface-tint": "#ff9157",
+              "error-container": "#b92902",
+              "surface-variant": "#25252a",
+              "on-background": "#f0edf1",
+              "tertiary-fixed": "#9facf4",
+              "on-primary-container": "#401600",
+              "on-secondary-fixed": "#004147",
+              "background": "#0e0e11",
+              "outline-variant": "#48474b",
+              "tertiary-fixed-dim": "#929fe6",
+              "on-tertiary-container": "#1d2b6a"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .tonal-transition {
+        background: linear-gradient(180deg, rgba(14, 14, 17, 0.8) 0%, rgba(14, 14, 17, 0) 100%);
+      }
+      .liquid-gradient-primary {
+        background: linear-gradient(135deg, #ff9157 0%, #ff7520 100%);
+      }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #48474b; border-radius: 10px; }
+      body { height: 100vh; overflow: hidden; }
+
+      @keyframes reactive-pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+      }
+      .reactive-indicator {
+        animation: reactive-pulse 2s infinite ease-in-out;
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 tonal-transition">
+<div class="text-2xl font-black tracking-tighter text-orange-500 font-headline" style="">Sound Lens</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex gap-6 text-zinc-400 font-['Inter'] tracking-tight">
+<a class="text-orange-500 font-bold transition-transform scale-95 active:scale-90 hover:text-orange-400" href="#" style="">Panel</a>
+<a class="hover:text-orange-400 transition-colors duration-300" href="#" style="">Explorador de Ánimo</a>
+<a class="hover:text-orange-400 transition-colors duration-300" href="#" style="">Lista de Descubrimiento</a>
+<a class="hover:text-orange-400 transition-colors duration-300" href="#" style="">Análisis de Rendimiento</a>
+</nav>
+</div>
+<div class="flex items-center gap-4 text-zinc-100">
+<button class="hover:text-orange-400 transition-colors duration-300 scale-95 active:scale-90" style=""><span class="material-symbols-outlined" style="">mood</span></button>
+<button class="hover:text-orange-400 transition-colors duration-300 scale-95 active:scale-90" style=""><span class="material-symbols-outlined" style="">notifications</span></button>
+<button class="hover:text-orange-400 transition-colors duration-300 scale-95 active:scale-90" style=""><span class="material-symbols-outlined" style="">account_circle</span></button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-zinc-800/10 bg-zinc-950 py-8 px-4 gap-y-6 z-40">
+<div class="flex flex-col gap-1 px-2 mt-20">
+<h2 class="text-orange-500 font-black font-headline text-lg" style="">El Escenario Sinestésico</h2>
+<p class="text-zinc-500 text-xs font-medium" style="">Ánimo Actual: Animado</p>
+</div>
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 py-3 px-4 bg-orange-500/10 text-orange-500 rounded-lg font-bold font-['Inter'] text-sm transition-all hover:translate-x-1" href="#" style=""><span class="material-symbols-outlined" style="">dashboard</span> Panel</a>
+<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm transition-all hover:translate-x-1" href="#" style=""><span class="material-symbols-outlined" style="">explore</span> Explorador de Ánimo</a>
+<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm transition-all hover:translate-x-1" href="#" style=""><span class="material-symbols-outlined" style="">library_music</span> Lista de Descubrimiento</a>
+<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm transition-all hover:translate-x-1" href="#" style=""><span class="material-symbols-outlined" style="">insights</span> Análisis de Rendimiento</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2">
+<button class="mb-4 py-3 px-4 liquid-gradient-primary text-on-primary font-bold rounded-full text-sm shadow-[0_0_32px_rgba(255,145,87,0.1)] hover:scale-105 transition-transform" style="">Sorpréndeme</button>
+<a class="flex items-center gap-3 py-2 px-4 text-zinc-500 hover:text-zinc-300 transition-colors font-['Inter'] text-sm" href="#" style=""><span class="material-symbols-outlined" style="">settings</span> Ajustes</a>
+<a class="flex items-center gap-3 py-2 px-4 text-zinc-500 hover:text-zinc-300 transition-colors font-['Inter'] text-sm" href="#" style=""><span class="material-symbols-outlined" style="">help</span> Soporte</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="lg:ml-64 pt-24 h-screen px-8 pb-8 flex flex-col gap-6 overflow-hidden">
+<!-- Top Hero Section -->
+<section class="max-w-[1600px] w-full mx-auto grid grid-cols-12 gap-6 flex-shrink-0">
+<!-- Left Content: Title & Moods -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<div class="space-y-1">
+<h1 class="font-headline font-black text-5xl tracking-tighter leading-none text-on-surface" style="">¿Cuál es la <span class="text-primary" style="">Frecuencia?</span></h1>
+<p class="text-on-surface-variant text-base font-light" style="">Establece tu resonancia emocional. Sound Lens adapta el escenario a tu estado actual.</p>
+</div>
+<!-- Bento Grid Mood Selection -->
+<div class="grid grid-cols-3 gap-4">
+<button class="group relative aspect-[4/3] rounded-2xl overflow-hidden p-6 flex flex-col justify-end items-start surface-container transition-all hover:ring-2 hover:ring-primary" style="">
+<div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-3xl text-primary mb-3" style="font-variation-settings: &quot;FILL&quot; 1;">bolt</span>
+<h3 class="text-xl font-black text-on-surface" style="">Animado</h3>
+<p class="text-on-surface-variant text-xs text-left" style="">Ritmos de alto BPM</p>
+</button>
+<button class="group relative aspect-[4/3] rounded-2xl overflow-hidden p-6 flex flex-col justify-end items-start surface-container transition-all hover:ring-2 hover:ring-secondary" style="">
+<div class="absolute inset-0 bg-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-3xl text-secondary mb-3" style="">balance</span>
+<h3 class="text-xl font-black text-on-surface" style="">Neutro</h3>
+<p class="text-on-surface-variant text-xs text-left" style="">Ritmos ambientales</p>
+</button>
+<button class="group relative aspect-[4/3] rounded-2xl overflow-hidden p-6 flex flex-col justify-end items-start border border-outline-variant/10 surface-container transition-all hover:ring-2 hover:ring-tertiary" style="">
+<div class="absolute inset-0 bg-tertiary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-3xl text-tertiary mb-3" style="">water_drop</span>
+<h3 class="text-xl font-black text-on-surface" style="">Triste</h3>
+<p class="text-on-surface-variant text-xs text-left" style="">Flujos melancólicos</p>
+</button>
+</div>
+<!-- Command Input & Dynamic Trends -->
+<div class="flex flex-col gap-4">
+<div class="surface-container rounded-2xl p-2 flex items-center gap-4 border border-outline-variant/10 shadow-lg">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-xl" style="">auto_awesome</span>
+</div>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-on-surface-variant text-base py-2" id="mood-input" placeholder="Dime qué estás haciendo... (ej. Sesión de código nocturna)" type="text">
+<button class="liquid-gradient-primary w-10 h-10 rounded-full flex items-center justify-center text-on-primary hover:scale-105 transition-transform flex-shrink-0" style="">
+<span class="material-symbols-outlined font-bold text-xl" style="">arrow_forward</span>
+</button>
+</div>
+<!-- Reactive Trend Mini-Cards -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Most Frequent Mood -->
+<div class="surface-container-low rounded-2xl p-4 flex flex-col justify-center gap-3 border border-outline-variant/5">
+<div class="flex items-center justify-between">
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest" style="">Ánimo Principal</p>
+<span class="material-symbols-outlined text-primary text-sm reactive-indicator" style="">bolt</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl" style="">bolt</span>
+</div>
+<div>
+<h4 class="text-sm font-black text-on-surface" style="">Animado</h4>
+<p class="text-[10px] text-on-surface-variant" style="">42% de Frecuencia</p>
+</div>
+</div>
+<div class="w-full bg-surface-bright h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-300" id="mood-bar" style="width: 42%"></div>
+</div>
+</div>
+<!-- Top Genre -->
+<div class="surface-container-low rounded-2xl p-4 flex flex-col justify-center gap-3 border border-outline-variant/5">
+<div class="flex items-center justify-between">
+<p class="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest" style="">Género Principal</p>
+<span class="material-symbols-outlined text-secondary text-sm reactive-indicator" style="">graphic_eq</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl" style="">graphic_eq</span>
+</div>
+<div>
+<h4 class="text-sm font-black text-on-surface" style="">Synthwave</h4>
+<p class="text-[10px] text-on-surface-variant" style="">12 Exportaciones</p>
+</div>
+</div>
+<div class="w-full bg-surface-bright h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-300" id="genre-bar" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Content: Visual Preview -->
+<div class="hidden lg:flex col-span-4 flex-col">
+<div class="surface-container rounded-3xl overflow-hidden relative group h-full max-h-[460px]">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-[2000ms]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEyQ3Y7787E5nhzK4naE4oCAzGfPeRTAjDY14LqgOXu3TrvBvYg76hgc2kUDL8-fQibD1h8RYj06I_Xrs9ZTjLU8kF3xbHyK77yOepFUj8PN9iZvAOKS_m7WZdM5ZOsjF2w4YnaofQ2BxOopP0i8D9ofwOKaDC-0n_qVewB6k1J-vhR7RjoptCBJUKyALactHMlQroNS8EyfJApqaPz8prpqwyIeGLB0fQDbs4huGJ_zdlbmlit4QPjEZzmsjIF_sJR0HSpOiKHhY" style="">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 p-6 flex flex-col h-full justify-end">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase w-fit mb-3" style=""><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span> Vista Previa Visual</div>
+<h4 class="text-2xl font-black text-on-surface leading-tight" style="">Sincronización de Entorno: Animado</h4>
+<div class="flex items-end gap-1 h-8 my-3">
+<div class="w-1 bg-primary/40 rounded-full h-[60%]"></div>
+<div class="w-1 bg-primary rounded-full h-[90%]"></div>
+<div class="w-1 bg-primary/60 rounded-full h-[40%]"></div>
+<div class="w-1 bg-primary rounded-full h-[100%]"></div>
+<div class="w-1 bg-primary/50 rounded-full h-[70%]"></div>
+<div class="w-1 bg-primary rounded-full h-[85%]"></div>
+</div>
+<p class="text-on-surface-variant text-xs leading-relaxed" style="">Acentos naranjas pulsantes de alta frecuencia y transiciones nítidas.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Data Section -->
+<section class="max-w-[1600px] w-full mx-auto grid grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden">
+<!-- Community Top Section -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-4 min-h-0">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-black font-headline text-on-surface" style="">Top de la Comunidad</h2>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline" style="">Ver Todo <span class="material-symbols-outlined text-xs" style="">arrow_forward</span></button>
+</div>
+<div class="flex-1 grid grid-cols-3 gap-4 min-h-0">
+<div class="surface-container-low rounded-2xl p-3 border border-outline-variant/5 flex flex-col gap-3 group cursor-pointer hover:bg-surface-container transition-all">
+<div class="aspect-square rounded-xl overflow-hidden relative">
+<img alt="Cyberpunk Beats" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://i.blogs.es/juegos/8873/cyberpunk/fotos/noticias/cyberpunk-5259439.jpg" style="">
+<div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" style="font-variation-settings: &quot;FILL&quot; 1;">favorite</span>
+<span class="text-[9px] font-bold" style="">1.2k</span>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-black text-on-surface truncate" style="">Neon Pulse Drive</h4>
+<p class="text-[10px] text-primary font-bold uppercase tracking-tighter" style="">Tendencia Superior</p>
+</div>
+</div>
+<div class="surface-container-low rounded-2xl p-3 border border-outline-variant/5 flex flex-col gap-3 group cursor-pointer hover:bg-surface-container transition-all">
+<div class="aspect-square rounded-xl overflow-hidden relative">
+<img alt="Deep Focus" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2MKHFO6XEzXGXi8kjbhY-o-S_0tCpRA4D9egmiPg066QR98GSMG063CIwGiS5hmfgkPG5BDJWZsabl77N5jTj1KkznhIgC8eIJ5Nb-9w3VIrVTC4JZ2IzHuXT7c6An0pmtkQhgLonPhGOYPT8h5RPsjavYCtcB_gM_kI4yICiPEU4Ig7s3mIiFPBLBFY02CSKYGvNgeV0DlpM-c0Vr9ce2vAuTuoWDUPIQnUyEnBY4mxNO8oM227IqfrFntoZ6QBOtpHVK9XBfJk" style="">
+<div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" style="font-variation-settings: &quot;FILL&quot; 1;">bookmark</span>
+<span class="text-[9px] font-bold" style="">842 saves</span>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-black text-on-surface truncate" style="">Ethereal Static</h4>
+<p class="text-[10px] text-on-surface-variant" style="">Por SonicWanderer</p>
+</div>
+</div>
+<div class="surface-container-low rounded-2xl p-3 border border-outline-variant/5 flex flex-col gap-3 group cursor-pointer hover:bg-surface-container transition-all">
+<div class="aspect-square rounded-xl overflow-hidden relative">
+<img alt="Ocean Waves" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbAffh5UMgvSd2I18RJCG-iihnS1VvRHsiQvwAW6s2CgQm-rmtOrHg3Fe7oWg-wP7j68D_VaP96giKtbHOKggP2V7PU41VKiw-A2Cjvm5762hq0PziG1-fX0yoJgdxE0EHOLMuenjX5TFOb_GBR22ELsVeF5zwHZLRWctx2Pqa1MT9JFJCt432UGqDm5B8HmcP5EzqG90e4J6jsPQgcFla1TPxkb_p17xa9IKYsECJC9mkv-PmoU49AOuvkgWcWVmBKHVyJEqIC7k" style="">
+<div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px] text-primary" style="font-variation-settings: &quot;FILL&quot; 1;">play_arrow</span>
+<span class="text-[9px] font-bold" style="">3.5k plays</span>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-black text-on-surface truncate" style="">Abyssal Chill</h4>
+<p class="text-[10px] text-on-surface-variant" style="">Flujo Ambiental</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Latest Playlists -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-4 min-h-0">
+<h3 class="text-lg font-black font-headline text-on-surface flex items-center gap-2" style=""><span class="material-symbols-outlined text-primary text-xl" style="">queue_music</span> RECIENTE</h3>
+<div class="flex flex-col gap-2 overflow-y-auto pr-1">
+<div class="surface-container-low rounded-xl p-3 flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" style="">bolt</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface" style="">Hyper Focus</p>
+<p class="text-[10px] text-on-surface-variant" style="">Establece tu resonancia emocional. Sound Lens adapta el escenario a tu estado actual.</p>
+</div>
+</div>
+<p class="text-[9px] text-zinc-600" style="">2m</p>
+</div>
+<div class="surface-container-low rounded-xl p-3 flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-tertiary/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-lg" style="">water_drop</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface" style="">Midnight Rain</p>
+<p class="text-[10px] text-on-surface-variant" style="">Establece tu resonancia emocional. Sound Lens adapta el escenario a tu estado actual.</p>
+</div>
+</div>
+<p class="text-[9px] text-zinc-600" style="">1h</p>
+</div>
+<div class="surface-container-low rounded-xl p-3 flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer border border-outline-variant/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-lg" style="">balance</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface" style="">Zen Garden</p>
+<p class="text-[10px] text-on-surface-variant" style="">Establece tu resonancia emocional. Sound Lens adapta el escenario a tu estado actual.</p>
+</div>
+</div>
+<p class="text-[9px] text-zinc-600" style="">Oct 24</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Background Decoration -->
+<div class="fixed top-[-10%] right-[-5%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full z-[-1]"></div>
+<div class="fixed bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-secondary/5 blur-[100px] rounded-full z-[-1]"></div>
+<script>
+        // Simple script to simulate reactive components based on input length
+        const input = document.getElementById('mood-input');
+        const moodBar = document.getElementById('mood-bar');
+        const genreBar = document.getElementById('genre-bar');
+        const indicators = document.querySelectorAll('.reactive-indicator');
+
+        input.addEventListener('input', (e) => {
+            const length = e.target.value.length;
+            
+            // Randomly oscillate the bars based on input to simulate "analysis"
+            const moodVal = Math.min(100, 42 + (length % 20));
+            const genreVal = Math.min(100, 65 + (length % 15));
+            
+            moodBar.style.width = moodVal + '%';
+            genreBar.style.width = genreVal + '%';
+
+            // Increase animation speed for visual feedback
+            if (length > 0) {
+                indicators.forEach(ind => {
+                    ind.style.animationDuration = Math.max(0.5, 2 - (length * 0.05)) + 's';
+                });
+            } else {
+                indicators.forEach(ind => {
+                    ind.style.animationDuration = '2s';
+                });
+            }
+        });
+    </script>
+</body></html>

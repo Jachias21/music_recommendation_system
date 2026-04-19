@@ -1,3 +1,5 @@
+export type Emotion = 'Alegre' | 'Triste' | 'Neutro';
+
 /** Song model matching the API response */
 export interface Song {
   id: string;

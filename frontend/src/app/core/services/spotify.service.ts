@@ -14,7 +14,7 @@ export interface SpotifySavedTrack {
 @Injectable({ providedIn: 'root' })
 export class SpotifyService {
   private readonly SPOTIFY_API = 'https://api.spotify.com/v1';
-  private readonly BACKEND_API = 'http://localhost:8000/api';
+  private readonly BACKEND_API = 'http://localhost:8002/api';
 
   /** Reactive state */
   readonly savedTracks = signal<SpotifySavedTrack[]>([]);
@@ -99,11 +99,11 @@ export class SpotifyService {
 
       // If no ID matches, fallback to name matching
       if (matched.length === 0) {
-        const names = tracks.map(t => t.name);
+        const payload = tracks.map(t => ({ name: t.name, artist: t.artist }));
         const byNameRes = await fetch(`${this.BACKEND_API}/songs/match-names`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(names),
+          body: JSON.stringify(payload),
         });
 
         if (byNameRes.ok) {
@@ -140,6 +140,41 @@ export class SpotifyService {
     } catch {
       // Ignore parse errors
     }
+  }
+
+  /**
+   * Create a Spotify playlist with the given track IDs and return its URL.
+   */
+  async createPlaylist(trackIds: string[], name: string): Promise<string> {
+    const token = this.auth.getAccessToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // Get user ID
+    const meRes = await fetch(`${this.SPOTIFY_API}/me`, { headers });
+    const me = await meRes.json();
+
+    // Create playlist
+    const plRes = await fetch(`${this.SPOTIFY_API}/users/${me.id}/playlists`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name, public: true }),
+    });
+    const pl = await plRes.json();
+
+    // Add tracks
+    const uris = trackIds.slice(0, 100).map(id => `spotify:track:${id}`);
+    await fetch(`${this.SPOTIFY_API}/playlists/${pl.id}/tracks`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ uris }),
+    });
+
+    return `https://open.spotify.com/playlist/${pl.id}`;
   }
 
   /**

@@ -2,6 +2,8 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Recommendation } from '../../core/models/song.model';
 import { CartService } from '../../core/services/cart.service';
+import { AuthService } from '../../core/services/auth.service';
+import { SpotifyService } from '../../core/services/spotify.service';
 import { listStagger } from '../../shared/animations/route-animations';
 import { SVG_ICONS } from '../../shared/icons/svg-icons';
 
@@ -14,14 +16,22 @@ import { SVG_ICONS } from '../../shared/icons/svg-icons';
 })
 export class Playlist implements OnInit {
   private router = inject(Router);
+  private auth = inject(AuthService);
+  private spotifyService = inject(SpotifyService);
   cart = inject(CartService);
   icons = SVG_ICONS;
 
   recommendations = signal<Recommendation[]>([]);
   emotion = signal<string>('');
   isEmpty = signal(false);
+  isExporting = signal(false);
+
+  isSpotifyUser = signal(false);
 
   ngOnInit(): void {
+    this.auth.user$.subscribe(user => {
+      this.isSpotifyUser.set(user?.provider === 'spotify');
+    });
     const nav = this.router.getCurrentNavigation();
     const state = nav?.extras?.state || history.state;
 
@@ -39,7 +49,7 @@ export class Playlist implements OnInit {
 
   getScoreColor(score: number): string {
     const pct = score * 100;
-    if (pct >= 85) return 'var(--accent)';
+    if (pct >= 85) return 'var(--triste)';
     if (pct >= 70) return 'var(--success)';
     if (pct >= 50) return 'var(--warning)';
     return 'var(--text-secondary)';
@@ -52,5 +62,20 @@ export class Playlist implements OnInit {
   startOver(): void {
     this.cart.clear();
     this.router.navigate(['/dashboard']);
+  }
+
+  async exportToSpotify(): Promise<void> {
+    this.isExporting.set(true);
+    try {
+      const url = await this.spotifyService.createPlaylist(
+        this.recommendations().map(r => r.id),
+        `Mi Playlist · Sound Lens — ${this.emotion()}`
+      );
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error('[Export] Failed to create playlist:', err);
+    } finally {
+      this.isExporting.set(false);
+    }
   }
 }

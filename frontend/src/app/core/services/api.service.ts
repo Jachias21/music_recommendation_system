@@ -5,7 +5,7 @@ import { Song, Recommendation, RecommendationRequest } from '../models/song.mode
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:8000/api';
+  private readonly baseUrl = 'http://localhost:8002/api';
 
   constructor(private http: HttpClient) {}
 

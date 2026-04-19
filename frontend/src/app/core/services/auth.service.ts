@@ -8,12 +8,7 @@ export interface AppUser {
   email: string;
   images: { url: string }[];
   provider: 'spotify' | 'google' | 'local';
-}
-
-interface LocalAccount {
-  email: string;
-  password: string;
-  name: string;
+  onboarding_complete?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +16,7 @@ export class AuthService {
   /* ── Spotify config ───────────────────────── */
   private readonly SPOTIFY_CLIENT_ID = 'c8295b5e717042348ae0655ccad0091c';
   private readonly SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:4200/callback';
-  private readonly SPOTIFY_SCOPES = 'user-read-private user-read-email user-library-read';
+  private readonly SPOTIFY_SCOPES = 'user-read-private user-read-email user-library-read playlist-modify-public';
   private readonly SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
   private readonly SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
@@ -140,49 +135,78 @@ export class AuthService {
 
   /* ── Standard login (email/password) ──────── */
 
-  registerLocal(name: string, email: string, password: string): { success: boolean; error?: string } {
-    const accounts: LocalAccount[] = JSON.parse(localStorage.getItem('local_accounts') || '[]');
-
-    if (accounts.some((a) => a.email === email)) {
-      return { success: false, error: 'Ya existe una cuenta con ese correo electrónico.' };
+  async registerLocal(name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const res = await fetch('http://localhost:8002/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.detail || 'Error al registrar.' };
+      }
+      const user: AppUser = {
+        id: data.id,
+        display_name: data.name,
+        email: data.email,
+        images: [],
+        provider: 'local',
+        onboarding_complete: data.onboarding_complete,
+      };
+      this.setUser(user);
+      return { success: true };
+    } catch {
+      return { success: false, error: 'No se pudo conectar al servidor. Asegúrate de que el backend está activo.' };
     }
-
-    accounts.push({ email, password: this.hashPassword(password), name });
-    localStorage.setItem('local_accounts', JSON.stringify(accounts));
-
-    // Auto-login after registration
-    const user: AppUser = {
-      id: `local_${Date.now()}`,
-      display_name: name,
-      email,
-      images: [],
-      provider: 'local',
-    };
-    this.setUser(user);
-    return { success: true };
   }
 
-  loginLocal(email: string, password: string): { success: boolean; error?: string } {
-    const accounts: LocalAccount[] = JSON.parse(localStorage.getItem('local_accounts') || '[]');
-    const account = accounts.find((a) => a.email === email);
-
-    if (!account) {
-      return { success: false, error: 'No se encontró una cuenta con ese correo.' };
+  async loginLocal(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const res = await fetch('http://localhost:8002/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.detail || 'Error al iniciar sesión.' };
+      }
+      const user: AppUser = {
+        id: data.id,
+        display_name: data.name,
+        email: data.email,
+        images: [],
+        provider: 'local',
+        onboarding_complete: data.onboarding_complete,
+      };
+      this.setUser(user);
+      return { success: true };
+    } catch {
+      return { success: false, error: 'No se pudo conectar al servidor. Asegúrate de que el backend está activo.' };
     }
+  }
 
-    if (account.password !== this.hashPassword(password)) {
-      return { success: false, error: 'Contraseña incorrecta.' };
+  async completeOnboarding(userId: string, seedSongIds: string[]): Promise<void> {
+    await fetch(`http://localhost:8002/api/users/${userId}/onboarding`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ seed_song_ids: seedSongIds }),
+    });
+    const user = this.userSubject.getValue();
+    if (user) {
+      const updated = { ...user, onboarding_complete: true };
+      this.setUser(updated);
     }
+  }
 
-    const user: AppUser = {
-      id: `local_${email}`,
-      display_name: account.name,
-      email,
-      images: [],
-      provider: 'local',
-    };
-    this.setUser(user);
-    return { success: true };
+  needsOnboarding(): boolean {
+    const user = this.userSubject.getValue();
+    return !!user && user.provider === 'local' && user.onboarding_complete === false;
+  }
+
+  getCurrentUser(): AppUser | null {
+    return this.userSubject.getValue();
   }
 
   /* ── Logout ───────────────────────────────── */
@@ -240,17 +264,6 @@ export class AuthService {
   private getStoredUser(): AppUser | null {
     const raw = localStorage.getItem('app_user');
     return raw ? JSON.parse(raw) : null;
-  }
-
-  /** Simple hash for demo purposes — NOT for production use */
-  private hashPassword(password: string): string {
-    let hash = 0;
-    for (let i = 0; i < password.length; i++) {
-      const char = password.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash |= 0;
-    }
-    return hash.toString(36);
   }
 
   /* ── PKCE utils ───────────────────────────── */
