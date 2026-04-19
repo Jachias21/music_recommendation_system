@@ -137,7 +137,7 @@ export class AuthService {
 
   async registerLocal(name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const res = await fetch('http://localhost:8002/api/auth/register', {
+      const res = await fetch('http://localhost:8000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
@@ -163,7 +163,7 @@ export class AuthService {
 
   async loginLocal(email: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const res = await fetch('http://localhost:8002/api/auth/login', {
+      const res = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -188,7 +188,7 @@ export class AuthService {
   }
 
   async completeOnboarding(userId: string, seedSongIds: string[]): Promise<void> {
-    await fetch(`http://localhost:8002/api/users/${userId}/onboarding`, {
+    await fetch(`http://localhost:8000/api/users/${userId}/onboarding`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ seed_song_ids: seedSongIds }),

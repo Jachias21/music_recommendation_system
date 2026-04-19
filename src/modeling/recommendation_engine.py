@@ -192,6 +192,7 @@ def get_contextual_recommendations(user_vector, target_emotion, dataframe_base, 
         
         result.append({
             "id": song_id,
+            "track_id": str(row.get("track_id", song_id)),
             "name": name,
             "artist": artist,
             "similarity_score": round(score, 4)

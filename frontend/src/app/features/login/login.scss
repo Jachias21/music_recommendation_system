@@ -9,10 +9,13 @@ $muted:     #afa8bc;
 $outline:   rgba(74,69,86,.4);
 
 .login-page {
+  position: fixed;
+  inset: 0;
   display: flex;
-  min-height: 100vh;
   background: $bg;
   font-family: 'Inter', sans-serif;
+  z-index: 9999;
+  overflow: hidden;
 }
 
 /* ── Left panel ──────────────────────────── */
@@ -95,6 +98,7 @@ $outline:   rgba(74,69,86,.4);
   justify-content: center;
   padding: 48px 32px;
   overflow-y: auto;
+  height: 100%;
 
   @media (min-width: 1024px) {
     width: 50%;

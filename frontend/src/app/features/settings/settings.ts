@@ -50,9 +50,11 @@ export class Settings {
   updateSlider(key: keyof SettingsData, event: Event): void {
     const val = +(event.target as HTMLInputElement).value;
     this.values.update(v => ({ ...v, [key]: val }));
+    this.apply(); // Auto-save
   }
 
   setDiversity(val: SettingsData['diversity']): void {
     this.values.update(v => ({ ...v, diversity: val }));
+    this.apply(); // Auto-save
   }
 }

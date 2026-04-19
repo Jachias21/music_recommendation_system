@@ -65,6 +65,7 @@ export class Onboarding implements OnInit {
     this.isSaving = true;
     this.errorMessage = '';
     const user = this.auth.getCurrentUser();
+    if (!user) return;
     try {
       await this.auth.completeOnboarding(user.id, this.selected.map((s) => s.id));
       this.router.navigate(['/dashboard']);

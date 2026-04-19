@@ -6,8 +6,9 @@ services:
     ports:
       - "27018:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: adminmsj
-      MONGO_INITDB_ROOT_PASSWORD: aA123456789!
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+
     volumes:
       - mongodb_data:/data/db
 

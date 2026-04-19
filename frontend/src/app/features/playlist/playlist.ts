@@ -67,13 +67,28 @@ export class Playlist implements OnInit {
   async exportToSpotify(): Promise<void> {
     this.isExporting.set(true);
     try {
-      const url = await this.spotifyService.createPlaylist(
-        this.recommendations().map(r => r.id),
-        `Mi Playlist · Sound Lens — ${this.emotion()}`
-      );
-      window.open(url, '_blank');
+      if (this.isSpotifyUser()) {
+        const url = await this.spotifyService.createPlaylist(
+          this.recommendations().map(r => r.track_id || r.id),
+          `Mi Playlist · Sound Lens — ${this.emotion()}`
+        );
+        window.open(url, '_blank');
+      } else {
+        // Fallback: Export to CSV
+        const bom = "\uFEFF";
+        const csvContent = "Título,Artista,Afinidad\n" + 
+          this.recommendations().map(e => `"${e.name.replace(/"/g, '""')}","${e.artist.replace(/"/g, '""')}",${this.getScorePercent(e.similarity_score)}%`).join("\n");
+        const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Playlist_SoundLens_${this.emotion()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (err) {
-      console.error('[Export] Failed to create playlist:', err);
+      console.error('[Export] Failed to export playlist:', err);
     } finally {
       this.isExporting.set(false);
     }

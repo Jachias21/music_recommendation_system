@@ -16,6 +16,7 @@ export interface Song {
 /** Recommendation result */
 export interface Recommendation {
   id: string;
+  track_id?: string;
   name: string;
   artist: string;
   similarity_score: number;

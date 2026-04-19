@@ -5,7 +5,7 @@ import { Song, Recommendation, RecommendationRequest } from '../models/song.mode
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:8002/api';
+  private readonly baseUrl = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -18,17 +18,21 @@ export class ApiService {
     return this.http.get<string[]>(`${this.baseUrl}/emotions`);
   }
 
-  getRecommendations(songIds: string[], emotion: string): Observable<Recommendation[]> {
-    const body: RecommendationRequest = { song_ids: songIds, emotion };
+  getRecommendations(songIds: string[], emotion: string, settings?: any): Observable<Recommendation[]> {
+    const body: any = { song_ids: songIds, emotion };
+    if (settings) {
+      Object.assign(body, settings);
+    }
     return this.http.post<Recommendation[]>(`${this.baseUrl}/recommendations`, body);
   }
 
   /** Get auto-recommendations using Spotify saved track IDs */
-  getAutoRecommendations(trackIds: string[], emotion: string): Observable<Recommendation[]> {
-    return this.http.post<Recommendation[]>(`${this.baseUrl}/recommendations/auto`, {
-      track_ids: trackIds,
-      emotion,
-    });
+  getAutoRecommendations(trackIds: string[], emotion: string, settings?: any): Observable<Recommendation[]> {
+    const body: any = { track_ids: trackIds, emotion };
+    if (settings) {
+      Object.assign(body, settings);
+    }
+    return this.http.post<Recommendation[]>(`${this.baseUrl}/recommendations/auto`, body);
   }
 
   /** Find songs in dataset matching given track IDs */

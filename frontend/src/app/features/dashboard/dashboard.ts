@@ -65,9 +65,17 @@ export class Dashboard implements OnInit {
     }
   }
 
+  private getSettings(): any {
+    try {
+      const raw = localStorage.getItem('sonicLensSettings');
+      if (raw) return JSON.parse(raw);
+    } catch { /* ignore */ }
+    return undefined;
+  }
+
   private generateFromSpotify(): void {
     this.isGenerating.set(true);
-    this.api.getAutoRecommendations(this.spotify.matchedIds(), this.selectedEmotion()).subscribe({
+    this.api.getAutoRecommendations(this.spotify.matchedIds(), this.selectedEmotion(), this.getSettings()).subscribe({
       next: (recs) => {
         this.isGenerating.set(false);
         this.router.navigate(['/playlist'], {
@@ -81,7 +89,7 @@ export class Dashboard implements OnInit {
   private generateFromCart(): void {
     if (this.cart.count() < 3) return;
     this.isGenerating.set(true);
-    this.api.getRecommendations(this.cart.songIds(), this.selectedEmotion()).subscribe({
+    this.api.getRecommendations(this.cart.songIds(), this.selectedEmotion(), this.getSettings()).subscribe({
       next: (recs) => {
         this.isGenerating.set(false);
         this.router.navigate(['/playlist'], {

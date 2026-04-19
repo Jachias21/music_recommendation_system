@@ -46,24 +46,35 @@
   flex-direction: column;
   gap: 2px;
   padding: 16px 12px 8px;
+  align-items: stretch;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   font-size: .88rem;
   font-weight: 500;
   text-decoration: none;
   transition: all var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
 
   .nav-icon {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    svg { width: 16px; height: 16px; }
+    width: 20px;
+    svg { width: 16px; height: 16px; display: block; }
+  }
+
+  span:not(.nav-icon) {
+    line-height: 1;
   }
 
   &:hover {

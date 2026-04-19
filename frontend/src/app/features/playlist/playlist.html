@@ -13,23 +13,21 @@
       </div>
     </section>
 
-    <!-- Export button (Spotify users only) -->
-    @if (isSpotifyUser()) {
-      <div class="export-bar">
-        <button
-          class="btn btn-spotify"
-          [disabled]="isExporting()"
-          (click)="exportToSpotify()">
-          @if (isExporting()) {
-            <span class="spinner"></span>
-            Exportando...
-          } @else {
-            <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
-            Guardar en Spotify
-          }
-        </button>
-      </div>
-    }
+    <!-- Export button (Available for all) -->
+    <div class="export-bar">
+      <button
+        class="btn btn-spotify"
+        [disabled]="isExporting()"
+        (click)="exportToSpotify()">
+        @if (isExporting()) {
+          <span class="spinner"></span>
+          Exportando...
+        } @else {
+          <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
+          Guardar Playlist
+        }
+      </button>
+    </div>
 
     <!-- Recommendations -->
     <section class="recs-section">

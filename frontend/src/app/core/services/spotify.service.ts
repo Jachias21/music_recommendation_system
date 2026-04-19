@@ -14,7 +14,7 @@ export interface SpotifySavedTrack {
 @Injectable({ providedIn: 'root' })
 export class SpotifyService {
   private readonly SPOTIFY_API = 'https://api.spotify.com/v1';
-  private readonly BACKEND_API = 'http://localhost:8002/api';
+  private readonly BACKEND_API = 'http://localhost:8000/api';
 
   /** Reactive state */
   readonly savedTracks = signal<SpotifySavedTrack[]>([]);

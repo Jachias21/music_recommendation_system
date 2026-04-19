@@ -20,6 +20,77 @@ def load_data():
 df = load_data()
 
 # ---------------------------------------------------------
+# Sección 0: Autenticación (Login / Registro)
+# ---------------------------------------------------------
+import pymongo
+import bcrypt
+
+@st.cache_resource
+def get_users_collection():
+    client = pymongo.MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    return db["users"]
+
+users_col = get_users_collection()
+
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+if st.session_state.user is None:
+    st.title("🎵 Bienvenido al Sistema de Recomendación Musical")
+    st.subheader("Por favor, inicia sesión o regístrate para continuar.")
+    
+    tab1, tab2 = st.tabs(["Iniciar Sesión", "Registrarse"])
+    
+    with tab1:
+        with st.form("login_form"):
+            login_email = st.text_input("Correo electrónico")
+            login_password = st.text_input("Contraseña", type="password")
+            submit_login = st.form_submit_button("Entrar")
+            
+            if submit_login:
+                user = users_col.find_one({"email": login_email})
+                if user and bcrypt.checkpw(login_password.encode('utf-8'), user["password_hash"].encode('utf-8')):
+                    st.session_state.user = {"name": user["name"], "email": user["email"]}
+                    st.success(f"¡Bienvenido de nuevo, {user['name']}!")
+                    st.rerun()
+                else:
+                    st.error("Correo o contraseña incorrectos.")
+                    
+    with tab2:
+        with st.form("register_form"):
+            reg_name = st.text_input("Nombre")
+            reg_email = st.text_input("Correo electrónico")
+            reg_password = st.text_input("Contraseña", type="password")
+            submit_register = st.form_submit_button("Crear Cuenta")
+            
+            if submit_register:
+                if users_col.find_one({"email": reg_email}):
+                    st.error("Ya existe una cuenta con este correo.")
+                elif len(reg_password) < 6:
+                    st.error("La contraseña debe tener al menos 6 caracteres.")
+                else:
+                    hashed_pw = bcrypt.hashpw(reg_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                    new_user = {
+                        "name": reg_name,
+                        "email": reg_email,
+                        "password_hash": hashed_pw,
+                        "onboarding_complete": False,
+                        "seed_song_ids": []
+                    }
+                    users_col.insert_one(new_user)
+                    st.success("Cuenta creada exitosamente. ¡Ya puedes iniciar sesión!")
+                    
+    st.stop() # Detener la ejecución del resto de la app hasta que inicie sesión
+
+# Si hay usuario, mostramos el botón de cerrar sesión en la barra lateral
+st.sidebar.markdown(f"👤 **Usuario:** {st.session_state.user['name']}")
+if st.sidebar.button("Cerrar Sesión"):
+    st.session_state.user = None
+    st.rerun()
+st.sidebar.markdown("---")
+
+# ---------------------------------------------------------
 # Sección 1: Cabecera
 # ---------------------------------------------------------
 st.title("🎵 Generador de Playlists Contextuales")

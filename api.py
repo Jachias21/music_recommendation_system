@@ -9,7 +9,7 @@ from typing import List, Optional
 import pandas as pd
 from pymongo import MongoClient
 from bson import ObjectId
-from passlib.hash import bcrypt as pwd_context
+import bcrypt
 
 from src.modeling.recommendation_engine import (
     get_mongodb_data,
@@ -26,7 +26,7 @@ app = FastAPI(title="Music Recommendation API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -89,6 +89,10 @@ def _resolve_emotion(emotion: str) -> str:
 class RecommendationRequest(BaseModel):
     song_ids: List[str]
     emotion: str
+    serendipity: int = 75
+    novelty: int = 40
+    instrumentalness: int = 20
+    diversity: str = "balanced"
 
 
 class Node2VecRequest(BaseModel):
@@ -100,6 +104,10 @@ class AutoRecommendationRequest(BaseModel):
     """Request body for Spotify auto-profile recommendations."""
     track_ids: List[str]
     emotion: str
+    serendipity: int = 75
+    novelty: int = 40
+    instrumentalness: int = 20
+    diversity: str = "balanced"
 
 
 class SongOut(BaseModel):
@@ -116,6 +124,7 @@ class SongOut(BaseModel):
 
 class RecommendationOut(BaseModel):
     id: str
+    track_id: str | None = None
     name: str
     artist: str
     similarity_score: float
@@ -152,6 +161,23 @@ def recommend(body: RecommendationRequest):
     """Generate contextual recommendations based on seed songs + emotion."""
     if len(body.song_ids) < 1 or len(body.song_ids) > 5:
         raise HTTPException(status_code=400, detail="Provide 1-5 song IDs.")
+
+    if _n2v._embeddings is not None:
+        settings = {
+            "serendipity": body.serendipity,
+            "novelty": body.novelty,
+            "instrumentalness": body.instrumentalness,
+            "diversity": body.diversity
+        }
+        return _n2v.get_node2vec_recommendations(
+            seed_song_ids=body.song_ids,
+            target_emotion=_resolve_emotion(body.emotion),
+            df=_df,
+            embeddings=_n2v._embeddings,
+            song_ids=_n2v._song_ids,
+            top_n=10,
+            settings=settings
+        )
 
     user_vector = create_user_profile(body.song_ids, _df)
     recs = get_contextual_recommendations(
@@ -234,7 +260,25 @@ def recommend_auto(body: AutoRecommendationRequest):
             detail="None of the provided tracks were found in the dataset.",
         )
 
-    # Build the user profile from ALL matched tracks (not just 3)
+    # Use Node2Vec if embeddings are ready
+    if _n2v._embeddings is not None:
+        settings = {
+            "serendipity": body.serendipity,
+            "novelty": body.novelty,
+            "instrumentalness": body.instrumentalness,
+            "diversity": body.diversity
+        }
+        return _n2v.get_node2vec_recommendations(
+            seed_song_ids=matched_df[id_col].astype(str).tolist(),
+            target_emotion=_resolve_emotion(body.emotion),
+            df=_df,
+            embeddings=_n2v._embeddings,
+            song_ids=_n2v._song_ids,
+            top_n=10,
+            settings=settings
+        )
+
+    # Fallback to centroid profile
     features = ["danceability", "energy", "valence", "tempo", "acousticness"]
     present_features = [f for f in features if f in matched_df.columns]
     user_vector = matched_df[present_features].mean().values.tolist()
@@ -278,7 +322,7 @@ class UserOut(BaseModel):
 def register_user(body: UserRegister):
     if _users_col.find_one({"email": body.email}):
         raise HTTPException(status_code=409, detail="Ya existe una cuenta con ese correo electrónico.")
-    hashed = pwd_context.hash(body.password)
+    hashed = bcrypt.hashpw(body.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     doc = {
         "name": body.name,
         "email": body.email,
@@ -295,7 +339,7 @@ def login_user(body: UserLogin):
     user = _users_col.find_one({"email": body.email})
     if not user:
         raise HTTPException(status_code=401, detail="No se encontró una cuenta con ese correo.")
-    if not pwd_context.verify(body.password, user["password_hash"]):
+    if not bcrypt.checkpw(body.password.encode('utf-8'), user["password_hash"].encode('utf-8')):
         raise HTTPException(status_code=401, detail="Contraseña incorrecta.")
     return UserOut(
         id=str(user["_id"]),
