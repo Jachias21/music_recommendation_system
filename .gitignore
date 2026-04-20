@@ -58,3 +58,5 @@ tests/*.py
 
 # ─── Specific Exclusions ──────────────────────────────────────────
 frontend/src/models/
+
+evaluation_results.json

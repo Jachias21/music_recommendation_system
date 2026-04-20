@@ -147,7 +147,7 @@ def ingest_from_csv():
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(dataset_final, f, ensure_ascii=False, indent=2)
 
-    print(f"\n✅ Finalizado. Datos guardados en:\n  {output_file}")
+    print(f"\nFinalizado. Datos guardados en:\n  {output_file}")
 
 
 if __name__ == "__main__":
