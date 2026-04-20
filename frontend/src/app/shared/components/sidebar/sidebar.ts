@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
 import { ApiService } from '../../../core/services/api.service';
+import { MoodService } from '../../../core/services/mood.service';
 import { Song } from '../../../core/models/song.model';
 import { SongCard } from '../song-card/song-card';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
@@ -10,18 +12,21 @@ import { SVG_ICONS } from '../../icons/svg-icons';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [SongCard],
+  imports: [SongCard, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
   cart = inject(CartService);
+  mood = inject(MoodService);
   private api = inject(ApiService);
+  private router = inject(Router);
   icons = SVG_ICONS;
 
   searchResults = signal<Song[]>([]);
   isSearching = signal(false);
   searchQuery = signal('');
+  showSearch = signal(false);
 
   private searchSubject = new Subject<string>();
 
@@ -58,5 +63,17 @@ export class Sidebar {
 
   removeFromCart(songId: string): void {
     this.cart.remove(songId);
+  }
+
+  goToDiscover(): void {
+    this.router.navigate(['/discover']);
+  }
+
+  get moodLabel(): string {
+    return this.mood.emotion();
+  }
+
+  get moodColorClass(): string {
+    return this.mood.moodClass();
   }
 }

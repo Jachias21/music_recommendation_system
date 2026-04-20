@@ -1,0 +1,72 @@
+<div class="analysis">
+  <div class="analysis-header">
+    <h1 class="page-title">Análisis Sonoro</h1>
+    <p class="page-sub">
+      @if (cart.count() === 0) {
+        Radar de ejemplo — añade canciones para ver tu perfil real.
+      } @else {
+        Perfil basado en {{ cart.count() }} canción{{ cart.count() > 1 ? 'es' : '' }} seleccionada{{ cart.count() > 1 ? 's' : '' }}.
+      }
+    </p>
+  </div>
+
+  <div class="analysis-body">
+    <!-- Radar chart -->
+    <div class="radar-card glass">
+      <h2 class="card-title">Perfil de Frecuencias</h2>
+      <svg class="radar-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid rings -->
+        @for (ring of gridLines; track $index) {
+          <polygon [attr.points]="ring" class="radar-ring" />
+        }
+        <!-- Axis lines -->
+        @for (line of axisLines; track $index) {
+          <polyline [attr.points]="line" class="radar-axis" />
+        }
+        <!-- Data polygon -->
+        <polygon [attr.points]="polygon()" class="radar-data" />
+        <!-- Axis labels -->
+        @for (lbl of labels; track lbl.label) {
+          <text [attr.x]="lbl.x" [attr.y]="lbl.y" class="radar-label" text-anchor="middle" dominant-baseline="middle">
+            {{ lbl.label }}
+          </text>
+        }
+      </svg>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics-panel">
+      <h2 class="card-title">Métricas Cinéticas</h2>
+      @for (m of metrics(); track m.label) {
+        <div class="metric-item">
+          <div class="metric-header">
+            <span class="metric-label">{{ m.label }}</span>
+            <span class="metric-value">{{ m.pct }}%</span>
+          </div>
+          <div class="metric-bar">
+            <div class="metric-fill" [style.width.%]="m.pct"></div>
+          </div>
+        </div>
+      }
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <p class="stat-val">{{ (values()[0] * 100).toFixed(0) }}%</p>
+          <p class="stat-lbl">Danceability</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-val">{{ (values()[2] * 100).toFixed(0) }}%</p>
+          <p class="stat-lbl">Valence</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-val">{{ (values()[3] * 100).toFixed(0) }}%</p>
+          <p class="stat-lbl">Acoustic</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-val">{{ mood.emotion() }}</p>
+          <p class="stat-lbl">Mood activo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,144 @@
+.analysis {
+  padding: 24px 0;
+  max-width: 900px;
+}
+
+.analysis-header {
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.page-sub {
+  color: var(--text-muted);
+  font-size: .9rem;
+}
+
+.analysis-body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Radar ──────────────────────────────── */
+.radar-card {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  align-self: flex-start;
+}
+
+.radar-svg {
+  width: 100%;
+  max-width: 240px;
+}
+
+.radar-ring {
+  fill: none;
+  stroke: var(--outline);
+  stroke-width: 1;
+}
+
+.radar-axis {
+  fill: none;
+  stroke: var(--outline);
+  stroke-width: 1;
+}
+
+.radar-data {
+  fill: color-mix(in srgb, var(--primary) 20%, transparent);
+  stroke: var(--primary);
+  stroke-width: 2;
+  transition: fill var(--transition-base), stroke var(--transition-base);
+}
+
+.radar-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  fill: var(--text-muted);
+}
+
+/* ── Metrics ────────────────────────────── */
+.metrics-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.metric-item { display: flex; flex-direction: column; gap: 8px; }
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-label { font-size: .88rem; color: var(--text-secondary); font-weight: 500; }
+.metric-value { font-size: .88rem; font-weight: 700; color: var(--primary); }
+
+.metric-bar {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.metric-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 8px;
+  transition: width var(--transition-base);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.stat-card {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: center;
+}
+
+.stat-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-lbl {
+  font-size: .72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+@media (max-width: 768px) {
+  .analysis-body { grid-template-columns: 1fr; }
+}

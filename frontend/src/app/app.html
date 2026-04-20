@@ -1,8 +1,11 @@
-@if (auth.isLoggedIn()) {
-  <app-navbar></app-navbar>
-  <app-sidebar></app-sidebar>
-}
-
-<main [class.main-content]="auth.isLoggedIn()" [@routeAnimation]="getRouteAnimationData()">
+@if (auth.isLoggedIn() && !isOnboarding) {
+  <div [class]="'app-wrapper ' + mood.moodClass()">
+    <app-navbar></app-navbar>
+    <app-sidebar></app-sidebar>
+    <main class="main-content" [@routeAnimation]="getRouteAnimationData()">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+} @else {
   <router-outlet></router-outlet>
-</main>
+}

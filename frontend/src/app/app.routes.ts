@@ -43,4 +43,24 @@ export const routes: Routes = [
     data: { animation: 'Playlist' },
     canActivate: [authGuard],
   },
+  {
+    path: 'analysis',
+    loadComponent: () =>
+      import('./features/analysis/analysis').then((m) => m.Analysis),
+    data: { animation: 'Analysis' },
+    canActivate: [authGuard],
+  },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./features/settings/settings').then((m) => m.Settings),
+    data: { animation: 'Settings' },
+    canActivate: [authGuard],
+  },
+  {
+    path: 'onboarding',
+    loadComponent: () =>
+      import('./features/onboarding/onboarding').then((m) => m.Onboarding),
+    canActivate: [authGuard],
+  },
 ];

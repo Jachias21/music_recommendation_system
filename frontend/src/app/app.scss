@@ -1,13 +1,19 @@
+.app-wrapper {
+  min-height: 100vh;
+  transition: --primary var(--transition-base);
+}
+
 .main-content {
-  margin-top: 70px;     /* navbar height */
-  margin-left: 320px;   /* sidebar width */
-  padding: 24px 32px;
-  min-height: calc(100vh - 70px);
+  margin-top: 60px;
+  margin-left: 240px;
+  padding: 28px 32px;
+  min-height: calc(100vh - 60px);
+  overflow-y: auto;
 }
 
 @media (max-width: 1024px) {
   .main-content {
-    margin-left: 280px;
+    margin-left: 200px;
     padding: 20px 24px;
   }
 }

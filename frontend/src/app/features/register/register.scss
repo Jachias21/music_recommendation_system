@@ -1,12 +1,13 @@
 /* ── Register page ──────────────────────────── */
 .register-page {
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
+  overflow: auto;
   background: var(--bg-base);
+  z-index: 9999;
 }
 
 .bg-glow {

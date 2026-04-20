@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "spotify-green": "#1DB954",
+              "on-error-container": "#ffd2c8",
+              "inverse-on-surface": "#555458",
+              "tertiary": "#aebaff",
+              "error-dim": "#d53d18",
+              "surface-container": "#19191d",
+              "tertiary-container": "#9facf4",
+              "surface-container-low": "#131316",
+              "primary": "#ff9157",
+              "tertiary-dim": "#929fe6",
+              "on-tertiary-fixed-variant": "#263474",
+              "surface-bright": "#2c2c30",
+              "on-secondary-fixed-variant": "#006069",
+              "on-surface": "#f0edf1",
+              "outline": "#767579",
+              "primary-fixed": "#ff7a2c",
+              "inverse-surface": "#fcf8fd",
+              "inverse-primary": "#a04200",
+              "on-primary-fixed-variant": "#4f1d00",
+              "secondary-fixed": "#89e9f6",
+              "on-error": "#450900",
+              "on-surface-variant": "#acaaae",
+              "on-secondary-container": "#e6fcff",
+              "on-primary-fixed": "#000000",
+              "secondary": "#89e9f6",
+              "on-secondary": "#00555d",
+              "on-primary": "#531e00",
+              "surface-container-highest": "#25252a",
+              "primary-fixed-dim": "#f46800",
+              "on-tertiary-fixed": "#000f4f",
+              "surface": "#0e0e11",
+              "secondary-container": "#006972",
+              "secondary-dim": "#7adae7",
+              "surface-container-lowest": "#000000",
+              "on-tertiary": "#283575",
+              "surface-dim": "#0e0e11",
+              "primary-container": "#ff7a2c",
+              "error": "#ff7351",
+              "secondary-fixed-dim": "#7adae7",
+              "primary-dim": "#ff7520",
+              "surface-container-high": "#1f1f23",
+              "surface-tint": "#ff9157",
+              "error-container": "#b92902",
+              "surface-variant": "#25252a",
+              "on-background": "#f0edf1",
+              "tertiary-fixed": "#9facf4",
+              "on-primary-container": "#401600",
+              "on-secondary-fixed": "#004147",
+              "background": "#0e0e11",
+              "outline-variant": "#48474b",
+              "tertiary-fixed-dim": "#929fe6",
+              "on-tertiary-container": "#1d2b6a"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-transition {
+            background: linear-gradient(to bottom, rgba(14, 14, 17, 0.8), rgba(19, 19, 22, 0.4));
+        }
+        .glass-card {
+            background: rgba(37, 37, 42, 0.4);
+            backdrop-filter: blur(24px);
+        }
+        .no-line { border: none !important; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #48474b; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-zinc-800/10 bg-zinc-950 flex flex-col py-8 px-4 gap-y-6 z-50">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-500" style="font-variation-settings: 'FILL' 1;">lens</span>
+</div>
+<div>
+<h2 class="text-orange-500 font-black font-headline">El Escenario Sinestésico</h2>
+<p class="text-[10px] text-zinc-500 uppercase tracking-widest">ESTADO DE ÁNIMO ACTUAL: ANIMADO</p>
+</div>
+</div>
+<nav class="flex flex-col gap-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 transition-all font-medium rounded-lg hover:translate-x-1" href="#"><span class="material-symbols-outlined">dashboard</span> Panel de Control</a>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 transition-all font-medium rounded-lg hover:translate-x-1" href="#"><span class="material-symbols-outlined">explore</span> Explorador de Ánimo</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-orange-500/10 text-orange-500 rounded-lg font-bold transition-all hover:translate-x-1" href="#"><span class="material-symbols-outlined">auto_awesome_motion</span> Generador de Listas</a>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 transition-all font-medium rounded-lg hover:translate-x-1" href="#"><span class="material-symbols-outlined">settings_input_component</span> Historial de Exportación</a>
+</nav>
+<div class="mt-auto flex flex-col gap-y-1">
+<div class="mb-4 p-4 rounded-xl bg-surface-container-high border border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<svg class="w-4 h-4 fill-spotify-green" viewbox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.508 17.302c-.216.354-.675.465-1.028.249-2.858-1.746-6.456-2.141-10.692-1.171-.405.092-.813-.158-.906-.563-.092-.404.159-.812.564-.905 4.639-1.061 8.623-.611 11.813 1.341.353.215.464.674.249 1.029zm1.472-3.26c-.272.441-.849.582-1.291.31-3.272-2.012-8.259-2.593-12.128-1.417-.501.152-1.029-.133-1.181-.634-.151-.501.134-1.028.634-1.181 4.417-1.34 9.924-.687 13.665 1.611.442.272.583.849.311 1.291zm.126-3.411C15.225 8.245 8.815 8.032 5.093 9.162c-.629.191-1.297-.164-1.488-.793-.191-.628.163-1.296.793-1.487 4.269-1.296 11.35-1.045 15.828 1.613.565.335.751 1.064.415 1.63-.335.565-1.064.752-1.63.415l.001-.001z"></path></svg>
+<span class="text-[10px] font-bold text-zinc-400 uppercase">CONECTADO</span>
+</div>
+<p class="text-[11px] text-zinc-500">Sincronizado con: <span class="text-on-surface">@username</span></p>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 transition-all font-medium rounded-lg hover:translate-x-1" href="#"><span class="material-symbols-outlined">settings</span> Configuración</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 h-screen overflow-y-auto relative pb-12">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 z-40 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-[calc(100%-16rem)] no-line tonal-transition">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black tracking-tighter text-orange-500">Sound Lens</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-zinc-400 hover:text-orange-400 transition-colors duration-300 font-medium" href="#">Inicio</a>
+<a class="text-orange-500 font-bold" href="#">Descubrimiento</a>
+<a class="text-zinc-400 hover:text-orange-400 transition-colors duration-300 font-medium" href="#">Colecciones</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<input class="bg-surface-container-high border-none rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-primary/50 transition-all" placeholder="Buscar en el paisaje sonoro..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-lg">search</span>
+</div>
+<div class="flex items-center gap-3 ml-4">
+<span class="material-symbols-outlined text-zinc-400 hover:text-orange-400 cursor-pointer transition-colors" data-icon="mood">mood</span>
+<span class="material-symbols-outlined text-zinc-400 hover:text-orange-400 cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-zinc-400 hover:text-orange-400 cursor-pointer transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Content Shell -->
+<section class="pt-28 px-12">
+<!-- Hero / Discovery Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+<div class="max-w-2xl">
+<span class="text-secondary font-bold tracking-[0.2em] text-[10px] uppercase mb-2 block">CURADO PARA LA SERENDIPIA</span>
+<h1 class="text-7xl font-black font-headline tracking-tighter text-on-surface mb-4">Tu Viaje Sonoro está Listo</h1>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-xl">Hemos recopilado 12 anomalías sonoras para tu estado <span class="text-primary italic">Animado</span>. Revisa y exporta tu lista de descubrimiento a continuación.</p>
+</div>
+<button class="group flex items-center gap-3 bg-spotify-green px-10 py-5 rounded-full font-black text-black hover:scale-105 transition-all shadow-[0_0_32px_rgba(29,185,84,0.3)] active:scale-95"><svg class="w-6 h-6 fill-black" viewbox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.508 17.302c-.216.354-.675.465-1.028.249-2.858-1.746-6.456-2.141-10.692-1.171-.405.092-.813-.158-.906-.563-.092-.404.159-.812.564-.905 4.639-1.061 8.623-.611 11.813 1.341.353.215.464.674.249 1.029zm1.472-3.26c-.272.441-.849.582-1.291.31-3.272-2.012-8.259-2.593-12.128-1.417-.501.152-1.029-.133-1.181-.634-.151-.501.134-1.028.634-1.181 4.417-1.34 9.924-.687 13.665 1.611.442.272.583.849.311 1.291zm.126-3.411C15.225 8.245 8.815 8.032 5.093 9.162c-.629.191-1.297-.164-1.488-.793-.191-.628.163-1.296.793-1.487 4.269-1.296 11.35-1.045 15.828 1.613.565.335.751 1.064.415 1.63-.335.565-1.064.752-1.63.415l.001-.001z"></path></svg> Exportar a Spotify</button>
+</div>
+<!-- Bento Grid Discovery -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Large Featured Card -->
+<div class="col-span-12 lg:col-span-8 group relative overflow-hidden rounded-[2rem] h-[450px] bg-surface-container shadow-2xl">
+<img alt="Abstract colorful neon light patterns" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-1000" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTZXDAijBrTnDOHP0OQUs5d47jaTTmxEyC7GdyF36nCljkjEkZ6a578SOFIlXWMYSSjZkFzk59bSi4QrwesD0gSKJkMa5Q3zEElM_BnfdBJQlDUGAF1gi0eNJGe15MIV2I4vbwhM2ujp69iNKGPztW-7D-zqWF8rF64fCh5HjZNa7BKQy5i9SOMlpTtQ0CR9GZOvGx0oCjGWCTUSyqrI91lHc50sEUoY7As76PTvyv9jIAF2aXU1A7BFc5peN_LrMbRgoBpBmktC4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/20 to-transparent"></div>
+<!-- Interaction Overlay -->
+<div class="absolute top-8 right-8 z-10">
+<div class="flex flex-col gap-2">
+<div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/10 cursor-pointer hover:bg-white/20 transition-all" title="Selection Toggle">
+<span class="material-symbols-outlined text-spotify-green" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 p-10 w-full">
+<div class="flex items-center gap-3 mb-4">
+<span class="bg-primary/20 backdrop-blur-md text-primary px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border border-primary/20">98% Serendipity Match</span>
+<span class="bg-white/10 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider">Primary Seed</span>
+</div>
+<h3 class="text-5xl font-black mb-2 tracking-tight">Solar Flare Echoes</h3>
+<p class="text-zinc-300 font-medium text-lg mb-8">The Synthetic Orchestra • 2024</p>
+<div class="flex gap-4">
+<button class="bg-white text-black px-8 py-3 rounded-full font-black text-sm hover:bg-spotify-green hover:text-black transition-all active:scale-95 flex items-center gap-2"><span class="material-symbols-outlined text-lg">open_in_new</span> Previsualizar en Spotify</button>
+<button class="px-8 py-3 rounded-full glass-card border border-white/10 flex items-center justify-center hover:bg-white/20 transition-all font-bold text-sm">Mostrar Similares</button>
+</div>
+</div>
+</div>
+<!-- Recommendation Analysis Card -->
+<div class="col-span-12 lg:col-span-4 rounded-[2rem] bg-surface-container-high p-8 flex flex-col justify-between border border-outline-variant/10 relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-tertiary/5 blur-3xl rounded-full"></div>
+<div>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-tertiary">insights</span>
+<span class="text-tertiary font-bold text-[10px] uppercase tracking-[0.2em] block">LÓGICA DE CURACIÓN</span>
+</div>
+<h4 class="text-2xl font-black mb-4 leading-tight">Exportando este viaje...</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Hemos identificado una alineación armónica del 94% con tu estado <span class="italic text-primary">Animado</span> actual. Al exportar esto, se creará una lista de reproducción privada en tu biblioteca con metadatos optimizados para futuros descubrimientos algorítmicos.</p>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[10px] uppercase font-bold text-zinc-500 mb-1.5">
+<span>Sinergia de Ánimo</span>
+<span>94%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-[94%] shadow-[0_0_8px_rgba(255,109,0,0.4)]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] uppercase font-bold text-zinc-500 mb-1.5">
+<span>Factor de Novedad</span>
+<span>78%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[78%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-white/5">
+<p class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Géneros Incluidos</p>
+<div class="flex gap-2 mt-2">
+<span class="px-2 py-1 bg-zinc-800 text-zinc-400 text-[9px] rounded uppercase font-bold">Cyber-Jazz</span>
+<span class="px-2 py-1 bg-zinc-800 text-zinc-400 text-[9px] rounded uppercase font-bold">Glitch-Pop</span>
+<span class="px-2 py-1 bg-zinc-800 text-zinc-400 text-[9px] rounded uppercase font-bold">Nu-Disco</span>
+</div>
+</div>
+</div>
+<!-- List of Discovery Tracks -->
+<div class="col-span-12 mt-4">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-black tracking-tight">Lote de Descubrimiento (12 Pistas)</h3>
+<div class="flex gap-4">
+<button class="text-xs font-bold text-zinc-500 hover:text-spotify-green transition-colors flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_box</span> Seleccionar Todo</button>
+<button class="text-xs font-bold text-zinc-500 hover:text-white transition-colors">Actualizar Selección</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Track Card 1 -->
+<div class="glass-card p-4 rounded-2xl flex items-center gap-4 group hover:bg-surface-container-highest transition-all duration-300 border border-white/5 border-l-4 border-l-spotify-green">
+<div class="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Vibrant concert lights and crowds" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApBkAv5oj3YoUbAG63A2MSfITinZKjmY4WneuxyVms4x4oQMmjMnq1erVzVdOKSHXgLexB87cttwMjPMalcP2hMG0RvqbsXw0vZyQwQ00sBS-L6ILS1PNbAQsRKeae78xK8wEYCw0-KzDZp0GMFLZUw56N0eOAQ1EDAZsS-PPShS5Laom3Mf-XFyNo2i7Jj73PEiMa4oRCFETD3YQeRsVGLCEbrRlPheCTXtxbyy11BRcul6ez-Ch3KqhzqAh18wmeqdWe6qlR16Y"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-spotify-green text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<h5 class="font-bold text-on-surface truncate">Neon Rhizome</h5>
+<p class="text-[10px] text-on-surface-variant mb-2 truncate">Arp Explorers</p>
+<div class="flex gap-2">
+<div class="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-secondary/10 border border-secondary/20">
+<span class="text-[8px] font-black text-secondary uppercase tracking-tighter">82% Novelty</span>
+</div>
+</div>
+</div>
+<button class="text-zinc-600 hover:text-white transition-colors" title="View Analysis">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+</div>
+<!-- Track Card 2 -->
+<div class="glass-card p-4 rounded-2xl flex items-center gap-4 group hover:bg-surface-container-highest transition-all duration-300 border border-white/5 border-l-4 border-l-spotify-green">
+<div class="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Microphone in a dark music studio" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZUUUMj4vfnDIfkjmhQUqW1rxYqpR9_xV94u9ZR8EQtSPOtPrLU30HizW1Ko9mSehkJC0miDpBv8uEvOuudhZYxLNWJ5HHBAA80tUTwCYhFAPcYpfz0n8viEIx9KJ2xzy-eNTJ2Vsia0ug3hqe1YcVmxxgKCTkmkI4H0SLuPTsoUNCZcV3zkUHRAW6XuqhlTXDfiOIJqiHSeTTQxOrHygdFItHKxrc0t1fMbfCaDS9_0X9m9RGxLOPQgqHU-nRfSyr1289jtojnx0"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-spotify-green text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<h5 class="font-bold text-on-surface truncate">Static Bloom</h5>
+<p class="text-[10px] text-on-surface-variant mb-2 truncate">Velvet Voltage</p>
+<div class="flex gap-2">
+<div class="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20">
+<span class="text-[8px] font-black text-primary uppercase tracking-tighter">94% Novelty</span>
+</div>
+</div>
+</div>
+<button class="text-zinc-600 hover:text-white transition-colors" title="View Analysis">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+</div>
+<!-- Track Card 3 -->
+<div class="glass-card p-4 rounded-2xl flex items-center gap-4 group hover:bg-surface-container-highest transition-all duration-300 border border-white/5 border-l-4 border-l-spotify-green">
+<div class="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Person enjoying music with headphones" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAki3DoH4-jG-TW33pDBiKfADDQxodbrF4r0vwedgH0-GyhOps-LR5ngO4zFDyMdL4T9Vki_G5qmzWNf8pU6XXIQZFY5Qm0qOvGZ8OCclfjwZb2nsyUTdatKWgbWMe2V5YIfhVJT8IYPwM7Ji4RhzmGneAwgrTjv9xiEEMThMEvAwb-FvegJftLTmsnlxX97acIXYbAdX_A-FnpvcOglsG9CG4-sA3vtt_Gs86xUqwSYe4Ew7kgBhpDv-BDvpv_dA8INCZqMliPX6o"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-spotify-green text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<h5 class="font-bold text-on-surface truncate">Digital Rain</h5>
+<p class="text-[10px] text-on-surface-variant mb-2 truncate">Glitch Garden</p>
+<div class="flex gap-2">
+<div class="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-tertiary/10 border border-tertiary/20">
+<span class="text-[8px] font-black text-tertiary uppercase tracking-tighter">75% Novelty</span>
+</div>
+</div>
+</div>
+<button class="text-zinc-600 hover:text-white transition-colors" title="View Analysis">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>

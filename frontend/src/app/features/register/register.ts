@@ -23,7 +23,7 @@ export class Register {
     private router: Router,
   ) {}
 
-  register(): void {
+  async register(): Promise<void> {
     this.errorMessage = '';
 
     if (!this.name || !this.email || !this.password || !this.confirmPassword) {
@@ -42,11 +42,11 @@ export class Register {
     }
 
     this.isLoading = true;
-    const result = this.auth.registerLocal(this.name, this.email, this.password);
+    const result = await this.auth.registerLocal(this.name, this.email, this.password);
     this.isLoading = false;
 
     if (result.success) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/onboarding']);
     } else {
       this.errorMessage = result.error || 'Error al registrar.';
     }

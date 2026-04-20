@@ -5,3 +5,5 @@ scikit-learn
 mkdocs
 mkdocs-material
 python-dotenv
+nodevectors>=0.1.23
+passlib[bcrypt]

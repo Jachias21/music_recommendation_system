@@ -4,9 +4,7 @@
     <section class="playlist-header">
       <div class="header-bg"></div>
       <div class="header-content">
-        <button class="btn btn-ghost back-btn" (click)="goBack()">
-          ← Volver
-        </button>
+        <button class="btn btn-ghost back-btn" (click)="goBack()">← Volver</button>
         <h1 class="playlist-title">Tu Playlist</h1>
         <p class="playlist-meta">
           <span class="emotion-badge">{{ emotion() }}</span>
@@ -15,7 +13,23 @@
       </div>
     </section>
 
-    <!-- Recommendations List -->
+    <!-- Export button (Available for all) -->
+    <div class="export-bar">
+      <button
+        class="btn btn-spotify"
+        [disabled]="isExporting()"
+        (click)="exportToSpotify()">
+        @if (isExporting()) {
+          <span class="spinner"></span>
+          Exportando...
+        } @else {
+          <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
+          Guardar Playlist
+        }
+      </button>
+    </div>
+
+    <!-- Recommendations -->
     <section class="recs-section">
       <div class="recs-list" [@listStagger]="recommendations().length">
         @for (rec of recommendations(); track rec.id; let i = $index) {
@@ -51,22 +65,19 @@
 
     <!-- Actions -->
     <section class="actions-section">
-      <button class="btn btn-accent" (click)="goBack()">
-        <span class="btn-icon" [innerHTML]="icons.MUSIC_NOTE"></span> Generar otra playlist
+      <button class="btn btn-primary" (click)="goBack()">
+        <span class="btn-icon" [innerHTML]="icons.MUSIC_NOTE"></span> Nueva playlist
       </button>
       <button class="btn btn-ghost" (click)="startOver()">
         <span class="btn-icon" [innerHTML]="icons.REFRESH"></span> Empezar de nuevo
       </button>
     </section>
   } @else {
-    <!-- Empty State -->
     <div class="empty-playlist">
       <span class="empty-icon" [innerHTML]="icons.MUSIC_NOTES"></span>
       <h2>No hay playlist generada</h2>
-      <p>Selecciona 3 canciones y elige una emoción para generar tu playlist personalizada.</p>
-      <button class="btn btn-primary" (click)="goBack()">
-        Ir al Dashboard
-      </button>
+      <p>Selecciona canciones y una emoción para generar tu playlist personalizada.</p>
+      <button class="btn btn-primary" (click)="goBack()">Ir al Dashboard</button>
     </div>
   }
 </div>
