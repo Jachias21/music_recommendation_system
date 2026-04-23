@@ -1,3 +1,5 @@
+export type Emotion = 'Alegre' | 'Triste' | 'Neutro';
+
 /** Song model matching the API response */
 export interface Song {
   id: string;
@@ -14,6 +16,7 @@ export interface Song {
 /** Recommendation result */
 export interface Recommendation {
   id: string;
+  track_id?: string;
   name: string;
   artist: string;
   similarity_score: number;

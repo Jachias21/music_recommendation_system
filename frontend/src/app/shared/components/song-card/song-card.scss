@@ -3,17 +3,19 @@
   align-items: center;
   gap: 14px;
   padding: 14px 18px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   cursor: default;
+  min-width: 0;
+  overflow: hidden;
 
   &:hover {
     background: var(--bg-elevated);
-    border-color: rgba(180, 78, 224, 0.2);
-    box-shadow: 0 0 20px rgba(180, 78, 224, 0.08);
+    border-color: var(--outline);
     transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
   }
 
   &.compact {
@@ -26,34 +28,25 @@
       font-size: 0.9rem;
     }
 
-    .song-name {
-      font-size: 0.85rem;
-    }
-
-    .song-artist {
-      font-size: 0.75rem;
-    }
+    .song-name { font-size: 0.85rem; }
+    .song-artist { font-size: 0.75rem; }
   }
 }
 
-.song-visual {
-  flex-shrink: 0;
-}
+.song-visual { flex-shrink: 0; }
 
 .song-avatar {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  background: color-mix(in srgb, var(--primary) 20%, var(--bg-elevated));
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(180, 78, 224, 0.25);
 
   .note-icon {
-    font-size: 1.2rem;
-    color: white;
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+    color: var(--primary);
+    transition: color var(--transition-base);
   }
 }
 
@@ -97,29 +90,26 @@
 
 .btn-action {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
-  color: var(--bg-base);
-  font-size: 1.1rem;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
 
   &:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+    transform: scale(1.12);
+    box-shadow: 0 0 14px var(--primary-glow);
   }
 
-  &:active {
-    transform: scale(0.95);
-  }
+  &:active { transform: scale(0.95); }
 
   &:disabled {
     opacity: 0.3;

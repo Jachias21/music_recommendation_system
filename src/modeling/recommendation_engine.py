@@ -251,6 +251,7 @@ def get_contextual_recommendations(
             "name":             row.get("name", "Unknown"),
             "artist":           row.get("artist", "Unknown"),
             "similarity_score": round(float(row.get("similarity_score", 0.0)), 4),
+
         })
 
     return result

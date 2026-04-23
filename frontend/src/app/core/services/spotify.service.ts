@@ -152,6 +152,41 @@ export class SpotifyService {
   }
 
   /**
+   * Create a Spotify playlist with the given track IDs and return its URL.
+   */
+  async createPlaylist(trackIds: string[], name: string): Promise<string> {
+    const token = this.auth.getAccessToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    // Get user ID
+    const meRes = await fetch(`${this.SPOTIFY_API}/me`, { headers });
+    const me = await meRes.json();
+
+    // Create playlist
+    const plRes = await fetch(`${this.SPOTIFY_API}/users/${me.id}/playlists`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name, public: true }),
+    });
+    const pl = await plRes.json();
+
+    // Add tracks
+    const uris = trackIds.slice(0, 100).map(id => `spotify:track:${id}`);
+    await fetch(`${this.SPOTIFY_API}/playlists/${pl.id}/tracks`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ uris }),
+    });
+
+    return `https://open.spotify.com/playlist/${pl.id}`;
+  }
+
+  /**
    * Clear all stored Spotify data (called on logout).
    */
   clearData(): void {

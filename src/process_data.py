@@ -61,13 +61,59 @@ def process_and_load_data():
     # 4. Insercion masiva (Bulk Insert)
     if dataset:
         try:
-            result = collection.insert_many(dataset)
+            import pandas as pd
+            from sklearn.preprocessing import MinMaxScaler
+            import re
+            
+            print("Escalando variables continuas y limpiando strings...")
+            
+            FEATURES = [
+                "danceability", "energy", "valence", "tempo", 
+                "acousticness", "instrumentalness", "liveness", "speechiness"
+            ]
+            
+            def clean_text(text):
+                if not isinstance(text, str):
+                    return ""
+                text = text.lower()
+                text = re.sub(r'\(.*?\)', '', text)
+                text = re.sub(r'-.*', '', text)
+                return text.strip()
+                
+            df = pd.DataFrame(dataset)
+            
+            # Limpiar text para queries rapidas
+            df["clean_name"] = df["name"].apply(clean_text)
+            df["clean_artist"] = df["artist"].apply(clean_text)
+            
+            # Numeric conversion
+            for f in FEATURES:
+                if f in df.columns:
+                    df[f] = pd.to_numeric(df[f], errors="coerce").fillna(0)
+            
+            # Scaling
+            scaler = MinMaxScaler()
+            if "tempo" in df.columns:
+                df[["tempo"]] = scaler.fit_transform(df[["tempo"]])
+            if "loudness" in df.columns:
+                df["loudness"] = pd.to_numeric(df["loudness"], errors="coerce").fillna(0)
+                df[["loudness"]] = scaler.fit_transform(df[["loudness"]])
+                
+            dataset_cleaned = df.to_dict(orient="records")
+            
+            print("Iniciando inseción masiva...")
+            result = collection.insert_many(dataset_cleaned)
             print(f"Insertados {len(result.inserted_ids)} documentos en la coleccion '{COLLECTION_NAME}'.")
             
-            # 5. Optimizacion: Creacion de indices
-            # Creamos un indice en el campo 'emocion' para acelerar los filtros del recomendador
+            # 5. Optimizacion: Creacion de indices multiples
+            print("Creando indices para optimizar busquedas API...")
             collection.create_index("emocion")
-            print("Indice creado sobre el campo 'emocion'.")
+            collection.create_index("clean_name")
+            collection.create_index("clean_artist")
+            collection.create_index("track_id")
+            collection.create_index("name")
+            collection.create_index("artist")
+            print("Indices creados con éxito.")
             
         except Exception as e:
             print(f"ERROR durante la insercion de datos: {e}")

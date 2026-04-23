@@ -1,150 +1,110 @@
 <div class="dashboard">
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
       <h1 class="hero-title">
-        Descubre tu
-        <span class="gradient-text">ADN Musical</span>
+        ¿Cuál es la <span class="accent-word">Frecuencia?</span>
       </h1>
       @if (isSpotifyUser() && spotify.hasSpotifyData()) {
-        <p class="hero-subtitle">
-          Hemos sincronizado tu biblioteca de Spotify. Solo elige cómo te sientes y generaremos la playlist perfecta.
-        </p>
+      <p class="hero-subtitle">
+        Biblioteca Spotify sincronizada. Elige tu estado y generamos la playlist perfecta.
+      </p>
       } @else {
-        <p class="hero-subtitle">
-          Selecciona 3 canciones que reflejen tu gusto, elige una emoción y genera playlists personalizadas con inteligencia artificial.
-        </p>
+      <p class="hero-subtitle">
+        Añade 3 canciones en el panel, elige tu emoción y deja que la IA encuentre tu frecuencia.
+      </p>
       }
     </div>
   </section>
 
-  <!-- Spotify Library Section (only for Spotify users) -->
+  <!-- Spotify Library (Spotify users only) -->
   @if (isSpotifyUser()) {
-    <section class="spotify-section animate-fade-in-up">
-      <div class="spotify-card glass">
-        <div class="spotify-header">
-          <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
-          <div class="spotify-header-info">
-            <h2 class="spotify-title">Tu Biblioteca de Spotify</h2>
-            @if (spotify.isLoading()) {
-              <p class="spotify-status">Sincronizando canciones...</p>
-            } @else if (spotify.hasSpotifyData()) {
-              <p class="spotify-status">{{ spotify.matchedSongs().length }} canciones encontradas en nuestro catálogo</p>
-            } @else if (spotify.isLoaded()) {
-              <p class="spotify-status">No encontramos coincidencias con tu biblioteca</p>
-            }
-          </div>
-        </div>
-
-        @if (spotify.isLoading()) {
-          <div class="spotify-loading">
-            <span class="spinner-lg"></span>
-            <p>Cargando tu biblioteca...</p>
-          </div>
-        } @else if (spotify.matchedSongs().length > 0) {
-          <div class="spotify-tracks">
-            @for (song of spotify.matchedSongs().slice(0, 8); track song.id; let i = $index) {
-              <div class="spotify-track">
-                <span class="track-index">{{ i + 1 }}</span>
-                <div class="track-info">
-                  <p class="track-name">{{ song.name }}</p>
-                  <p class="track-artist">{{ song.artist }}</p>
-                </div>
-              </div>
-            }
-            @if (spotify.matchedSongs().length > 8) {
-              <p class="spotify-more">
-                y {{ spotify.matchedSongs().length - 8 }} canciones más...
-              </p>
-            }
-          </div>
-        }
-      </div>
-    </section>
-  }
-
-  <!-- Status (only for non-Spotify users or if Spotify data is empty) -->
-  @if (!isSpotifyUser() || (isSpotifyUser() && !spotify.hasSpotifyData())) {
-    <section class="status-section animate-fade-in-up">
-      <div class="status-card glass">
-        <div class="status-icon">
-          @if (cart.count() === 3) {
-            <span [innerHTML]="icons.CHECK_CIRCLE"></span>
-          } @else {
-            <span [innerHTML]="icons.MUSIC_NOTE"></span>
+  <section class="spotify-section animate-fade-in-up">
+    <div class="spotify-card glass">
+      <div class="spotify-header">
+        <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
+        <div>
+          <h2 class="spotify-title">Tu Biblioteca de Spotify</h2>
+          @if (spotify.isLoading()) {
+          <p class="spotify-status">Sincronizando...</p>
+          } @else if (spotify.hasSpotifyData()) {
+          <p class="spotify-status">{{ spotify.matchedSongs().length }} canciones en el catálogo</p>
+          } @else if (spotify.isLoaded()) {
+          <p class="spotify-status">Sin coincidencias en la biblioteca</p>
           }
         </div>
-        <div class="status-info">
-          <p class="status-label">Canciones seleccionadas</p>
-          <p class="status-value">{{ cart.count() }} / 3</p>
-        </div>
-        <div class="status-progress">
-          <div class="status-bar">
-            <div class="status-fill" [style.width.%]="cart.progress() * 100"></div>
+      </div>
+      @if (spotify.isLoading()) {
+      <div class="spotify-loading">
+        <span class="spinner-lg"></span>
+        <p>Cargando...</p>
+      </div>
+      } @else if (spotify.matchedSongs().length > 0) {
+      <div class="spotify-tracks">
+        @for (song of spotify.matchedSongs().slice(0, 8); track song.id; let i = $index) {
+        <div class="spotify-track">
+          <span class="track-index">{{ i + 1 }}</span>
+          <div class="track-info">
+            <p class="track-name">{{ song.name }}</p>
+            <p class="track-artist">{{ song.artist }}</p>
           </div>
         </div>
-      </div>
-    </section>
-  }
-
-  <!-- Emotion Selector -->
-  <section class="emotion-section animate-fade-in-up" style="animation-delay: 0.1s">
-    <h2 class="section-heading">
-      @if (isSpotifyUser() && spotify.hasSpotifyData()) {
-        ¿Cómo te sientes hoy?
-      } @else {
-        Elige tu contexto emocional
-      }
-    </h2>
-    <p class="section-description">¿Qué tipo de música buscas hoy?</p>
-
-    @if (emotions().length > 0) {
-      <div class="emotion-grid" [@listStagger]="emotions().length">
-        @for (emotion of emotions(); track emotion) {
-          <button
-            class="emotion-card"
-            [class.selected]="selectedEmotion() === emotion"
-            (click)="selectEmotion(emotion)">
-            <span class="emotion-icon" [innerHTML]="getEmotionIcon(emotion)"></span>
-            <span class="emotion-name">{{ emotion }}</span>
-          </button>
+        }
+        @if (spotify.matchedSongs().length > 8) {
+        <p class="spotify-more">y {{ spotify.matchedSongs().length - 8 }} más...</p>
         }
       </div>
-    } @else {
-      <div class="loading-emotions">
-        <span class="spinner-lg"></span>
-        <p>Cargando emociones...</p>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- Emotion grid -->
+  <section class="emotion-section animate-fade-in-up">
+    <h2 class="section-heading">¿Cómo te sientes?</h2>
+    <div class="emotion-grid">
+      @for (emotion of emotions; track emotion) {
+      <button class="emotion-card"
+        [class]="'emotion-card ' + moodClass(emotion) + (selectedEmotion() === emotion ? ' selected' : '')"
+        (click)="selectEmotion(emotion)">
+        <span class="emotion-dot"></span>
+        <span class="emotion-name">{{ emotion }}</span>
+      </button>
+      }
+    </div>
+  </section>
+
+  <!-- Community top -->
+  <section class="community-section animate-fade-in-up">
+    <h2 class="section-heading">Top Comunidad</h2>
+    <div class="community-grid">
+      @for (pl of community; track pl.title) {
+      <div class="community-card glass" [class]="'community-card glass ' + moodClass(pl.mood)">
+        <div class="community-badge" [class]="moodClass(pl.mood)">{{ pl.mood }}</div>
+        <p class="community-title">{{ pl.title }}</p>
+        <p class="community-plays">{{ pl.plays }} plays</p>
       </div>
-    }
+      }
+    </div>
   </section>
 
   <!-- Generate CTA -->
-  <section class="generate-section animate-fade-in-up" style="animation-delay: 0.2s">
-    <button
-      class="btn btn-primary generate-btn"
-      [disabled]="!canGenerate()"
-      (click)="generatePlaylist()">
+  <section class="generate-section animate-fade-in-up">
+    <button class="btn btn-primary generate-btn" [disabled]="!canGenerate()" (click)="generatePlaylist()">
       @if (isGenerating()) {
-        <span class="spinner"></span>
-        Analizando tu perfil...
+      <span class="spinner"></span>
+      Analizando...
       } @else {
-        <span class="btn-icon" [innerHTML]="icons.ROCKET"></span>
-        Generar Playlist Contextual
+      <span class="btn-icon" [innerHTML]="icons.ROCKET"></span>
+      Generar Playlist
       }
     </button>
 
-    @if ((!isSpotifyUser() || !spotify.hasSpotifyData()) && cart.count() < 3) {
-      <p class="generate-hint">
-        <span class="hint-icon" [innerHTML]="icons.WARNING"></span>
-        Busca {{ 3 - cart.count() }} canción{{ cart.count() === 2 ? '' : 'es' }} más en la barra lateral
+    @if ((!isSpotifyUser() || !spotify.hasSpotifyData()) && cart.count() < 3) { <p class="generate-hint">
+      <span class="hint-icon" [innerHTML]="icons.WARNING"></span>
+      Añade {{ 3 - cart.count() }} canción{{ cart.count() === 2 ? '' : 'es' }} más en el panel lateral
       </p>
-    }
-
-    @if (isSpotifyUser() && spotify.isLoading()) {
-      <p class="generate-hint">
-        Esperando sincronización con Spotify...
-      </p>
-    }
+      }
   </section>
 </div>

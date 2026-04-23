@@ -1,0 +1,102 @@
+<div class="settings">
+  <div class="settings-header">
+    <h1 class="page-title">Ajustes</h1>
+    <p class="page-sub">Personaliza cómo Sound Lens genera tus recomendaciones.</p>
+  </div>
+
+  <div class="settings-card glass">
+    <!-- Serendipity -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <p class="setting-label">Serendipia</p>
+        <p class="setting-desc">Qué tan sorprendentes serán las recomendaciones</p>
+      </div>
+      <div class="setting-control">
+        <div class="slider-row">
+          <input
+            type="range" min="0" max="100"
+            [value]="values().serendipity"
+            (input)="updateSlider('serendipity', $event)"
+            class="slider" />
+          <span class="slider-val">{{ values().serendipity }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Novelty -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <p class="setting-label">Novedad</p>
+        <p class="setting-desc">Preferencia por artistas y canciones emergentes</p>
+      </div>
+      <div class="setting-control">
+        <div class="slider-row">
+          <input
+            type="range" min="0" max="100"
+            [value]="values().novelty"
+            (input)="updateSlider('novelty', $event)"
+            class="slider" />
+          <span class="slider-val">{{ values().novelty }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Instrumentalness -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <p class="setting-label">Instrumentalismo</p>
+        <p class="setting-desc">Peso de pistas instrumentales vs. vocales</p>
+      </div>
+      <div class="setting-control">
+        <div class="slider-row">
+          <input
+            type="range" min="0" max="100"
+            [value]="values().instrumentalness"
+            (input)="updateSlider('instrumentalness', $event)"
+            class="slider" />
+          <span class="slider-val">{{ values().instrumentalness }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Diversity -->
+    <div class="setting-row">
+      <div class="setting-info">
+        <p class="setting-label">Diversidad de géneros</p>
+        <p class="setting-desc">Amplitud del espectro de géneros en la playlist</p>
+      </div>
+      <div class="setting-control">
+        <div class="radio-group">
+          @for (opt of ['focused','balanced','wide']; track opt) {
+            <button
+              class="radio-btn"
+              [class.active]="values().diversity === opt"
+              (click)="setDiversity($any(opt))">
+              {{ opt === 'focused' ? 'Enfocado' : opt === 'balanced' ? 'Equilibrado' : 'Amplio' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Snapshot -->
+  <div class="snapshot glass">
+    <p class="snapshot-title">Configuración actual</p>
+    <pre class="snapshot-code">{{ values() | json }}</pre>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-primary" (click)="apply()">
+      @if (saved()) { ✓ Guardado } @else { Aplicar }
+    </button>
+    <button class="btn btn-ghost" (click)="reset()">Restablecer</button>
+  </div>
+</div>

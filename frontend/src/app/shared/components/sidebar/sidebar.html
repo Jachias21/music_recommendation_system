@@ -1,19 +1,54 @@
-<aside class="sidebar glass">
-  <!-- Search -->
-  <div class="sidebar-section">
-    <h3 class="section-title"><span class="section-icon" [innerHTML]="icons.SEARCH"></span> Buscar Música</h3>
+<aside class="sidebar">
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <span class="logo-icon" [innerHTML]="icons.MUSIC_NOTE"></span>
+    <span class="logo-text">Sound Lens</span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">
+      <span class="nav-icon" [innerHTML]="icons.HOME"></span>
+      <span>Inicio</span>
+    </a>
+    <a routerLink="/discover" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon" [innerHTML]="icons.SEARCH"></span>
+      <span>Descubrir</span>
+    </a>
+    <a routerLink="/playlist" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon" [innerHTML]="icons.MUSIC_NOTES"></span>
+      <span>Mi Playlist</span>
+    </a>
+    <a routerLink="/analysis" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon" [innerHTML]="icons.CHART"></span>
+      <span>Análisis</span>
+    </a>
+    <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon" [innerHTML]="icons.SETTINGS"></span>
+      <span>Ajustes</span>
+    </a>
+  </nav>
+
+  <!-- Mood badge -->
+  <div class="mood-badge" [class]="moodColorClass">
+    <span class="mood-dot"></span>
+    <span class="mood-label">{{ moodLabel }}</span>
+  </div>
+
+  <!-- Search toggle + results -->
+  <div class="search-section">
     <input
       class="input search-input"
       type="text"
-      placeholder="Canción o artista..."
+      placeholder="Buscar canción o artista..."
       [value]="searchQuery()"
       (input)="onSearch($event)" />
-  </div>
 
-  <!-- Search Results -->
-  @if (searchResults().length > 0) {
-    <div class="sidebar-section results-section">
-      <h4 class="section-subtitle">Resultados</h4>
+    @if (isSearching()) {
+      <div class="searching-hint">Buscando...</div>
+    }
+
+    @if (searchResults().length > 0) {
       <div class="results-list">
         @for (song of searchResults(); track song.id) {
           <app-song-card
@@ -24,49 +59,41 @@
             (action)="addToCart($event)" />
         }
       </div>
-    </div>
-  }
-
-  @if (isSearching()) {
-    <div class="sidebar-section">
-      <div class="loading-indicator">
-        <span class="spinner"></span>
-        <span>Buscando...</span>
-      </div>
-    </div>
-  }
+    }
+  </div>
 
   <!-- Cart -->
-  <div class="sidebar-section cart-section">
-    <h3 class="section-title">
-      <span class="section-icon" [innerHTML]="icons.MUSIC_NOTE"></span> Tu Selección
+  <div class="cart-section">
+    <div class="cart-header">
+      <span class="section-icon" [innerHTML]="icons.MUSIC_NOTE"></span>
+      <span>Selección</span>
       <span class="cart-count">{{ cart.count() }}/3</span>
-    </h3>
-
-    <!-- Progress bar -->
+    </div>
     <div class="progress-bar">
       <div class="progress-fill" [style.width.%]="cart.progress() * 100"></div>
     </div>
 
     @if (cart.count() === 0) {
-      <div class="empty-cart">
-        <p>Busca y añade 3 canciones que te gusten para descubrir música nueva.</p>
-      </div>
+      <p class="empty-hint">Añade 3 canciones para generar recomendaciones.</p>
     } @else {
       <div class="cart-list">
         @for (song of cart.songs(); track song.id; let i = $index) {
           <div class="cart-item">
             <span class="cart-index">{{ i + 1 }}</span>
             <div class="cart-info">
-              <p class="cart-song-name">{{ song.name }}</p>
-              <p class="cart-song-artist">{{ song.artist }}</p>
+              <p class="cart-name">{{ song.name }}</p>
+              <p class="cart-artist">{{ song.artist }}</p>
             </div>
-            <button class="btn-remove" (click)="removeFromCart(song.id)" title="Quitar">
-              ✕
-            </button>
+            <button class="btn-remove" (click)="removeFromCart(song.id)">✕</button>
           </div>
         }
       </div>
     }
   </div>
+
+  <!-- Sorpréndeme -->
+  <button class="btn btn-surprise" (click)="goToDiscover()">
+    <span [innerHTML]="icons.SHUFFLE"></span>
+    Sorpréndeme
+  </button>
 </aside>
