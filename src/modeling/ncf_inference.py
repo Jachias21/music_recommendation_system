@@ -114,7 +114,7 @@ class NCFRecommender:
         if not WEIGHTS_PATH.exists():
             raise FileNotFoundError(f"Neither ONNX nor PyTorch weights found.")
 
-        model = NeuralCollaborativeFiltering(num_users=num_users, num_items=num_items)
+        model = NeuralCollaborativeFiltering(num_users=num_users, num_items=num_items, item_features_dim=7)
         state = torch.load(WEIGHTS_PATH, map_location="cpu", weights_only=True)
         model.load_state_dict(state)
         model.eval()

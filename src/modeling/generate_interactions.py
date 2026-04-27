@@ -3,63 +3,49 @@ import csv
 import random
 import numpy as np
 import pandas as pd
-from pymongo import MongoClient
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Configuración del dataset de interacciones (Escala Producción)
+# Configuración del dataset de interacciones (Adaptado a V3 CLEAN)
 # ─────────────────────────────────────────────────────────────────────────────
-NUM_SONGS_SAMPLE = 1_200_000   # Catálogo completo
 NUM_USERS = 100_000            # 100k usuarios sintéticos
 MIN_POS_INTERACTIONS = 20
 MAX_POS_INTERACTIONS = 50
 NEGATIVE_RATIO = 4
 CHUNK_SIZE = 50_000            # Escritura en chunks para no saturar RAM
 
-def get_mongo_client():
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    env_path = os.path.join(base_dir, ".env")
-    if os.path.exists(env_path):
-        with open(env_path) as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith('#') and '=' in line:
-                    k, v = line.split('=', 1)
-                    os.environ.setdefault(k.strip(), v.strip())
-        
-    uri = os.environ.get("MONGO_URI", "mongodb://admin:admin123@127.0.0.1:27018/")
-    db_name = os.environ.get("DB_NAME", "music_recommendation_db")
-    col_name = os.environ.get("COLLECTION_NAME", "songs")
-    
-    client = MongoClient(uri)
-    return client[db_name][col_name]
+# NUEVO: Ruta directa a tu CSV procesado y limpio
+CLEAN_DATASET_PATH = "dataset_soundwave_CLEAN_V3.csv"
 
 def main():
     print("=" * 60)
-    print("GENERADOR DE INTERACCIONES v2 — Escala Producción")
-    print(f"  Catálogo objetivo: {NUM_SONGS_SAMPLE:,} canciones")
+    print("GENERADOR DE INTERACCIONES v3 — Adaptado a Dataset Clean")
     print(f"  Usuarios sintéticos: {NUM_USERS:,}")
     print(f"  Negative Ratio: {NEGATIVE_RATIO}")
     print("=" * 60)
     
-    print("\n[1/5] Descargando catálogo completo de MongoDB...")
-    collection = get_mongo_client()
+    print(f"\n[1/5] Cargando catálogo limpio desde {CLEAN_DATASET_PATH}...")
     
-    pipeline = [
-        {"$project": {"_id": 0, "id": {"$ifNull": ["$id", "$track_id"]}, "artist": 1, "emocion": 1}}
-    ]
-    cursor = collection.aggregate(pipeline, allowDiskUse=True)
-    df_all = pd.DataFrame(list(cursor))
+    if not os.path.exists(CLEAN_DATASET_PATH):
+        print(f"❌ ERROR: No se encuentra el archivo {CLEAN_DATASET_PATH}")
+        return
+
+    # Leemos tu CSV de Oro
+    df_all = pd.read_csv(CLEAN_DATASET_PATH)
+    
+    # Renombrar track_id a id para mantener compatibilidad con el resto del script
+    if 'track_id' in df_all.columns:
+        df_all.rename(columns={'track_id': 'id'}, inplace=True)
+        
     df_all.dropna(subset=["id", "emocion", "artist"], inplace=True)
     df_all.drop_duplicates(subset=["id"], inplace=True)
-    print(f"  Catálogo limpio: {len(df_all):,} canciones únicas.")
+    print(f"  Catálogo validado: {len(df_all):,} canciones puras listas para interactuar.")
     
     # ─────────────────────────────────────────────────────────────────────
-    # Distribución de Pareto (80/20): El 20% de artistas top acumula el 80% de clics
+    # Distribución de Pareto (80/20) sobre las canciones limpias
     # ─────────────────────────────────────────────────────────────────────
     print("\n[2/5] Construyendo distribución de Pareto (80/20)...")
     artist_counts = df_all['artist'].value_counts()
     
-    # Usamos el catálogo completo (NUM_SONGS_SAMPLE = 1.2M)
     df_songs = df_all.copy()
     print(f"  Pool final: {len(df_songs):,} canciones de {df_songs['artist'].nunique():,} artistas.")
     
@@ -96,7 +82,9 @@ def main():
     # ─────────────────────────────────────────────────────────────────────
     print(f"\n[3/5] Generando interacciones para {NUM_USERS:,} usuarios (escritura chunk={CHUNK_SIZE:,})...")
     
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    base_dir = os.path.dirname(os.path.dirname(__file__)) # Sube una carpeta (src/)
+    base_dir = os.path.dirname(base_dir) # Sube otra a la raíz del proyecto
+    
     output_dir = os.path.join(base_dir, "data", "processed")
     os.makedirs(output_dir, exist_ok=True)
     out_path = os.path.join(output_dir, "ncf_interactions.csv")
@@ -113,7 +101,7 @@ def main():
             fav_emotions = random.sample(all_emotions, k=random.choice([1, 2]))
             num_pos = random.randint(MIN_POS_INTERACTIONS, MAX_POS_INTERACTIONS)
             
-            # Interacciones Positivas (distribución Pareto)
+            # Interacciones Positivas
             user_pos_songs = set()
             for em in fav_emotions:
                 pool = songs_by_emotion[em]

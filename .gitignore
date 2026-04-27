@@ -52,6 +52,10 @@ docker-compose.yml
 models/*.pth
 models/*.pkl
 models/*.pt
+models/*.onnx
+models/*.npy
+models/*.onnx.data
+
 
 # ─── Tests ───────────────────────────────────────────────────────
 tests/*.py
