@@ -1,0 +1,12 @@
+site_name: Sistema de Recomendación Musical
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Extracción de Datos: ingest_data_documentation.md
+  - Carga y Procesamiento: process_data_documentation.md
+  - Motor de Recomendación: recommendator_engine.md
+  - Frontend (App): app_documentation.md
+  - Ayuda MkDocs: help-mkdocs.md

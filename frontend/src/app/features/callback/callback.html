@@ -1,0 +1,16 @@
+<div class="callback-page">
+  <div class="bg-glow bg-glow--1"></div>
+  <div class="bg-glow bg-glow--2"></div>
+
+  <div class="callback-card glass">
+    @if (!error) {
+      <div class="spinner"></div>
+      <h2>Conectando con Spotify...</h2>
+      <p class="callback-sub">Estamos verificando tu cuenta</p>
+    } @else {
+      <span class="callback-error-icon">⚠️</span>
+      <h2>Error de autenticación</h2>
+      <p class="callback-sub">No se pudo iniciar sesión. Redirigiendo...</p>
+    }
+  </div>
+</div>

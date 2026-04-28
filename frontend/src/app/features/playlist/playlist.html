@@ -1,0 +1,83 @@
+<div class="playlist">
+  @if (!isEmpty()) {
+    <!-- Header -->
+    <section class="playlist-header">
+      <div class="header-bg"></div>
+      <div class="header-content">
+        <button class="btn btn-ghost back-btn" (click)="goBack()">← Volver</button>
+        <h1 class="playlist-title">Tu Playlist</h1>
+        <p class="playlist-meta">
+          <span class="emotion-badge">{{ emotion() }}</span>
+          · {{ recommendations().length }} recomendaciones
+        </p>
+      </div>
+    </section>
+
+    <!-- Export button (Available for all) -->
+    <div class="export-bar">
+      <button
+        class="btn btn-spotify"
+        [disabled]="isExporting()"
+        (click)="exportToSpotify()">
+        @if (isExporting()) {
+          <span class="spinner"></span>
+          Exportando...
+        } @else {
+          <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
+          Guardar Playlist
+        }
+      </button>
+    </div>
+
+    <!-- Recommendations -->
+    <section class="recs-section">
+      <div class="recs-list" [@listStagger]="recommendations().length">
+        @for (rec of recommendations(); track rec.id; let i = $index) {
+          <div class="rec-card">
+            <div class="rec-rank">{{ i + 1 }}</div>
+            <div class="rec-avatar">
+              <span class="note" [innerHTML]="icons.NOTE_SINGLE"></span>
+            </div>
+            <div class="rec-info">
+              <p class="rec-name">{{ rec.name }}</p>
+              <p class="rec-artist">{{ rec.artist }}</p>
+            </div>
+            <div class="rec-score">
+              <div class="score-ring">
+                <svg viewBox="0 0 40 40">
+                  <circle class="ring-bg" cx="20" cy="20" r="16" />
+                  <circle
+                    class="ring-fill"
+                    cx="20" cy="20" r="16"
+                    [style.stroke]="getScoreColor(rec.similarity_score)"
+                    [style.stroke-dasharray]="(getScorePercent(rec.similarity_score) * 1.005).toString() + ' 100'" />
+                </svg>
+                <span class="score-value" [style.color]="getScoreColor(rec.similarity_score)">
+                  {{ getScorePercent(rec.similarity_score) }}%
+                </span>
+              </div>
+              <span class="score-label">Afinidad</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <section class="actions-section">
+      <button class="btn btn-primary" (click)="goBack()">
+        <span class="btn-icon" [innerHTML]="icons.MUSIC_NOTE"></span> Nueva playlist
+      </button>
+      <button class="btn btn-ghost" (click)="startOver()">
+        <span class="btn-icon" [innerHTML]="icons.REFRESH"></span> Empezar de nuevo
+      </button>
+    </section>
+  } @else {
+    <div class="empty-playlist">
+      <span class="empty-icon" [innerHTML]="icons.MUSIC_NOTES"></span>
+      <h2>No hay playlist generada</h2>
+      <p>Selecciona canciones y una emoción para generar tu playlist personalizada.</p>
+      <button class="btn btn-primary" (click)="goBack()">Ir al Dashboard</button>
+    </div>
+  }
+</div>

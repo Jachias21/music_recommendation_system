@@ -1,2 +1,66 @@
+# ─── Entornos virtuales ───────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ─── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Variables de entorno ──────────────────────────────────────
 .env
-.venv
+.env.*
+
+# ─── Datos (ficheros grandes, no van al repo) ──────────────────
+# Los compañeros deben descargar/generar los datos localmente.
+# Ver README para instrucciones.
+data/source/
+data/raw/
+data/processed/
+
+# ─── Jupyter ───────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── IDEs y SO ──────────────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+# ─── Frontend: Angular / Node ───────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# ─── Logs ───────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ─── Docker ───────────────────────────────────────────────────────
+docker-compose.yml
+
+
+# ─── Models ───────────────────────────────────────────────────────
+models/*.pth
+models/*.pkl
+models/*.pt
+models/*.onnx
+models/*.npy
+models/*.onnx.data
+
+
+# ─── Tests ───────────────────────────────────────────────────────
+tests/*.py
+
+# ─── Specific Exclusions ──────────────────────────────────────────
+frontend/src/models/
+
+evaluation_results.json

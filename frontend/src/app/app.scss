@@ -1,0 +1,26 @@
+.app-wrapper {
+  min-height: 100vh;
+  transition: --primary var(--transition-base);
+}
+
+.main-content {
+  margin-top: 60px;
+  margin-left: 240px;
+  padding: 28px 32px;
+  min-height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 200px;
+    padding: 20px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+}

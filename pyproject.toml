@@ -1,0 +1,24 @@
+[project]
+name = "music-recommendation-system"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.135.1",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.5",
+    "pandas>=2.3.3",
+    "pymongo>=4.16.0",
+    "scikit-learn>=1.8.0",
+    "spotipy>=2.26.0",
+    "streamlit>=1.55.0",
+    "torch>=2.11.0",
+    "uvicorn>=0.42.0",
+    "gensim>=4.0",
+    "lyricsgenius>=3.12.0",
+    "python-dotenv>=1.2.2",
+    "pipeline>=0.1.0",
+    "transformers>=5.6.2",
+    "faiss-cpu>=1.13.2",
+    "bcrypt>=5.0.0",
+]

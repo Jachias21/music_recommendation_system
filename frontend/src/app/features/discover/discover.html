@@ -1,0 +1,52 @@
+<div class="discover">
+  <section class="discover-header">
+    <h1 class="discover-title gradient-text">Descubrir</h1>
+    <p class="discover-subtitle">Explora y encuentra canciones que conecten contigo</p>
+
+    <div class="search-container">
+      <span class="search-icon" [innerHTML]="icons.SEARCH"></span>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Busca por canción o artista..."
+        [value]="query()"
+        (input)="onSearch($event)"
+        autofocus />
+    </div>
+  </section>
+
+  @if (isSearching()) {
+    <div class="loading-state">
+      <span class="spinner-lg"></span>
+      <p>Buscando resultados...</p>
+    </div>
+  }
+
+  @if (results().length > 0) {
+    <section class="results-section">
+      <h2 class="results-heading">
+        Se encontraron <span class="accent-text">{{ results().length }}</span> resultados
+      </h2>
+      <div class="results-grid" [@listStagger]="results().length">
+        @for (song of results(); track song.id) {
+          <app-song-card
+            [song]="song"
+            [disabled]="cart.isFull() || isInCart(song.id)"
+            [actionIcon]="isInCart(song.id) ? '✓' : '＋'"
+            [actionLabel]="isInCart(song.id) ? 'Ya añadida' : 'Añadir'"
+            (action)="addSong($event)" />
+        }
+      </div>
+    </section>
+  } @else if (hasSearched() && !isSearching()) {
+    <div class="empty-state">
+      <span class="empty-icon" [innerHTML]="icons.MUSIC_NOTE"></span>
+      <p>No se encontraron resultados para "{{ query() }}"</p>
+    </div>
+  } @else if (!hasSearched()) {
+    <div class="empty-state initial">
+      <span class="empty-icon" [innerHTML]="icons.HEADPHONES"></span>
+      <p>Empieza a escribir para buscar canciones...</p>
+    </div>
+  }
+</div>

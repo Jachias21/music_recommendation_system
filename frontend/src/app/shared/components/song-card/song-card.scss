@@ -1,0 +1,120 @@
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  cursor: default;
+  min-width: 0;
+  overflow: hidden;
+
+  &:hover {
+    background: var(--bg-elevated);
+    border-color: var(--outline);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &.compact {
+    padding: 10px 14px;
+    gap: 10px;
+
+    .song-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 0.9rem;
+    }
+
+    .song-name { font-size: 0.85rem; }
+    .song-artist { font-size: 0.75rem; }
+  }
+}
+
+.song-visual { flex-shrink: 0; }
+
+.song-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--primary) 20%, var(--bg-elevated));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .note-icon {
+    color: var(--primary);
+    transition: color var(--transition-base);
+  }
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-features {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+
+  .feature {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    background: var(--bg-elevated);
+    border-radius: 20px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+}
+
+.btn-action {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 14px var(--primary-glow);
+  }
+
+  &:active { transform: scale(0.95); }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

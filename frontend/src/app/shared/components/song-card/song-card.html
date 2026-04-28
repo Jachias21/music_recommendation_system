@@ -1,0 +1,33 @@
+<div class="song-card" [class.compact]="compact()">
+  <div class="song-visual">
+    <div class="song-avatar">
+      <span class="note-icon" [innerHTML]="icons.NOTE_SINGLE"></span>
+    </div>
+  </div>
+  <div class="song-info">
+    <p class="song-name">{{ song().name }}</p>
+    <p class="song-artist">{{ song().artist }}</p>
+    @if (!compact()) {
+      <div class="song-features">
+        <span class="feature" [title]="'Danceability: ' + (song().danceability * 100 | number:'1.0-0') + '%'">
+          <span class="feature-icon" [innerHTML]="icons.DANCE"></span> {{ song().danceability * 100 | number:'1.0-0' }}%
+        </span>
+        <span class="feature" [title]="'Energy: ' + (song().energy * 100 | number:'1.0-0') + '%'">
+          <span class="feature-icon" [innerHTML]="icons.ENERGY"></span> {{ song().energy * 100 | number:'1.0-0' }}%
+        </span>
+        <span class="feature" [title]="'Valence: ' + (song().valence * 100 | number:'1.0-0') + '%'">
+          <span class="feature-icon" [innerHTML]="icons.VALENCE"></span> {{ song().valence * 100 | number:'1.0-0' }}%
+        </span>
+      </div>
+    }
+  </div>
+  @if (showAction()) {
+    <button
+      class="btn-action"
+      [disabled]="disabled()"
+      (click)="onAction()"
+      [title]="actionLabel()">
+      {{ actionIcon() }}
+    </button>
+  }
+</div>

@@ -1,0 +1,110 @@
+<div class="dashboard">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        ¿Cuál es la <span class="accent-word">Frecuencia?</span>
+      </h1>
+      @if (isSpotifyUser() && spotify.hasSpotifyData()) {
+      <p class="hero-subtitle">
+        Biblioteca Spotify sincronizada. Elige tu estado y generamos la playlist perfecta.
+      </p>
+      } @else {
+      <p class="hero-subtitle">
+        Añade 3 canciones en el panel, elige tu emoción y deja que la IA encuentre tu frecuencia.
+      </p>
+      }
+    </div>
+  </section>
+
+  <!-- Spotify Library (Spotify users only) -->
+  @if (isSpotifyUser()) {
+  <section class="spotify-section animate-fade-in-up">
+    <div class="spotify-card glass">
+      <div class="spotify-header">
+        <span class="spotify-icon" [innerHTML]="icons.SPOTIFY"></span>
+        <div>
+          <h2 class="spotify-title">Tu Biblioteca de Spotify</h2>
+          @if (spotify.isLoading()) {
+          <p class="spotify-status">Sincronizando...</p>
+          } @else if (spotify.hasSpotifyData()) {
+          <p class="spotify-status">{{ spotify.matchedSongs().length }} canciones en el catálogo</p>
+          } @else if (spotify.isLoaded()) {
+          <p class="spotify-status">Sin coincidencias en la biblioteca</p>
+          }
+        </div>
+      </div>
+      @if (spotify.isLoading()) {
+      <div class="spotify-loading">
+        <span class="spinner-lg"></span>
+        <p>Cargando...</p>
+      </div>
+      } @else if (spotify.matchedSongs().length > 0) {
+      <div class="spotify-tracks">
+        @for (song of spotify.matchedSongs().slice(0, 8); track song.id; let i = $index) {
+        <div class="spotify-track">
+          <span class="track-index">{{ i + 1 }}</span>
+          <div class="track-info">
+            <p class="track-name">{{ song.name }}</p>
+            <p class="track-artist">{{ song.artist }}</p>
+          </div>
+        </div>
+        }
+        @if (spotify.matchedSongs().length > 8) {
+        <p class="spotify-more">y {{ spotify.matchedSongs().length - 8 }} más...</p>
+        }
+      </div>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- Emotion grid -->
+  <section class="emotion-section animate-fade-in-up">
+    <h2 class="section-heading">¿Cómo te sientes?</h2>
+    <div class="emotion-grid">
+      @for (emotion of emotions; track emotion) {
+      <button class="emotion-card"
+        [class]="'emotion-card ' + moodClass(emotion) + (selectedEmotion() === emotion ? ' selected' : '')"
+        (click)="selectEmotion(emotion)">
+        <span class="emotion-dot"></span>
+        <span class="emotion-name">{{ emotion }}</span>
+      </button>
+      }
+    </div>
+  </section>
+
+  <!-- Community top -->
+  <section class="community-section animate-fade-in-up">
+    <h2 class="section-heading">Top Comunidad</h2>
+    <div class="community-grid">
+      @for (pl of community; track pl.title) {
+      <div class="community-card glass" [class]="'community-card glass ' + moodClass(pl.mood)">
+        <div class="community-badge" [class]="moodClass(pl.mood)">{{ pl.mood }}</div>
+        <p class="community-title">{{ pl.title }}</p>
+        <p class="community-plays">{{ pl.plays }} plays</p>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Generate CTA -->
+  <section class="generate-section animate-fade-in-up">
+    <button class="btn btn-primary generate-btn" [disabled]="!canGenerate()" (click)="generatePlaylist()">
+      @if (isGenerating()) {
+      <span class="spinner"></span>
+      Analizando...
+      } @else {
+      <span class="btn-icon" [innerHTML]="icons.ROCKET"></span>
+      Generar Playlist
+      }
+    </button>
+
+    @if ((!isSpotifyUser() || !spotify.hasSpotifyData()) && cart.count() < 3) { <p class="generate-hint">
+      <span class="hint-icon" [innerHTML]="icons.WARNING"></span>
+      Añade {{ 3 - cart.count() }} canción{{ cart.count() === 2 ? '' : 'es' }} más en el panel lateral
+      </p>
+      }
+  </section>
+</div>
