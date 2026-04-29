@@ -18,7 +18,7 @@ from src.modeling.recommendation_engine import (
     get_contextual_recommendations,
     FEATURES,
 )
-from src.process_data import MONGO_URI, DB_NAME, COLLECTION_NAME
+from src.data.process_data import MONGO_URI, DB_NAME, COLLECTION_NAME
 import src.modeling.node2vec_engine as _n2v
 
 # ────────────────────────────────────────────

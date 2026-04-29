@@ -82,7 +82,7 @@ def main():
     # ─────────────────────────────────────────────────────────────────────
     print(f"\n[3/5] Generando interacciones para {NUM_USERS:,} usuarios (escritura chunk={CHUNK_SIZE:,})...")
     
-    base_dir = os.path.dirname(os.path.dirname(__file__)) # Sube una carpeta (src/)
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Sube a src/
     base_dir = os.path.dirname(base_dir) # Sube otra a la raíz del proyecto
     
     output_dir = os.path.join(base_dir, "data", "processed")

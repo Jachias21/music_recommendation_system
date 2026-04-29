@@ -1,4 +1,4 @@
-# 🎵 Sound Lens — Sistema de Recomendación Musical
+# 🎵 SoundWave — Sistema de Recomendación Musical
 
 Sistema de recomendación de música basado en audio features y similitud coseno, con frontend en Angular 21, backend FastAPI y base de datos MongoDB.
 
@@ -89,7 +89,7 @@ Lee el CSV, clasifica cada canción por emoción usando sus audio features y gen
 
 ```bash
 source .venv/bin/activate
-python3 src/ingest_data.py
+python3 src/data/ingest_data.py
 ```
 
 **Output esperado:**
@@ -110,7 +110,7 @@ Clasificación completada. Distribución por emoción:
 Lee el JSON generado e inserta todos los documentos en la colección `songs` de MongoDB.
 
 ```bash
-python3 src/process_data.py
+python3 src/data/process_data.py
 ```
 
 **Output esperado:**
@@ -127,12 +127,12 @@ Indice creado sobre el campo 'emocion'.
 
 ## 🚀 5. Arrancar la Aplicación
 
-El sistema necesita **dos servicios corriendo simultáneamente** en terminales separadas:
+El sistema necesita **tres servicios corriendo simultáneamente** en terminales separadas:
 
 ### Terminal 1 — Backend FastAPI (puerto 8000)
 ```bash
 source .venv/bin/activate
-python -m uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn src.api.api:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Espera hasta ver:
@@ -140,6 +140,14 @@ Espera hasta ver:
 [API] Loaded 1,204,022 songs from data source.
 INFO:     Application startup complete.
 ```
+
+### Terminal 2 — Dashboard Streamlit (puerto 8501)
+Este panel permite auditar y evaluar los modelos de recomendación:
+```bash
+source .venv/bin/activate
+streamlit run src/dashboard/dashboard.py
+```
+Espera hasta que abra `http://localhost:8501` en tu navegador.
 
 ### Terminal 2 — Frontend Angular (puerto 4200)
 ```bash
@@ -175,7 +183,6 @@ El login con Spotify usa **OAuth 2.0 con PKCE** (sin backend propio para el toke
 
 ```
 music_recommendation_system/
-├── api.py                          # FastAPI — capa REST principal
 ├── pyproject.toml                  # Dependencias Python (uv)
 ├── requirements.txt                # Dependencias Python (pip)
 ├── docker-compose.yml              # MongoDB dockerizado
@@ -183,39 +190,60 @@ music_recommendation_system/
 │   ├── source/                     # ← Aquí va el CSV de Kaggle (no en git)
 │   ├── raw/                        # ← JSON generado por ingest_data.py (no en git)
 │   └── processed/                  # ← Dataset de interacciones para NCF (no en git)
-├── src/
-│   ├── ingest_data.py              # Paso 1: Lee CSV, clasifica emociones
-│   ├── process_data.py             # Paso 2: Carga datos en MongoDB
-│   └── modeling/
-│       ├── recommendation_engine.py  # Motor de Contenido (Similitud Coseno)
-│       ├── ncf_model.py              # Arquitectura de Red Neuronal (PyTorch)
-│       ├── generate_interactions.py  # Generador de datos sintéticos (Negative Sampling)
-│       └── train_ncf.py              # Script de entrenamiento de Deep Learning
+├── docs/                           # Documentación MkDocs
+│   └── guides/                     # Guías Markdown (NCF_TRAINING, onboarding, etc.)
+├── scripts/                        # Scripts de utilidad (exportaciones, update Deezer, detect_language)
+├── src/                            # Lógica principal del sistema (Clean Architecture)
+│   ├── api/
+│   │   └── api.py                  # FastAPI — capa REST principal
+│   ├── dashboard/
+│   │   └── dashboard.py            # Streamlit — Panel de evaluación de IA
+│   ├── data/
+│   │   ├── ingest_data.py          # Paso 1: Lee CSV, clasifica emociones
+│   │   ├── process_data.py         # Paso 2: Carga datos en MongoDB
+│   │   └── generate_interactions.py# Generador de datos sintéticos (Negative Sampling)
+│   ├── modeling/
+│   │   ├── recommendation_engine.py# Motor de Contenido (Similitud Coseno)
+│   │   ├── ncf_model.py            # Arquitectura de Red Neuronal (PyTorch)
+│   │   └── train_ncf.py            # Script de entrenamiento de Deep Learning
+│   └── evaluation/
+│       └── evaluate_models.py      # Evaluador general para el Dashboard
 ├── models/                         # ← Pesos del modelo entrenado (.pth) y encoders
 ├── logs/                           # ← Registro de ejecuciones y entrenamiento
-├── frontend/                       # Angular 21 SPA
-└── docs/                           # Documentación MkDocs
+└── frontend/                       # Angular 21 SPA
 ```
 
 ---
 
-## 🧠 5. Modelo Avanzado: Neural Collaborative Filtering (NCF)
+## 🧠 Modelos Avanzados de IA
 
-Además del motor basado en contenido, el sistema incluye una implementación de **Deep Learning** para capturar patrones de preferencia latentes.
+Además del motor basado en contenido, el sistema incluye dos arquitecturas de recomendación de vanguardia:
 
-### Paso 1 — Generar Interacciones
-Simula usuarios y sus preferencias (Likes/Dislikes) basándose en emociones para crear la matriz de entrenamiento.
+### 1. Neural Collaborative Filtering (NCF)
+Implementación de **Deep Learning** (PyTorch) que utiliza una arquitectura MLP para aprender la función de interacción entre embeddings de usuarios y canciones.
+- **Entrenamiento**: `python3 src/modeling/train_ncf.py`
+- **Inferencia**: Realizada mediante ONNX Runtime para máximo rendimiento.
+
+### 2. Node2Vec (Graph Embeddings)
+Genera embeddings latentes basados en la topología de un grafo de similitud acústica (K-NN). Captura "comunidades" de canciones similares de forma más robusta que el coseno simple.
+- **Entrenamiento**: `python3 -m src.modeling.node2vec_engine`
+- **Caminatas aleatorias**: Utiliza sesgos `p` y `q` para equilibrar exploración local y global.
+
+---
+
+## 📊 Evaluación y Auditoría
+
+El sistema incluye un protocolo de evaluación científica (Carta A) para comparar los modelos:
+
+1. **Protocolo**: Leave-one-out con split 80/20 por usuario.
+2. **Eval Pool**: Para cada canción positiva (Ground Truth), se añaden 500 negativos aleatorios para evaluar la capacidad de ranking del modelo.
+3. **Métricas**: Hit Rate@10, NDCG@10, MRR@10, Catalog Coverage, Novelty y Serendipity.
+
+Para ejecutar la evaluación:
 ```bash
-python3 src/modeling/generate_interactions.py
+python -m src.evaluation.evaluate_models
 ```
-**Output:** Crea `data/processed/ncf_interactions.csv` (~500k filas con ratio 1:4).
-
-### Paso 2 — Entrenar la Red Neuronal
-Entrena un modelo NCF (Embeddings + MLP) usando PyTorch.
-```bash
-python3 src/modeling/train_ncf.py
-```
-**Output:** Genera los pesos en `models/ncf_weights.pth` y guarda el log en `logs/train_ncf.log`.
+Los resultados se visualizan en tiempo real en el **Dashboard de Streamlit**.
 
 ---
 
