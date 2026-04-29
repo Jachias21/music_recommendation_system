@@ -1,15 +1,14 @@
 """
 evaluate_models.py — Evaluación profunda del sistema de recomendación
 =====================================================================
-Protocolo: Carta A
+Protocolo: Carta A (Actualizado para incluir Node2Vec)
   - Split 80/20 por usuario (hold-out)
   - Eval pool: GT items + 500 negativos aleatorios del catálogo
-  - NCF busca sobre el catálogo completo, luego filtra al eval pool
+  - Modelos evaluados: NCF, Baseline (Contenido), Node2Vec
   - Métricas: HR@K, NDCG@K, MRR@K, Catalog Coverage, Novelty, Serendipity
 
 Uso:
     python -m src.evaluation.evaluate_models
-    python src/evaluation/evaluate_models.py
 """
 
 import os
@@ -37,6 +36,7 @@ from src.modeling.recommendation_engine import (
     create_user_profile,
     FEATURES,
 )
+from src.modeling.node2vec_engine import get_node2vec_recommendations, get_or_build_embeddings
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ def _agg(values: list) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CATALOG LOADER  (MongoDB primary, CSV fallback)
+# CATALOG LOADER
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _load_catalog(base_dir: str) -> pd.DataFrame:
@@ -158,37 +158,27 @@ def _load_catalog(base_dir: str) -> pd.DataFrame:
         if os.path.exists(path):
             print(f"  CSV: {path}")
             df = pd.read_csv(path)
-            if "track_id" in df.columns:
-                df["id"] = df["track_id"].astype(str)
-            else:
-                df["id"] = df["id"].astype(str)
+            df["id"] = df["track_id"].astype(str) if "track_id" in df.columns else df["id"].astype(str)
             return df
 
     print("  CSV no encontrado → MongoDB...")
     try:
         from src.data.process_data import MONGO_URI, DB_NAME, COLLECTION_NAME
         from pymongo import MongoClient
-
         client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=8000)
-        client.admin.command("ping")
-
         projection = {
             "_id": 0, "track_id": 1, "name": 1, "artist": 1, "emocion": 1,
             "danceability": 1, "energy": 1, "valence": 1, "tempo": 1,
             "acousticness": 1, "instrumentalness": 1, "liveness": 1, "speechiness": 1,
         }
         docs = list(client[DB_NAME][COLLECTION_NAME].find({}, projection))
-        df   = pd.DataFrame(docs)
-        if df.empty:
-            return df
-        if "track_id" in df.columns:
-            df["id"] = df["track_id"].astype(str)
-        else:
-            df["id"] = df["id"].astype(str)
+        df = pd.DataFrame(docs)
+        if not df.empty:
+            df["id"] = df["track_id"].astype(str) if "track_id" in df.columns else df["id"].astype(str)
         print(f"  MongoDB: {len(df):,} canciones.")
         return df
     except Exception as e:
-        print(f"  MongoDB no disponible: {e}")
+        print(f"  Error MongoDB: {e}")
         return pd.DataFrame()
 
 
@@ -197,216 +187,138 @@ def _load_catalog(base_dir: str) -> pd.DataFrame:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    print("=" * 65)
-    print("  EVALUACIÓN NCF — Protocolo Carta A")
-    print(f"  HR@{K} | NDCG@{K} | MRR@{K} | Coverage | Novelty | Serendipity")
-    print(f"  N_users={N_TEST_USERS} | N_neg={N_NEG} | Seed={SEED_SIZE} | GT={GT_SIZE}")
-    print("=" * 65)
+    print("=" * 75)
+    print("  EVALUACIÓN COMPARATIVA: NCF vs Node2Vec vs Baseline")
+    print(f"  Métricas: HR@{K} | NDCG@{K} | MRR@{K} | Coverage | Novelty | Serendipity")
+    print("=" * 75)
 
-    # ── 1. Catalog ────────────────────────────────────────────────────────────
+    # 1. Catalog
     print("\n[1/5] Cargando catálogo...")
     df = _load_catalog(_BASE_DIR)
-    if df.empty:
-        print("  ERROR: catálogo no encontrado.")
-        return
+    if df.empty: return
 
-    # Restrict to encoder-known IDs
+    # IDs del encoder (punto común de verdad)
     enc_path = os.path.join(_BASE_DIR, "models", "item_encoder.pkl")
     with open(enc_path, "rb") as fh:
         _enc = pickle.load(fh)
     encoder_ids = set(str(x) for x in _enc.classes_)
     df = df[df["id"].isin(encoder_ids)].copy().reset_index(drop=True)
-
-    emo_col   = "emocion" if "emocion" in df.columns else "emotion"
-    feat_cols = [f for f in FEATURES if f in df.columns]
-    print(f"  Catálogo restringido: {len(df):,} canciones")
-    print(f"  Emociones: {df[emo_col].unique().tolist()}")
-    print(f"  Features  : {feat_cols}")
-
     catalog_ids_list = df["id"].tolist()
+    feat_cols = [f for f in FEATURES if f in df.columns]
+    emo_col = "emocion" if "emocion" in df.columns else "emotion"
 
-    # ── 2. Interactions ───────────────────────────────────────────────────────
-    print("\n[2/5] Cargando interacciones (80/20 hold-out)...")
+    # 2. Interactions
+    print("\n[2/5] Cargando interacciones (80/20 split)...")
     inter_path = os.path.join(_BASE_DIR, "data", "processed", "ncf_interactions.csv")
-    if not os.path.exists(inter_path):
-        print(f"  ERROR: {inter_path} no encontrado.")
-        print("  Ejecuta: python scripts/generate_interactions_from_encoder.py")
-        return
-
     inter_df = pd.read_csv(inter_path)
-    pos_df   = inter_df[inter_df["label"] == 1].copy()
+    pos_df = inter_df[inter_df["label"] == 1].copy()
     pos_df["item_id"] = pos_df["item_id"].astype(str)
-    pos_df   = pos_df[pos_df["item_id"].isin(encoder_ids)]
-
+    pos_df = pos_df[pos_df["item_id"].isin(encoder_ids)]
     item_popularity = pos_df["item_id"].value_counts().to_dict()
-    total_pos       = len(pos_df)
+    total_pos = len(pos_df)
 
-    # 80/20 hold-out by user
     valid_users = pos_df["user_id"].value_counts()
     valid_users = valid_users[valid_users >= MIN_HISTORY].index.tolist()
     random.seed(42)
     random.shuffle(valid_users)
-    n_test = min(N_TEST_USERS, int(len(valid_users) * 0.20))
-    test_users = valid_users[:n_test]
-    print(f"  Usuarios válidos: {len(valid_users):,} | Test (20%): {len(test_users)}")
+    test_users = valid_users[:min(N_TEST_USERS, int(len(valid_users)*0.2))]
+    print(f"  Usuarios de test: {len(test_users)}")
 
-    # ── 3. NCF ────────────────────────────────────────────────────────────────
-    print("\n[3/5] Cargando NCF Recommender...")
-    try:
-        ncf = NCFRecommender()
-        print("  NCF listo.")
-    except Exception as e:
-        print(f"  ERROR: {e}")
-        return
+    # 3. Models
+    print("\n[3/5] Inicializando modelos...")
+    ncf = NCFRecommender()
+    n2v_embeddings, n2v_song_ids = get_or_build_embeddings(df)
+    print("  Modelos cargados.")
 
-    # ── 4. Evaluation loop ────────────────────────────────────────────────────
+    # 4. Loop
     print(f"\n[4/5] Evaluando {len(test_users)} usuarios...")
-    print(f"  {'N':>5}  {'HR_NCF':>7} {'NDCG_NCF':>9} {'MRR_NCF':>8}  "
-          f"{'HR_BASE':>7} {'NDCG_BASE':>10} {'MRR_BASE':>9}")
-    print("  " + "─" * 60)
+    print(f"{'User':>5} | {'NCF_HR':>7} | {'N2V_HR':>7} | {'BAS_HR':>7}")
+    print("-" * 45)
 
-    ncf_hr, ncf_ndcg, ncf_mrr, ncf_nov, ncf_seren = [], [], [], [], []
-    bas_hr, bas_ndcg, bas_mrr, bas_nov, bas_seren = [], [], [], [], []
-    all_ncf_recs, all_base_recs = [], []
-    ncf_fallbacks = 0
-    per_user_log  = []
+    res = {m: defaultdict(list) for m in ["ncf", "n2v", "base"]}
+    all_recs = {m: [] for m in ["ncf", "n2v", "base"]}
+    per_user_log = []
 
     for i, uid in enumerate(test_users):
-        u_history = pos_df[pos_df["user_id"] == uid]["item_id"].tolist()
-        random.Random(42 + i).shuffle(u_history)
-
-        seeds        = u_history[:SEED_SIZE]
-        ground_truth = u_history[SEED_SIZE : SEED_SIZE + GT_SIZE]
-        if not ground_truth:
-            continue
-
-        gt_set     = set(ground_truth)
-        gt_df      = df[df["id"].isin(gt_set)]
+        u_hist = pos_df[pos_df["user_id"] == uid]["item_id"].tolist()
+        random.Random(42+i).shuffle(u_hist)
+        seeds, gt = u_hist[:SEED_SIZE], u_hist[SEED_SIZE:SEED_SIZE+GT_SIZE]
+        if not gt: continue
+        
+        gt_set = set(gt)
+        gt_df = df[df["id"].isin(gt_set)]
         target_emo = gt_df[emo_col].mode().iloc[0] if not gt_df.empty else "Alegre"
 
-        # Eval pool: GT + N_NEG random negatives
-        negatives = [
-            x for x in random.sample(catalog_ids_list,
-                                     min(N_NEG * 2, len(catalog_ids_list)))
-            if x not in gt_set
-        ][:N_NEG]
+        # Eval pool
+        negatives = [x for x in random.sample(catalog_ids_list, min(N_NEG*2, len(df))) if x not in gt_set][:N_NEG]
         eval_pool = gt_set | set(negatives)
 
-        # — NCF: full catalog → post-filter to eval pool —
+        # Inferences
+        # NCF
         try:
-            raw_recs  = ncf.get_recommendations(seeds, target_emo, df, top_n=K * 30)
-            ncf_preds = [str(r["id"]) for r in raw_recs if str(r["id"]) in eval_pool][:K]
-            if not ncf_preds:
-                ncf_fallbacks += 1
-        except Exception:
-            ncf_preds = []
-            ncf_fallbacks += 1
-
-        # — Baseline: full catalog → post-filter to eval pool —
+            raw = ncf.get_recommendations(seeds, target_emo, df, top_n=K*30)
+            p_ncf = [str(r["id"]) for r in raw if str(r["id"]) in eval_pool][:K]
+        except: p_ncf = []
+        
+        # Node2Vec
         try:
-            user_vec  = create_user_profile(seeds, df)
-            raw_base  = get_contextual_recommendations(
-                user_vec, target_emo, df, top_n=K * 30, excluded_ids=seeds
-            )
-            base_preds = [str(r["id"]) for r in raw_base if str(r["id"]) in eval_pool][:K]
-        except Exception:
-            base_preds = []
+            raw = get_node2vec_recommendations(seeds, target_emo, df, n2v_embeddings, n2v_song_ids, top_n=K*30)
+            p_n2v = [str(r["id"]) for r in raw if str(r["id"]) in eval_pool][:K]
+        except: p_n2v = []
 
-        # — Metrics —
-        ncf_hr   .append(hit_rate_at_k(ncf_preds,  ground_truth, K))
-        ncf_ndcg .append(ndcg_at_k    (ncf_preds,  ground_truth, K))
-        ncf_mrr  .append(mrr           (ncf_preds,  ground_truth, K))
-        ncf_nov  .append(novelty_at_k  (ncf_preds,  item_popularity, total_pos, K))
-        ncf_seren.append(serendipity_at_k(ncf_preds, seeds, ground_truth, df, feat_cols, K))
+        # Baseline
+        try:
+            uv = create_user_profile(seeds, df)
+            raw = get_contextual_recommendations(uv, target_emo, df, top_n=K*30, excluded_ids=seeds)
+            p_bas = [str(r["id"]) for r in raw if str(r["id"]) in eval_pool][:K]
+        except: p_bas = []
 
-        bas_hr   .append(hit_rate_at_k(base_preds, ground_truth, K))
-        bas_ndcg .append(ndcg_at_k    (base_preds, ground_truth, K))
-        bas_mrr  .append(mrr          (base_preds, ground_truth, K))
-        bas_nov  .append(novelty_at_k (base_preds, item_popularity, total_pos, K))
-        bas_seren.append(serendipity_at_k(base_preds, seeds, ground_truth, df, feat_cols, K))
+        # Metrics computation
+        for m, preds in [("ncf", p_ncf), ("n2v", p_n2v), ("base", p_bas)]:
+            res[m]["hr"].append(hit_rate_at_k(preds, gt, K))
+            res[m]["ndcg"].append(ndcg_at_k(preds, gt, K))
+            res[m]["mrr"].append(mrr(preds, gt, K))
+            res[m]["nov"].append(novelty_at_k(preds, item_popularity, total_pos, K))
+            res[m]["ser"].append(serendipity_at_k(preds, seeds, gt, df, feat_cols, K))
+            all_recs[m].append(preds)
 
-        all_ncf_recs .append(ncf_preds)
-        all_base_recs.append(base_preds)
+        if (i+1) % 40 == 0 or i == 0:
+            print(f"{i+1:>5} | {np.mean(res['ncf']['hr']):>7.3f} | {np.mean(res['n2v']['hr']):>7.3f} | {np.mean(res['base']['hr']):>7.3f}")
 
-        per_user_log.append({
-            "user_id"       : int(uid),
-            "target_emotion": target_emo,
-            "seeds"         : seeds,
-            "ground_truth"  : ground_truth,
-            "ncf"           : {"recommendations": ncf_preds},
-            "base"          : {"recommendations": base_preds},
-        })
+    # 5. Output
+    print("\n" + "=" * 75)
+    print(f"{'METRICA':<15} | {'NCF':>10} | {'Node2Vec':>10} | {'Baseline':>10}")
+    print("-" * 75)
+    
+    def print_row(label, key):
+        print(f"{label:<15} | {np.mean(res['ncf'][key]):10.4f} | {np.mean(res['n2v'][key]):10.4f} | {np.mean(res['base'][key]):10.4f}")
 
-        if (i + 1) % 40 == 0 or i == 0:
-            print(f"  {i+1:>5}  "
-                  f"{np.mean(ncf_hr):>7.3f} {np.mean(ncf_ndcg):>9.4f} {np.mean(ncf_mrr):>8.4f}  "
-                  f"{np.mean(bas_hr):>7.3f} {np.mean(bas_ndcg):>10.4f} {np.mean(bas_mrr):>9.4f}")
+    print_row("Hit Rate@K", "hr")
+    print_row("NDCG@K", "ndcg")
+    print_row("MRR@K", "mrr")
+    print_row("Novelty", "nov")
+    print_row("Serendipity", "ser")
+    
+    # Coverage
+    print(f"{'Coverage':<15} | {catalog_coverage(all_recs['ncf'], len(df)):10.4f} | {catalog_coverage(all_recs['n2v'], len(df)):10.4f} | {catalog_coverage(all_recs['base'], len(df)):10.4f}")
+    print("=" * 75)
 
-    # ── 5. Output ─────────────────────────────────────────────────────────────
-    n = len(ncf_hr)
-    ncf_cov  = catalog_coverage(all_ncf_recs,  len(df))
-    base_cov = catalog_coverage(all_base_recs, len(df))
-
-    output = {
-        "protocol"      : "carta_a_holdout_20pct",
-        "k"             : K,
-        "n_neg"         : N_NEG,
-        "n_users"       : n,
-        "ncf_fallbacks" : ncf_fallbacks,
+    # Save to JSON
+    final_json = {
         "summary": {
-            "ncf": {
-                "hit_rate"   : _agg(ncf_hr),
-                "ndcg"       : _agg(ncf_ndcg),
-                "mrr"        : _agg(ncf_mrr),
-                "novelty"    : _agg(ncf_nov),
-                "serendipity": _agg(ncf_seren),
-                "coverage"   : float(ncf_cov),
-                # legacy keys for dashboard
-                "precision"  : float(np.mean(ncf_hr)),
-                "recall"     : float(np.mean(ncf_ndcg)),
-            },
-            "base": {
-                "hit_rate"   : _agg(bas_hr),
-                "ndcg"       : _agg(bas_ndcg),
-                "mrr"        : _agg(bas_mrr),
-                "novelty"    : _agg(bas_nov),
-                "serendipity": _agg(bas_seren),
-                "coverage"   : float(base_cov),
-                "precision"  : float(np.mean(bas_hr)),
-                "recall"     : float(np.mean(bas_ndcg)),
-            },
-        },
-        "users": per_user_log,
+            model: {
+                metric: _agg(vals) for metric, vals in res[model].items()
+            } for model in ["ncf", "n2v", "base"]
+        }
     }
+    # Add coverage to JSON
+    for model in ["ncf", "n2v", "base"]:
+        final_json["summary"][model]["coverage"] = catalog_coverage(all_recs[model], len(df))
 
     out_path = os.path.join(_BASE_DIR, "data", "evaluation_results.json")
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    with open(out_path, "w", encoding="utf-8") as fh:
-        json.dump(output, fh, indent=2, ensure_ascii=False)
-
-    # ── Pretty print ──────────────────────────────────────────────────────────
-    print("\n" + "=" * 65)
-    print("  RESULTADOS FINALES")
-    print("=" * 65)
-
-    def _row(label, ncf_v, base_v, fmt=".4f"):
-        delta = ncf_v - base_v
-        sign  = "+" if delta >= 0 else ""
-        print(f"  {label:<22} NCF={ncf_v:{fmt}}   Base={base_v:{fmt}}   Δ={sign}{delta:{fmt}}")
-
-    print(f"\n  Protocolo  : Carta A — hold-out 20%, {N_NEG} negativos")
-    print(f"  Usuarios   : {n}  |  K={K}  |  Fallbacks NCF: {ncf_fallbacks} ({100*ncf_fallbacks/max(1,n):.1f}%)\n")
-
-    _row(f"Hit Rate @ {K}",      np.mean(ncf_hr),    np.mean(bas_hr))
-    _row(f"NDCG @ {K}",         np.mean(ncf_ndcg),  np.mean(bas_ndcg))
-    _row(f"MRR @ {K}",          np.mean(ncf_mrr),   np.mean(bas_mrr))
-    _row("Catalog Coverage",     ncf_cov,             base_cov)
-    _row("Novelty",              np.mean(ncf_nov),   np.mean(bas_nov))
-    _row("Serendipity",          np.mean(ncf_seren), np.mean(bas_seren))
-
-    print(f"\n  Guardado en: {out_path}")
-    print("=" * 65)
-
+    with open(out_path, "w") as f:
+        json.dump(final_json, f, indent=2)
+    print(f"\nResultados guardados en {out_path}")
 
 if __name__ == "__main__":
     main()

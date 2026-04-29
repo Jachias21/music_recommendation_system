@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import json
 import os
+import numpy as np
 
-st.set_page_config(page_title="NCF vs Base - Auditoría de Modelos", layout="wide")
+st.set_page_config(page_title="Music RecSys - Auditoría Multimodelo", layout="wide")
 
 # ==========================================
 # Carga de Datos
@@ -19,11 +20,7 @@ def load_results():
 
 @st.cache_data
 def load_catalog():
-    # Load just enough to resolve names
-    # Connect to mongo directly or read from a dump, but for simplicity of the dashboard
-    # we can just use pymongo directly
     from pymongo import MongoClient
-    
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     env_path = os.path.join(base_dir, ".env")
     if os.path.exists(env_path):
@@ -39,19 +36,14 @@ def load_catalog():
     col_name = os.environ.get("COLLECTION_NAME", "songs")
     
     client = MongoClient(uri)
-    cursor = client[db_name][col_name].find({}, {"_id": 0, "id": 1, "track_id": 1, "name": 1, "artist": 1})
+    cursor = client[db_name][col_name].find({}, {"_id": 0, "track_id": 1, "name": 1, "artist": 1})
     df = pd.DataFrame(list(cursor))
     
-    if df.empty:
-        return {}
-        
-    if "track_id" in df.columns and "id" not in df.columns:
-        df["id"] = df["track_id"].astype(str)
+    if df.empty: return {}
     
-    # Create dict mapping id -> "Name - Artist"
     mapping = {}
     for _, row in df.iterrows():
-        id_val = str(row.get("id", ""))
+        id_val = str(row.get("track_id", ""))
         mapping[id_val] = f"{row.get('name', 'Unknown')} - {row.get('artist', 'Unknown')}"
     return mapping
 
@@ -61,117 +53,88 @@ catalog = load_catalog()
 # ==========================================
 # UI: Cabecera
 # ==========================================
-st.title("Auditoría de Modelos")
+st.title("Auditoría de Modelos de Recomendación")
 st.markdown("""
-Este panel interactivo evalúa el rendimiento del sistema de recomendación híbrido.
-Comparamos el motor original (Similitud del Coseno Acústica) con el nuevo modelo de **Neural Collaborative Filtering (NCF)** 
-sobre un volumen de 200 usuarios sintéticos *Hold-out*.
+Este panel evalúa comparativamente el rendimiento de tres arquitecturas de recomendación:
+1. **Baseline**: Similitud acústica basada en audio features (Content-Based).
+2. **NCF**: Neural Collaborative Filtering (Deep Learning).
+3. **Node2Vec**: Graph Embeddings basados en caminatas aleatorias sobre similitudes acústicas.
 """)
 
 if not data:
-    st.warning("No se encontró el archivo `data/evaluation_results.json`. Ejecuta `uv run src/evaluation/evaluate_models.py` primero.")
+    st.warning("No se encontraron resultados de evaluación. Ejecuta `python -m src.evaluation.evaluate_models` primero.")
     st.stop()
 
 summary = data["summary"]
-users = data["users"]
+# In the new format, we might have 'users' in the root or not. 
+# Let's check if it exists.
+users = data.get("users", [])
 
 # ==========================================
 # UI: KPIs Globales
 # ==========================================
-st.header("1. Rendimiento Global (Métricas @5)")
+st.header("1. Rendimiento Comparativo")
 
-col1, col2, col3, col4 = st.columns(4)
+models = list(summary.keys())
+metrics = ["hit_rate", "ndcg", "mrr", "novelty", "coverage"]
 
-def get_delta(ncf_val, base_val, is_pct=True):
-    if base_val == 0: return "N/A"
-    diff = ncf_val - base_val
-    if is_pct:
-        pct = (diff / base_val) * 100
-        return f"{pct:+.1f}%"
-    return f"{diff:+.3f}"
+# Create a clean dataframe for metrics
+display_data = []
+for m in models:
+    row = {"Modelo": m.upper()}
+    for met in metrics:
+        val = summary[m].get(met)
+        if isinstance(val, dict):
+            row[met.capitalize()] = val["mean"]
+        else:
+            row[met.capitalize()] = val
+    display_data.append(row)
 
-ncf_s = summary["ncf"]
-base_s = summary["base"]
+metrics_df = pd.DataFrame(display_data).set_index("Modelo")
 
-col1.metric("Precision@5 (NCF)", f"{ncf_s['precision']:.3f}", get_delta(ncf_s['precision'], base_s['precision']))
-col2.metric("Recall@5 (NCF)", f"{ncf_s['recall']:.3f}", get_delta(ncf_s['recall'], base_s['recall']))
-col3.metric("NDCG@5 (NCF)", f"{ncf_s['ndcg']:.3f}", get_delta(ncf_s['ndcg'], base_s['ndcg']))
-col4.metric("Novelty (NCF)", f"{ncf_s['novelty']:.3f}", get_delta(ncf_s['novelty'], base_s['novelty'], is_pct=False))
+st.subheader("Métricas Principales")
+st.dataframe(metrics_df.style.highlight_max(axis=0, color='lightgreen'))
 
-# ==========================================
-# UI: Gráficas de Comparación
-# ==========================================
-st.subheader("Comparativa de Modelos")
-
-metrics_df = pd.DataFrame({
-    "Métrica": ["Precision@5", "Recall@5", "NDCG@5", "Novelty"],
-    "NCF": [ncf_s["precision"], ncf_s["recall"], ncf_s["ndcg"], ncf_s["novelty"]],
-    "Base (Acústico)": [base_s["precision"], base_s["recall"], base_s["ndcg"], base_s["novelty"]]
-}).set_index("Métrica")
-
-st.bar_chart(metrics_df, height=350)
+st.subheader("Visualización")
+st.bar_chart(metrics_df[["Hit_rate", "Ndcg", "Mrr"]])
 
 # ==========================================
-# UI: Análisis de Ranking Acumulado
+# UI: Auditoría Individual
 # ==========================================
-st.subheader("Distribución de Ranking Empírico")
-st.markdown("¿En qué posición exacta de la lista (1 al 5) acierta cada modelo?")
-
-ncf_ranks = {1:0, 2:0, 3:0, 4:0, 5:0}
-base_ranks = {1:0, 2:0, 3:0, 4:0, 5:0}
-
-for u in users:
-    gt = set(u["ground_truth"])
-    for i, rec in enumerate(u["ncf"]["recommendations"][:5]):
-        if rec in gt: ncf_ranks[i+1] += 1
-    for i, rec in enumerate(u["base"]["recommendations"][:5]):
-        if rec in gt: base_ranks[i+1] += 1
-
-rank_df = pd.DataFrame({
-    "Posición": ["Top 1", "Top 2", "Top 3", "Top 4", "Top 5"],
-    "Aciertos NCF": list(ncf_ranks.values()),
-    "Aciertos Base": list(base_ranks.values())
-}).set_index("Posición")
-
-st.line_chart(rank_df, height=300)
-
-# ==========================================
-# UI: Casos de Uso Reales (Auditoría)
-# ==========================================
-st.header("2. Auditoría Individual de Usuarios")
-
-user_ids = [u["user_id"] for u in users]
-selected_user = st.selectbox("Selecciona un usuario de prueba:", user_ids)
-
-user_data = next(u for u in users if u["user_id"] == selected_user)
-gt_set = set(user_data["ground_truth"])
-
-def resolve_name(track_id):
-    name = catalog.get(str(track_id), str(track_id))
-    return f"{name}"
-
-st.markdown(f"**Emoción Objetivo:** `{user_data['target_emotion']}`")
-
-st.write("###Perfil del Usuario (Seeds ingresadas para Inferencia)")
-for seed in user_data["seeds"]:
-    st.markdown(f"- {resolve_name(seed)}")
+if users:
+    st.header("2. Auditoría Individual de Usuarios")
     
-c1, c2 = st.columns(2)
+    user_ids = [u["user_id"] for u in users]
+    selected_user = st.selectbox("Selecciona un usuario de prueba:", user_ids)
+    
+    user_data = next(u for u in users if u["user_id"] == selected_user)
+    gt_set = set(user_data["ground_truth"])
+    
+    def resolve_name(tid):
+        return catalog.get(str(tid), str(tid))
 
-with c1:
-    st.write("###Predicción NCF (Latent Pairwise)")
-    for rec in user_data["ncf"]["recommendations"]:
-        icon = "✅" if rec in gt_set else "❌"
-        st.markdown(f"{icon} {resolve_name(rec)}")
-        
-with c2:
-    st.write("###Predicción Base (Acoustic Cosine)")
-    for rec in user_data["base"]["recommendations"]:
-        icon = "✅" if rec in gt_set else "❌"
-        st.markdown(f"{icon} {resolve_name(rec)}")
+    st.markdown(f"**Emoción Objetivo:** `{user_data['target_emotion']}`")
+    
+    st.write("### Perfil (Seeds)")
+    seed_cols = st.columns(len(user_data["seeds"]))
+    for i, seed in enumerate(user_data["seeds"]):
+        seed_cols[i].caption(resolve_name(seed))
+
+    st.write("### Recomendaciones por Modelo")
+    rec_cols = st.columns(len(models))
+    for i, m in enumerate(models):
+        with rec_cols[i]:
+            st.write(f"**{m.upper()}**")
+            recs = user_data.get(m, {}).get("recommendations", [])
+            for r in recs:
+                icon = "✅" if r in gt_set else "❌"
+                st.markdown(f"{icon} {resolve_name(r)}")
+
+    with st.expander("Ver Ground Truth Real"):
+        for gt in user_data["ground_truth"]:
+            st.markdown(f"- {resolve_name(gt)}")
+else:
+    st.info("No hay datos de usuarios individuales disponibles para auditoría en este reporte.")
 
 st.write("---")
-with st.expander("Ver Ground Truth Real (Las canciones que realmente le gustan al usuario)"):
-    for gt in user_data["ground_truth"]:
-        st.markdown(f"- {resolve_name(gt)}")
-
+st.caption("Music Recommendation System - IA & Big Data P4")

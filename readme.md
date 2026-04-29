@@ -215,23 +215,35 @@ music_recommendation_system/
 
 ---
 
-## 🧠 5. Modelo Avanzado: Neural Collaborative Filtering (NCF)
+## 🧠 Modelos Avanzados de IA
 
-Además del motor basado en contenido, el sistema incluye una implementación de **Deep Learning** para capturar patrones de preferencia latentes.
+Además del motor basado en contenido, el sistema incluye dos arquitecturas de recomendación de vanguardia:
 
-### Paso 1 — Generar Interacciones
-Simula usuarios y sus preferencias (Likes/Dislikes) basándose en emociones para crear la matriz de entrenamiento.
+### 1. Neural Collaborative Filtering (NCF)
+Implementación de **Deep Learning** (PyTorch) que utiliza una arquitectura MLP para aprender la función de interacción entre embeddings de usuarios y canciones.
+- **Entrenamiento**: `python3 src/modeling/train_ncf.py`
+- **Inferencia**: Realizada mediante ONNX Runtime para máximo rendimiento.
+
+### 2. Node2Vec (Graph Embeddings)
+Genera embeddings latentes basados en la topología de un grafo de similitud acústica (K-NN). Captura "comunidades" de canciones similares de forma más robusta que el coseno simple.
+- **Entrenamiento**: `python3 -m src.modeling.node2vec_engine`
+- **Caminatas aleatorias**: Utiliza sesgos `p` y `q` para equilibrar exploración local y global.
+
+---
+
+## 📊 Evaluación y Auditoría
+
+El sistema incluye un protocolo de evaluación científica (Carta A) para comparar los modelos:
+
+1. **Protocolo**: Leave-one-out con split 80/20 por usuario.
+2. **Eval Pool**: Para cada canción positiva (Ground Truth), se añaden 500 negativos aleatorios para evaluar la capacidad de ranking del modelo.
+3. **Métricas**: Hit Rate@10, NDCG@10, MRR@10, Catalog Coverage, Novelty y Serendipity.
+
+Para ejecutar la evaluación:
 ```bash
-python3 src/data/generate_interactions.py
+python -m src.evaluation.evaluate_models
 ```
-**Output:** Crea `data/processed/ncf_interactions.csv` (~500k filas con ratio 1:4).
-
-### Paso 2 — Entrenar la Red Neuronal
-Entrena un modelo NCF (Embeddings + MLP) usando PyTorch.
-```bash
-python3 src/modeling/train_ncf.py
-```
-**Output:** Genera los pesos en `models/ncf_weights.pth` y guarda el log en `logs/train_ncf.log`.
+Los resultados se visualizan en tiempo real en el **Dashboard de Streamlit**.
 
 ---
 
