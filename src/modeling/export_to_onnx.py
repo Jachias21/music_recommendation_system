@@ -23,8 +23,8 @@ def export_model():
     model = NeuralCollaborativeFiltering(
         num_users=num_users, 
         num_items=num_items, 
-        item_features_dim=20,  # <--- Nuestro nuevo One-Hot de idiomas
-        embedding_dim=64       # <--- El cerebro súper rápido
+        item_features_dim=20,  
+        embedding_dim=64       
     )
     
     # 3. Cargar los pesos que acabamos de entrenar

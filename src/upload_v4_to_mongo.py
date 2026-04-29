@@ -9,7 +9,6 @@ def upload_to_production():
     # 1. Configuración
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
     DB_NAME = os.getenv("DB_NAME", "music_recommendation_db")
-    # OJO: Asegúrate de que el nombre de la colección coincide con la que lee tu API
     COLLECTION_NAME = os.getenv("COLLECTION_NAME", "songs") 
     V4_CSV_PATH = "dataset_soundwave_CLEAN_V4.csv"
 

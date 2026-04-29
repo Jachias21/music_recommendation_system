@@ -17,7 +17,7 @@ def export_v4_dataset():
     collection = db[COLLECTION_NAME]
 
     # 1. FILTRO ESTRICTO: Traer solo canciones procesadas y limpias
-    # Excluimos las que no tienen idioma, dieron error en Genius, o no tienen tempo
+
     query = {
         "language": {"$nin": [None, "unknown", "error"]},
         "tempo": {"$exists": True, "$ne": None}

@@ -134,7 +134,7 @@ def procesar_maraton_turbo_deezer(max_horas, num_hilos):
             if operaciones_bulk:
                 collection.bulk_write(operaciones_bulk, ordered=False)
                 procesadas_total += len(operaciones_bulk)
-                print("") # Salto de línea para que el log quede debajo
+                print("") 
                 logger.info(f"  | 💾 Lote de {len(operaciones_bulk)} guardado. Total sesión: {procesadas_total}")
 
             time.sleep(0.1) 

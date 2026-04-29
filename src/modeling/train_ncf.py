@@ -20,10 +20,9 @@ MODEL_WEIGHTS_PATH = os.path.join(MODELS_DIR, "ncf_weights.pth")
 LOSS_PLOT_PATH = os.path.join(MODELS_DIR, "training_loss.png")
 
 BATCH_SIZE = 16384
-EPOCHS = 30           # El Early Stopping parará antes si es necesario
-LEARNING_RATE = 0.0003 # LR más bajo para una convergencia más estable
-WEIGHT_DECAY = 1e-4    # Regularización L2 para combatir el overfitting
-
+EPOCHS = 30           
+LEARNING_RATE = 0.0003 
+WEIGHT_DECAY = 1e-4    
 class NCFHybridDataset(Dataset):
     def __init__(self, users, items, labels, features_matrix):
         self.users = users
@@ -96,7 +95,6 @@ def train():
     ), batch_size=BATCH_SIZE, shuffle=False)
 
     # 3. Inicialización del Modelo
-    # item_features_dim debe ser 21 (10 idiomas + 1 other + 10 numéricas) o len(feature_cols)
     model = NeuralCollaborativeFiltering(
         num_users=len(user_enc.classes_), 
         num_items=len(item_enc.classes_), 
@@ -117,7 +115,6 @@ def train():
     print(f"✨ Iniciando entrenamiento ({len(feature_cols)} features)...")
 
     for epoch in range(EPOCHS):
-        # --- FASE DE ENTRENAMIENTO ---
         model.train()
         total_train_loss = 0
         for b_user, b_item, b_label, b_feat in train_loader:
@@ -132,7 +129,6 @@ def train():
         avg_train_loss = total_train_loss / len(train_loader)
         train_losses.append(avg_train_loss)
 
-        # --- FASE DE VALIDACIÓN ---
         model.eval()
         total_val_loss = 0
         with torch.no_grad():

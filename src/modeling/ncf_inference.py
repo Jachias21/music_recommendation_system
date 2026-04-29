@@ -114,7 +114,6 @@ class NCFRecommender:
         if not WEIGHTS_PATH.exists():
             raise FileNotFoundError(f"Neither ONNX nor PyTorch weights found.")
 
-        # ACTUALIZADO: de item_features_dim=17 a item_features_dim=20 y embedding_dim=64
         model = NeuralCollaborativeFiltering(
             num_users=num_users, 
             num_items=num_items, 

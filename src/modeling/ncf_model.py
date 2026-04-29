@@ -7,8 +7,8 @@ class NeuralCollaborativeFiltering(nn.Module):
         self, 
         num_users: int, 
         num_items: int, 
-        item_features_dim: int = 20,  # <--- 7 acústicas + 11 idiomas (Top 10 + 'other')
-        embedding_dim: int = 64,      # <--- ID Cerebro reducido
+        item_features_dim: int = 20,  
+        embedding_dim: int = 64,     
         hidden_layers: List[int] = [128, 64, 32], 
         dropout_rate: float = 0.5
     ) -> None:
@@ -47,7 +47,6 @@ class NeuralCollaborativeFiltering(nn.Module):
         user_vector = self.user_embedding(user_indices)
         item_vector = self.item_embedding(item_indices)
 
-        # Si pasamos features, las añadimos al vector de entrada
         if item_features is not None:
             concatenated_vector = torch.cat([user_vector, item_vector, item_features], dim=-1)
         else:

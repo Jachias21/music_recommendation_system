@@ -168,7 +168,6 @@ def procesar_lote_idiomas_turbo(max_horas, num_hilos):
             for futuro in as_completed(futuros):
                 operacion, fue_exito = futuro.result()
                 operaciones_bulk.append(operacion)
-                # Mantenemos los prints para el efecto visual en terminal sin ensuciar el log
                 if fue_exito:
                     print(".", end="", flush=True)
                 else:
@@ -177,7 +176,7 @@ def procesar_lote_idiomas_turbo(max_horas, num_hilos):
             if operaciones_bulk:
                 collection.bulk_write(operaciones_bulk, ordered=False)
                 procesadas_total += len(operaciones_bulk)
-                print("") # Salto de línea después de los puntitos
+                print("")
                 logger.info(f"  | 💾 Lote de {len(operaciones_bulk)} guardado. Total sesión: {procesadas_total}")
                 
             time.sleep(0.1)
