@@ -2,7 +2,7 @@
   <!-- Logo -->
   <div class="sidebar-logo">
     <span class="logo-icon" [innerHTML]="icons.MUSIC_NOTE"></span>
-    <span class="logo-text">Sound Lens</span>
+    <span class="logo-text">SoundWave</span>
   </div>
 
   <!-- Nav -->
@@ -37,28 +37,21 @@
 
   <!-- Search toggle + results -->
   <div class="search-section">
-    <input
-      class="input search-input"
-      type="text"
-      placeholder="Buscar canción o artista..."
-      [value]="searchQuery()"
+    <input class="input search-input" type="text" placeholder="Buscar canción o artista..." [value]="searchQuery()"
       (input)="onSearch($event)" />
 
     @if (isSearching()) {
-      <div class="searching-hint">Buscando...</div>
+    <div class="searching-hint">Buscando...</div>
     }
 
     @if (searchResults().length > 0) {
-      <div class="results-list">
-        @for (song of searchResults(); track song.id) {
-          <app-song-card
-            [song]="song"
-            [compact]="true"
-            [disabled]="cart.isFull() || cart.songs().some(s => s.id === song.id)"
-            [actionIcon]="cart.songs().some(s => s.id === song.id) ? '✓' : '＋'"
-            (action)="addToCart($event)" />
-        }
-      </div>
+    <div class="results-list">
+      @for (song of searchResults(); track song.id) {
+      <app-song-card [song]="song" [compact]="true"
+        [disabled]="cart.isFull() || cart.songs().some(s => s.id === song.id)"
+        [actionIcon]="cart.songs().some(s => s.id === song.id) ? '✓' : '＋'" (action)="addToCart($event)" />
+      }
+    </div>
     }
   </div>
 
@@ -74,20 +67,20 @@
     </div>
 
     @if (cart.count() === 0) {
-      <p class="empty-hint">Añade 3 canciones para generar recomendaciones.</p>
+    <p class="empty-hint">Añade 3 canciones para generar recomendaciones.</p>
     } @else {
-      <div class="cart-list">
-        @for (song of cart.songs(); track song.id; let i = $index) {
-          <div class="cart-item">
-            <span class="cart-index">{{ i + 1 }}</span>
-            <div class="cart-info">
-              <p class="cart-name">{{ song.name }}</p>
-              <p class="cart-artist">{{ song.artist }}</p>
-            </div>
-            <button class="btn-remove" (click)="removeFromCart(song.id)">✕</button>
-          </div>
-        }
+    <div class="cart-list">
+      @for (song of cart.songs(); track song.id; let i = $index) {
+      <div class="cart-item">
+        <span class="cart-index">{{ i + 1 }}</span>
+        <div class="cart-info">
+          <p class="cart-name">{{ song.name }}</p>
+          <p class="cart-artist">{{ song.artist }}</p>
+        </div>
+        <button class="btn-remove" (click)="removeFromCart(song.id)">✕</button>
       </div>
+      }
+    </div>
     }
   </div>
 

@@ -1,288 +1,360 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Recommendation Engine Settings | Sound Lens</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "on-error-container": "#ffd2c8",
-              "inverse-on-surface": "#555458",
-              "tertiary": "#aebaff",
-              "error-dim": "#d53d18",
-              "surface-container": "#19191d",
-              "tertiary-container": "#9facf4",
-              "surface-container-low": "#131316",
-              "primary": "#ff9157",
-              "tertiary-dim": "#929fe6",
-              "on-tertiary-fixed-variant": "#263474",
-              "surface-bright": "#2c2c30",
-              "on-secondary-fixed-variant": "#006069",
-              "on-surface": "#f0edf1",
-              "outline": "#767579",
-              "primary-fixed": "#ff7a2c",
-              "inverse-surface": "#fcf8fd",
-              "inverse-primary": "#a04200",
-              "on-primary-fixed-variant": "#4f1d00",
-              "secondary-fixed": "#89e9f6",
-              "on-error": "#450900",
-              "on-surface-variant": "#acaaae",
-              "on-secondary-container": "#e6fcff",
-              "on-primary-fixed": "#000000",
-              "secondary": "#89e9f6",
-              "on-secondary": "#00555d",
-              "on-primary": "#531e00",
-              "surface-container-highest": "#25252a",
-              "primary-fixed-dim": "#f46800",
-              "on-tertiary-fixed": "#000f4f",
-              "surface": "#0e0e11",
-              "secondary-container": "#006972",
-              "secondary-dim": "#7adae7",
-              "surface-container-lowest": "#000000",
-              "on-tertiary": "#283575",
-              "surface-dim": "#0e0e11",
-              "primary-container": "#ff7a2c",
-              "error": "#ff7351",
-              "secondary-fixed-dim": "#7adae7",
-              "primary-dim": "#ff7520",
-              "surface-container-high": "#1f1f23",
-              "surface-tint": "#ff9157",
-              "error-container": "#b92902",
-              "surface-variant": "#25252a",
-              "on-background": "#f0edf1",
-              "tertiary-fixed": "#9facf4",
-              "on-primary-container": "#401600",
-              "on-secondary-fixed": "#004147",
-              "background": "#0e0e11",
-              "outline-variant": "#48474b",
-              "tertiary-fixed-dim": "#929fe6",
-              "on-tertiary-container": "#1d2b6a"
-            },
-            fontFamily: {
-              "headline": ["Inter"],
-              "body": ["Inter"],
-              "label": ["Inter"]
-            },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Recommendation Engine Settings | SoundWave</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-error-container": "#ffd2c8",
+            "inverse-on-surface": "#555458",
+            "tertiary": "#aebaff",
+            "error-dim": "#d53d18",
+            "surface-container": "#19191d",
+            "tertiary-container": "#9facf4",
+            "surface-container-low": "#131316",
+            "primary": "#ff9157",
+            "tertiary-dim": "#929fe6",
+            "on-tertiary-fixed-variant": "#263474",
+            "surface-bright": "#2c2c30",
+            "on-secondary-fixed-variant": "#006069",
+            "on-surface": "#f0edf1",
+            "outline": "#767579",
+            "primary-fixed": "#ff7a2c",
+            "inverse-surface": "#fcf8fd",
+            "inverse-primary": "#a04200",
+            "on-primary-fixed-variant": "#4f1d00",
+            "secondary-fixed": "#89e9f6",
+            "on-error": "#450900",
+            "on-surface-variant": "#acaaae",
+            "on-secondary-container": "#e6fcff",
+            "on-primary-fixed": "#000000",
+            "secondary": "#89e9f6",
+            "on-secondary": "#00555d",
+            "on-primary": "#531e00",
+            "surface-container-highest": "#25252a",
+            "primary-fixed-dim": "#f46800",
+            "on-tertiary-fixed": "#000f4f",
+            "surface": "#0e0e11",
+            "secondary-container": "#006972",
+            "secondary-dim": "#7adae7",
+            "surface-container-lowest": "#000000",
+            "on-tertiary": "#283575",
+            "surface-dim": "#0e0e11",
+            "primary-container": "#ff7a2c",
+            "error": "#ff7351",
+            "secondary-fixed-dim": "#7adae7",
+            "primary-dim": "#ff7520",
+            "surface-container-high": "#1f1f23",
+            "surface-tint": "#ff9157",
+            "error-container": "#b92902",
+            "surface-variant": "#25252a",
+            "on-background": "#f0edf1",
+            "tertiary-fixed": "#9facf4",
+            "on-primary-container": "#401600",
+            "on-secondary-fixed": "#004147",
+            "background": "#0e0e11",
+            "outline-variant": "#48474b",
+            "tertiary-fixed-dim": "#929fe6",
+            "on-tertiary-container": "#1d2b6a"
           },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
         },
-      }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .tonal-transition {
-            background: linear-gradient(180deg, rgba(14, 14, 17, 0.8) 0%, rgba(19, 19, 22, 0.4) 100%);
-        }
-        input[type='range'] {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-            cursor: pointer;
-        }
-        input[type='range']::-webkit-slider-runnable-track {
-            background: #25252a;
-            height: 6px;
-            border-radius: 999px;
-        }
-        input[type='range']::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            margin-top: -5px;
-            background-color: #ff9157;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 145, 87, 0.4);
-        }
-        .glass-panel {
-            background: rgba(37, 37, 42, 0.4);
-            backdrop-filter: blur(24px);
-        }
-    </style>
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .tonal-transition {
+      background: linear-gradient(180deg, rgba(14, 14, 17, 0.8) 0%, rgba(19, 19, 22, 0.4) 100%);
+    }
+
+    input[type='range'] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+      background: #25252a;
+      height: 6px;
+      border-radius: 999px;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -5px;
+      background-color: #ff9157;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 145, 87, 0.4);
+    }
+
+    .glass-panel {
+      background: rgba(37, 37, 42, 0.4);
+      backdrop-filter: blur(24px);
+    }
+  </style>
 </head>
+
 <body class="bg-surface text-on-surface font-body selection:bg-primary/30">
-<!-- TopAppBar -->
-<header class="fixed top-0 w-full z-50 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-full tonal-transition">
-<div class="text-2xl font-black tracking-tighter text-orange-500">Sound Lens</div>
-<div class="hidden md:flex items-center gap-8">
-<nav class="flex gap-6 items-center">
-<a class="text-zinc-400 hover:text-orange-400 transition-colors duration-300 font-['Inter'] tracking-tight" href="#">Inicio</a>
-<a class="text-zinc-400 hover:text-orange-400 transition-colors duration-300 font-['Inter'] tracking-tight" href="#">Biblioteca</a>
-<a class="text-orange-500 font-bold font-['Inter'] tracking-tight" href="#">Ajustes del Motor</a>
-</nav>
-<div class="flex items-center gap-4 text-zinc-100">
-<button class="scale-95 active:scale-90 transition-transform hover:text-orange-400">
-<span class="material-symbols-outlined">mood</span>
-</button>
-<button class="scale-95 active:scale-90 transition-transform hover:text-orange-400">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<button class="scale-95 active:scale-90 transition-transform hover:text-orange-400">
-<span class="material-symbols-outlined">account_circle</span>
-</button>
-</div>
-</div>
-</header>
-<!-- SideNavBar -->
-<aside class="h-screen w-64 fixed left-0 top-0 border-r border-zinc-800/10 bg-background-dark hidden md:flex flex-col py-8 px-4 gap-y-6 z-40">
-<div class="mt-20 px-4">
-<div class="flex items-center gap-3 mb-6">
-<img alt="User Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-orange-500/20" data-alt="Close up portrait of a young woman with neon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCtR4OuT_RAPaKbQpIfmoOr9SID5Z6_Sygo2-vKUdjPTZkqnPJf4sl_YzzJH5W0OeXyV8xXWmZ8-sX_gl-kKKXCABOz6007c-9aAZNQ9FN_lakiUZJWS5zjl7-6CIwZ6ODdGenmxCgFZrJbG2KGnv5AdM89uMgXCU5bW3P1S0HcR4xWgRt-5RQZIstHuRphQDz829TzLILE9xgaEFSBvtWyFqQN18qpaj7BuiK6Sf-BPpILR3W-uR36C4IZ258HF25wJimQHJ4MMU"/>
-<div>
-<p class="text-orange-500 font-black text-sm uppercase tracking-wider">The Synesthetic Stage</p>
-<p class="text-zinc-500 text-xs">Estado de ánimo: Animado</p>
-</div>
-</div>
-<nav class="space-y-2">
-<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">dashboard</span>Panel de Control</a>
-<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">explore</span>Explorador de Ánimos</a>
-<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">library_music</span>Lista de Descubrimiento</a>
-<a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">insights</span>Analíticas de Rendimiento</a>
-<a class="flex items-center gap-3 py-3 px-4 bg-orange-500/10 text-orange-500 rounded-lg font-bold transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>Ajustes</a>
-</nav>
-</div>
-<div class="mt-auto px-4 space-y-4">
-<button class="w-full py-3 px-4 bg-orange-500 text-on-primary rounded-full font-bold text-sm hover:bg-primary-fixed transition-colors">Sorpréndeme</button>
-<div class="space-y-1">
-<a class="flex items-center gap-3 py-2 px-4 text-zinc-500 hover:text-zinc-300 font-['Inter'] text-xs" href="#"><span class="material-symbols-outlined text-sm">help</span>Soporte</a>
-</div>
-</div>
-</aside>
-<!-- Main Content Canvas -->
-<main class="md:pl-64 pt-20 pb-32 min-h-screen">
-<div class="max-w-5xl mx-auto px-8 py-12">
-<!-- Header Section -->
-<header class="mb-12 relative">
-<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
-<h1 class="text-5xl font-black tracking-tighter mb-4 text-on-surface">Ajustes del Motor de <span class="text-primary">Recomendación</span></h1>
-<p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">Ajusta con precisión los algoritmos que impulsan tu viaje auditivo. Calibra el equilibrio entre lo familiar y lo desconocido para que coincida con tu frecuencia creativa actual.</p>
-</header>
-<!-- Bento Grid Layout for Settings -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-<!-- Main Controls Panel -->
-<div class="lg:col-span-8 space-y-6">
-<!-- Serendipity Control -->
-<div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
-<div class="flex justify-between items-start mb-8">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">auto_awesome</span>
-</div>
-<div>
-<h3 class="font-bold text-xl tracking-tight">Serendipia</h3>
-<p class="text-on-surface-variant text-sm">Encuentra la magia en lo inesperado</p>
-</div>
-</div>
-<div class="relative group/tooltip">
-<span class="material-symbols-outlined text-on-surface-variant cursor-help">info</span>
-<div class="absolute right-0 top-8 w-64 p-4 bg-surface-bright rounded-xl shadow-2xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-10 text-xs text-on-surface leading-normal border border-outline-variant/20 pointer-events-none">La serendipia determina con qué frecuencia el motor inyecta pistas "comodín" que se encuentran fuera de tus grupos de escucha habituales.</div>
-</div>
-</div>
-<div class="space-y-6">
-<input class="w-full" max="100" min="0" type="range" value="75"/>
-<div class="flex justify-between text-xs font-black uppercase tracking-widest text-zinc-500"><span>Guiado</span><span class="text-primary">Alta Serendipia</span><span>Impredecible</span></div>
-</div>
-</div>
-<!-- Novelty vs Familiarity -->
-<div class="bg-surface-container p-8 rounded-3xl border border-outline-variant/10 group">
-<div class="flex justify-between items-start mb-8">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
-<span class="material-symbols-outlined">refresh</span>
-</div>
-<div>
-<h3 class="font-bold text-xl tracking-tight">Sesgo de Novedad</h3>
-<p class="text-on-surface-variant text-sm">Descubrimiento vs. Comodidad</p>
-</div>
-</div>
-<div class="relative group/tooltip">
-<span class="material-symbols-outlined text-on-surface-variant cursor-help">info</span>
-<div class="absolute right-0 top-8 w-64 p-4 bg-surface-bright rounded-xl shadow-2xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-10 text-xs text-on-surface leading-normal border border-outline-variant/20 pointer-events-none">Ajusta cuánto prioriza el motor las pistas que nunca has escuchado antes frente a tus favoritos establecidos.</div>
-</div>
-</div>
-<div class="space-y-6">
-<input class="w-full" max="100" min="0" style="--track-bg: #25252a; --thumb-bg: #89e9f6;" type="range" value="40"/>
-<style>
-                                input[type='range'].novelty-range::-webkit-slider-thumb { background-color: #89e9f6; box-shadow: 0 0 10px rgba(137, 233, 246, 0.4); }
-                            </style>
-<div class="flex justify-between text-xs font-black uppercase tracking-widest text-zinc-500"><span class="text-secondary">Familiar</span><span>Experimental</span></div>
-</div>
-</div>
-<!-- Instrumentalness -->
-<div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10">
-<div class="flex justify-between items-start mb-8">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary">
-<span class="material-symbols-outlined">music_note</span>
-</div>
-<div>
-<h3 class="font-bold text-xl tracking-tight">Instrumentalidad</h3>
-<p class="text-on-surface-variant text-sm">Presencia vocal en las recomendaciones</p>
-</div>
-</div>
-<div class="relative group/tooltip">
-<span class="material-symbols-outlined text-on-surface-variant cursor-help">info</span>
-<div class="absolute right-0 top-8 w-64 p-4 bg-surface-bright rounded-xl shadow-2xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-10 text-xs text-on-surface leading-normal border border-outline-variant/20 pointer-events-none">Controla si prefieres contenido lírico o paisajes sonoros puros para sesiones de concentración profunda.</div>
-</div>
-</div>
-<div class="space-y-6">
-<input class="w-full" max="100" min="0" type="range" value="20"/>
-<div class="flex justify-between text-xs font-black uppercase tracking-widest text-zinc-500"><span>Lírico</span><span>Mixto</span><span class="text-tertiary">Solo Instrumental</span></div>
-</div>
-</div>
-</div>
-<!-- Secondary Actions / Summary Panel -->
-<div class="lg:col-span-4 space-y-6">
-<!-- Genre Diversity Selection -->
-<div class="bg-surface-container-high p-8 rounded-3xl border border-outline-variant/5">
-<h3 class="font-bold text-lg mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-primary">hub</span>Diversidad de Géneros</h3>
-<div class="space-y-4">
-<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-bright transition-colors cursor-pointer group">
-<span class="text-sm font-medium">Súper Enfocado</span>
-<div class="w-4 h-4 rounded-full border-2 border-outline group-hover:border-primary transition-colors"></div>
-</div>
-<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container ring-1 ring-primary/40 hover:bg-surface-bright transition-colors cursor-pointer group">
-<span class="text-sm font-medium text-primary">Espectro Equilibrado</span>
-<div class="w-4 h-4 rounded-full bg-primary ring-offset-2 ring-offset-surface-container-high ring-2 ring-primary"></div>
-</div>
-<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-bright transition-colors cursor-pointer group">
-<span class="text-sm font-medium">Modo Caos</span>
-<div class="w-4 h-4 rounded-full border-2 border-outline group-hover:border-primary transition-colors"></div>
-</div>
-</div>
-<p class="mt-6 text-xs text-on-surface-variant leading-relaxed italic">"Espectro Equilibrado" incluye actualmente elementos de Vaporwave, Neo-Soul y Glitch Hop.</p>
-</div>
-<!-- Visual Summary Card -->
-<div class="relative group rounded-3xl overflow-hidden aspect-square flex flex-col items-center justify-center p-8 text-center bg-zinc-900">
-<div class="absolute inset-0 bg-gradient-to-tr from-orange-500/20 to-teal-500/10 opacity-50"></div>
-<img alt="Abstract sound wave" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay grayscale opacity-30 group-hover:scale-110 transition-transform duration-700" data-alt="Abstract colorful light streaks mimicking sound frequencies" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQS7rxET4c8IWY8FvjzjzV3d4jtLtYS-ADMt9xlvn_iqEChPSRhe1tjY4Jeq9I3b-ZgiYj4puht__pe1tGCzuhxesIHMaPoJCcvwx3J8pxadahZXtkbj74dryL747KRsGz4pSB93WFAI7-MJu2SQyElCWlnm4ycfc2cKt74orqbyN0e_qeDV1HThE1ttNMzo-g59_5IwHOYm3cQyYWpvETNmNWFU3r7byMsjpIOQcVe6G74anqyJAsFFBPMylvvdqyS2l_WJFNFgE"/>
-<div class="relative z-10">
-<div class="w-20 h-20 rounded-full bg-primary/20 backdrop-blur-xl flex items-center justify-center mx-auto mb-4 border border-primary/30">
-<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">analytics</span>
-</div>
-<h4 class="font-black text-xl mb-2">Instantánea del Motor</h4>
-<p class="text-on-surface-variant text-sm px-4">Tu configuración actual favorece el descubrimiento con un enfoque en texturas electrón.</p>
-<button class="mt-8 px-6 py-2 bg-on-surface text-surface font-bold text-xs uppercase tracking-widest rounded-full hover:bg-primary transition-colors">Generar Vista Previa</button>
-</div>
-</div>
-<!-- CTA Actions -->
-<div class="flex flex-col gap-3">
-<button class="w-full py-4 bg-primary text-on-primary font-black uppercase tracking-widest rounded-2xl shadow-[0_0_32px_rgba(255,145,87,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all">Aplicar Ajustes del Motor</button>
-<button class="w-full py-4 bg-surface-container text-on-surface-variant font-bold text-sm rounded-2xl border border-outline-variant/10 hover:bg-surface-bright transition-colors">Restablecer Valores</button>
-</div>
-</div>
-</div>
-</div>
-</main>
-<!-- BottomNavBar (Mobile Player Controls Proxy) -->
-</body></html>
+  <!-- TopAppBar -->
+  <header
+    class="fixed top-0 w-full z-50 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-full tonal-transition">
+    <div class="text-2xl font-black tracking-tighter text-orange-500">SoundWave</div>
+    <div class="hidden md:flex items-center gap-8">
+      <nav class="flex gap-6 items-center">
+        <a class="text-zinc-400 hover:text-orange-400 transition-colors duration-300 font-['Inter'] tracking-tight"
+          href="#">Inicio</a>
+        <a class="text-zinc-400 hover:text-orange-400 transition-colors duration-300 font-['Inter'] tracking-tight"
+          href="#">Biblioteca</a>
+        <a class="text-orange-500 font-bold font-['Inter'] tracking-tight" href="#">Ajustes del Motor</a>
+      </nav>
+      <div class="flex items-center gap-4 text-zinc-100">
+        <button class="scale-95 active:scale-90 transition-transform hover:text-orange-400">
+          <span class="material-symbols-outlined">mood</span>
+        </button>
+        <button class="scale-95 active:scale-90 transition-transform hover:text-orange-400">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <button class="scale-95 active:scale-90 transition-transform hover:text-orange-400">
+          <span class="material-symbols-outlined">account_circle</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- SideNavBar -->
+  <aside
+    class="h-screen w-64 fixed left-0 top-0 border-r border-zinc-800/10 bg-background-dark hidden md:flex flex-col py-8 px-4 gap-y-6 z-40">
+    <div class="mt-20 px-4">
+      <div class="flex items-center gap-3 mb-6">
+        <img alt="User Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-orange-500/20"
+          data-alt="Close up portrait of a young woman with neon lighting"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCtR4OuT_RAPaKbQpIfmoOr9SID5Z6_Sygo2-vKUdjPTZkqnPJf4sl_YzzJH5W0OeXyV8xXWmZ8-sX_gl-kKKXCABOz6007c-9aAZNQ9FN_lakiUZJWS5zjl7-6CIwZ6ODdGenmxCgFZrJbG2KGnv5AdM89uMgXCU5bW3P1S0HcR4xWgRt-5RQZIstHuRphQDz829TzLILE9xgaEFSBvtWyFqQN18qpaj7BuiK6Sf-BPpILR3W-uR36C4IZ258HF25wJimQHJ4MMU" />
+        <div>
+          <p class="text-orange-500 font-black text-sm uppercase tracking-wider">The Synesthetic Stage</p>
+          <p class="text-zinc-500 text-xs">Estado de ánimo: Animado</p>
+        </div>
+      </div>
+      <nav class="space-y-2">
+        <a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium"
+          href="#"><span class="material-symbols-outlined">dashboard</span>Panel de Control</a>
+        <a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium"
+          href="#"><span class="material-symbols-outlined">explore</span>Explorador de Ánimos</a>
+        <a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium"
+          href="#"><span class="material-symbols-outlined">library_music</span>Lista de Descubrimiento</a>
+        <a class="flex items-center gap-3 py-3 px-4 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm font-medium"
+          href="#"><span class="material-symbols-outlined">insights</span>Analíticas de Rendimiento</a>
+        <a class="flex items-center gap-3 py-3 px-4 bg-orange-500/10 text-orange-500 rounded-lg font-bold transition-all cubic-bezier-300ms hover:translate-x-1 font-['Inter'] text-sm"
+          href="#"><span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 1;">settings</span>Ajustes</a>
+      </nav>
+    </div>
+    <div class="mt-auto px-4 space-y-4">
+      <button
+        class="w-full py-3 px-4 bg-orange-500 text-on-primary rounded-full font-bold text-sm hover:bg-primary-fixed transition-colors">Sorpréndeme</button>
+      <div class="space-y-1">
+        <a class="flex items-center gap-3 py-2 px-4 text-zinc-500 hover:text-zinc-300 font-['Inter'] text-xs"
+          href="#"><span class="material-symbols-outlined text-sm">help</span>Soporte</a>
+      </div>
+    </div>
+  </aside>
+  <!-- Main Content Canvas -->
+  <main class="md:pl-64 pt-20 pb-32 min-h-screen">
+    <div class="max-w-5xl mx-auto px-8 py-12">
+      <!-- Header Section -->
+      <header class="mb-12 relative">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 blur-[120px] rounded-full pointer-events-none">
+        </div>
+        <h1 class="text-5xl font-black tracking-tighter mb-4 text-on-surface">Ajustes del Motor de <span
+            class="text-primary">Recomendación</span></h1>
+        <p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">Ajusta con precisión los algoritmos que
+          impulsan tu viaje auditivo. Calibra el equilibrio entre lo familiar y lo desconocido para que coincida con tu
+          frecuencia creativa actual.</p>
+      </header>
+      <!-- Bento Grid Layout for Settings -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Main Controls Panel -->
+        <div class="lg:col-span-8 space-y-6">
+          <!-- Serendipity Control -->
+          <div
+            class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
+            <div class="flex justify-between items-start mb-8">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                  <span class="material-symbols-outlined">auto_awesome</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl tracking-tight">Serendipia</h3>
+                  <p class="text-on-surface-variant text-sm">Encuentra la magia en lo inesperado</p>
+                </div>
+              </div>
+              <div class="relative group/tooltip">
+                <span class="material-symbols-outlined text-on-surface-variant cursor-help">info</span>
+                <div
+                  class="absolute right-0 top-8 w-64 p-4 bg-surface-bright rounded-xl shadow-2xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-10 text-xs text-on-surface leading-normal border border-outline-variant/20 pointer-events-none">
+                  La serendipia determina con qué frecuencia el motor inyecta pistas "comodín" que se encuentran fuera
+                  de tus grupos de escucha habituales.</div>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <input class="w-full" max="100" min="0" type="range" value="75" />
+              <div class="flex justify-between text-xs font-black uppercase tracking-widest text-zinc-500">
+                <span>Guiado</span><span class="text-primary">Alta Serendipia</span><span>Impredecible</span></div>
+            </div>
+          </div>
+          <!-- Novelty vs Familiarity -->
+          <div class="bg-surface-container p-8 rounded-3xl border border-outline-variant/10 group">
+            <div class="flex justify-between items-start mb-8">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+                  <span class="material-symbols-outlined">refresh</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl tracking-tight">Sesgo de Novedad</h3>
+                  <p class="text-on-surface-variant text-sm">Descubrimiento vs. Comodidad</p>
+                </div>
+              </div>
+              <div class="relative group/tooltip">
+                <span class="material-symbols-outlined text-on-surface-variant cursor-help">info</span>
+                <div
+                  class="absolute right-0 top-8 w-64 p-4 bg-surface-bright rounded-xl shadow-2xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-10 text-xs text-on-surface leading-normal border border-outline-variant/20 pointer-events-none">
+                  Ajusta cuánto prioriza el motor las pistas que nunca has escuchado antes frente a tus favoritos
+                  establecidos.</div>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <input class="w-full" max="100" min="0" style="--track-bg: #25252a; --thumb-bg: #89e9f6;" type="range"
+                value="40" />
+              <style>
+                input[type='range'].novelty-range::-webkit-slider-thumb {
+                  background-color: #89e9f6;
+                  box-shadow: 0 0 10px rgba(137, 233, 246, 0.4);
+                }
+              </style>
+              <div class="flex justify-between text-xs font-black uppercase tracking-widest text-zinc-500"><span
+                  class="text-secondary">Familiar</span><span>Experimental</span></div>
+            </div>
+          </div>
+          <!-- Instrumentalness -->
+          <div class="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10">
+            <div class="flex justify-between items-start mb-8">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+                  <span class="material-symbols-outlined">music_note</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-xl tracking-tight">Instrumentalidad</h3>
+                  <p class="text-on-surface-variant text-sm">Presencia vocal en las recomendaciones</p>
+                </div>
+              </div>
+              <div class="relative group/tooltip">
+                <span class="material-symbols-outlined text-on-surface-variant cursor-help">info</span>
+                <div
+                  class="absolute right-0 top-8 w-64 p-4 bg-surface-bright rounded-xl shadow-2xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-10 text-xs text-on-surface leading-normal border border-outline-variant/20 pointer-events-none">
+                  Controla si prefieres contenido lírico o paisajes sonoros puros para sesiones de concentración
+                  profunda.</div>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <input class="w-full" max="100" min="0" type="range" value="20" />
+              <div class="flex justify-between text-xs font-black uppercase tracking-widest text-zinc-500">
+                <span>Lírico</span><span>Mixto</span><span class="text-tertiary">Solo Instrumental</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Secondary Actions / Summary Panel -->
+        <div class="lg:col-span-4 space-y-6">
+          <!-- Genre Diversity Selection -->
+          <div class="bg-surface-container-high p-8 rounded-3xl border border-outline-variant/5">
+            <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><span
+                class="material-symbols-outlined text-primary">hub</span>Diversidad de Géneros</h3>
+            <div class="space-y-4">
+              <div
+                class="flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-bright transition-colors cursor-pointer group">
+                <span class="text-sm font-medium">Súper Enfocado</span>
+                <div class="w-4 h-4 rounded-full border-2 border-outline group-hover:border-primary transition-colors">
+                </div>
+              </div>
+              <div
+                class="flex items-center justify-between p-3 rounded-xl bg-surface-container ring-1 ring-primary/40 hover:bg-surface-bright transition-colors cursor-pointer group">
+                <span class="text-sm font-medium text-primary">Espectro Equilibrado</span>
+                <div
+                  class="w-4 h-4 rounded-full bg-primary ring-offset-2 ring-offset-surface-container-high ring-2 ring-primary">
+                </div>
+              </div>
+              <div
+                class="flex items-center justify-between p-3 rounded-xl bg-surface-container hover:bg-surface-bright transition-colors cursor-pointer group">
+                <span class="text-sm font-medium">Modo Caos</span>
+                <div class="w-4 h-4 rounded-full border-2 border-outline group-hover:border-primary transition-colors">
+                </div>
+              </div>
+            </div>
+            <p class="mt-6 text-xs text-on-surface-variant leading-relaxed italic">"Espectro Equilibrado" incluye
+              actualmente elementos de Vaporwave, Neo-Soul y Glitch Hop.</p>
+          </div>
+          <!-- Visual Summary Card -->
+          <div
+            class="relative group rounded-3xl overflow-hidden aspect-square flex flex-col items-center justify-center p-8 text-center bg-zinc-900">
+            <div class="absolute inset-0 bg-gradient-to-tr from-orange-500/20 to-teal-500/10 opacity-50"></div>
+            <img alt="Abstract sound wave"
+              class="absolute inset-0 w-full h-full object-cover mix-blend-overlay grayscale opacity-30 group-hover:scale-110 transition-transform duration-700"
+              data-alt="Abstract colorful light streaks mimicking sound frequencies"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQS7rxET4c8IWY8FvjzjzV3d4jtLtYS-ADMt9xlvn_iqEChPSRhe1tjY4Jeq9I3b-ZgiYj4puht__pe1tGCzuhxesIHMaPoJCcvwx3J8pxadahZXtkbj74dryL747KRsGz4pSB93WFAI7-MJu2SQyElCWlnm4ycfc2cKt74orqbyN0e_qeDV1HThE1ttNMzo-g59_5IwHOYm3cQyYWpvETNmNWFU3r7byMsjpIOQcVe6G74anqyJAsFFBPMylvvdqyS2l_WJFNFgE" />
+            <div class="relative z-10">
+              <div
+                class="w-20 h-20 rounded-full bg-primary/20 backdrop-blur-xl flex items-center justify-center mx-auto mb-4 border border-primary/30">
+                <span class="material-symbols-outlined text-4xl text-primary"
+                  style="font-variation-settings: 'FILL' 1;">analytics</span>
+              </div>
+              <h4 class="font-black text-xl mb-2">Instantánea del Motor</h4>
+              <p class="text-on-surface-variant text-sm px-4">Tu configuración actual favorece el descubrimiento con un
+                enfoque en texturas electrón.</p>
+              <button
+                class="mt-8 px-6 py-2 bg-on-surface text-surface font-bold text-xs uppercase tracking-widest rounded-full hover:bg-primary transition-colors">Generar
+                Vista Previa</button>
+            </div>
+          </div>
+          <!-- CTA Actions -->
+          <div class="flex flex-col gap-3">
+            <button
+              class="w-full py-4 bg-primary text-on-primary font-black uppercase tracking-widest rounded-2xl shadow-[0_0_32px_rgba(255,145,87,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all">Aplicar
+              Ajustes del Motor</button>
+            <button
+              class="w-full py-4 bg-surface-container text-on-surface-variant font-bold text-sm rounded-2xl border border-outline-variant/10 hover:bg-surface-bright transition-colors">Restablecer
+              Valores</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- BottomNavBar (Mobile Player Controls Proxy) -->
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-# 🎵 Sound Lens — Sistema de Recomendación Musical
+# 🎵 SoundWave — Sistema de Recomendación Musical
 
 Sistema de recomendación de música basado en audio features y similitud coseno, con frontend en Angular 21, backend FastAPI y base de datos MongoDB.
 

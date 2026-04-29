@@ -1,4 +1,4 @@
-# 🚀 Onboarding: Sound Lens (Rama "marcos")
+# 🚀 Onboarding: SoundWave (Rama "marcos")
 
 Esta guía explica paso a paso cómo arrancar el proyecto desde cero tras haber hecho un `pull` o clonado la rama `marcos`. 
 

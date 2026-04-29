@@ -7,69 +7,41 @@
     <div class="register-brand">
       <span class="register-logo">🎵</span>
       <h1 class="gradient-text">Crear cuenta</h1>
-      <p class="register-subtitle">Únete a Sound Lens y descubre nueva música</p>
+      <p class="register-subtitle">Únete a SoundWave y descubre nueva música</p>
     </div>
 
     <div class="register-divider"></div>
 
     <form class="register-form" (ngSubmit)="register()">
       @if (errorMessage) {
-        <div class="form-error">
-          <span>⚠️</span> {{ errorMessage }}
-        </div>
+      <div class="form-error">
+        <span>⚠️</span> {{ errorMessage }}
+      </div>
       }
 
       <div class="form-group">
-        <input
-          type="text"
-          class="input"
-          placeholder="Nombre completo"
-          [(ngModel)]="name"
-          name="name"
-          id="register-name"
-          autocomplete="name"
-        />
+        <input type="text" class="input" placeholder="Nombre completo" [(ngModel)]="name" name="name" id="register-name"
+          autocomplete="name" />
       </div>
 
       <div class="form-group">
-        <input
-          type="email"
-          class="input"
-          placeholder="Correo electrónico"
-          [(ngModel)]="email"
-          name="email"
-          id="register-email"
-          autocomplete="email"
-        />
+        <input type="email" class="input" placeholder="Correo electrónico" [(ngModel)]="email" name="email"
+          id="register-email" autocomplete="email" />
       </div>
 
       <div class="form-group">
-        <input
-          type="password"
-          class="input"
-          placeholder="Contraseña (mín. 6 caracteres)"
-          [(ngModel)]="password"
-          name="password"
-          id="register-password"
-          autocomplete="new-password"
-        />
+        <input type="password" class="input" placeholder="Contraseña (mín. 6 caracteres)" [(ngModel)]="password"
+          name="password" id="register-password" autocomplete="new-password" />
       </div>
 
       <div class="form-group">
-        <input
-          type="password"
-          class="input"
-          placeholder="Confirmar contraseña"
-          [(ngModel)]="confirmPassword"
-          name="confirmPassword"
-          id="register-confirm-password"
-          autocomplete="new-password"
-        />
+        <input type="password" class="input" placeholder="Confirmar contraseña" [(ngModel)]="confirmPassword"
+          name="confirmPassword" id="register-confirm-password" autocomplete="new-password" />
       </div>
 
       <button type="submit" class="btn btn-primary register-submit" [disabled]="isLoading" id="register-submit-btn">
         @if (isLoading) {
-          <span class="btn-spinner"></span>
+        <span class="btn-spinner"></span>
         }
         Crear cuenta
       </button>
