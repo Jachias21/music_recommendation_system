@@ -1,7 +1,7 @@
 <div class="settings">
   <div class="settings-header">
     <h1 class="page-title">Ajustes</h1>
-    <p class="page-sub">Personaliza cómo Sound Lens genera tus recomendaciones.</p>
+    <p class="page-sub">Personaliza cómo SoundWave genera tus recomendaciones.</p>
   </div>
 
   <div class="settings-card glass">
@@ -13,11 +13,8 @@
       </div>
       <div class="setting-control">
         <div class="slider-row">
-          <input
-            type="range" min="0" max="100"
-            [value]="values().serendipity"
-            (input)="updateSlider('serendipity', $event)"
-            class="slider" />
+          <input type="range" min="0" max="100" [value]="values().serendipity"
+            (input)="updateSlider('serendipity', $event)" class="slider" />
           <span class="slider-val">{{ values().serendipity }}%</span>
         </div>
       </div>
@@ -33,10 +30,7 @@
       </div>
       <div class="setting-control">
         <div class="slider-row">
-          <input
-            type="range" min="0" max="100"
-            [value]="values().novelty"
-            (input)="updateSlider('novelty', $event)"
+          <input type="range" min="0" max="100" [value]="values().novelty" (input)="updateSlider('novelty', $event)"
             class="slider" />
           <span class="slider-val">{{ values().novelty }}%</span>
         </div>
@@ -53,11 +47,8 @@
       </div>
       <div class="setting-control">
         <div class="slider-row">
-          <input
-            type="range" min="0" max="100"
-            [value]="values().instrumentalness"
-            (input)="updateSlider('instrumentalness', $event)"
-            class="slider" />
+          <input type="range" min="0" max="100" [value]="values().instrumentalness"
+            (input)="updateSlider('instrumentalness', $event)" class="slider" />
           <span class="slider-val">{{ values().instrumentalness }}%</span>
         </div>
       </div>
@@ -74,12 +65,9 @@
       <div class="setting-control">
         <div class="radio-group">
           @for (opt of ['focused','balanced','wide']; track opt) {
-            <button
-              class="radio-btn"
-              [class.active]="values().diversity === opt"
-              (click)="setDiversity($any(opt))">
-              {{ opt === 'focused' ? 'Enfocado' : opt === 'balanced' ? 'Equilibrado' : 'Amplio' }}
-            </button>
+          <button class="radio-btn" [class.active]="values().diversity === opt" (click)="setDiversity($any(opt))">
+            {{ opt === 'focused' ? 'Enfocado' : opt === 'balanced' ? 'Equilibrado' : 'Amplio' }}
+          </button>
           }
         </div>
       </div>

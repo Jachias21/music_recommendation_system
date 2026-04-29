@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Sound Lens - Login</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SoundWave - Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -89,76 +97,101 @@
         }
     </script>
 </head>
+
 <body class="bg-background text-on-background font-body min-h-screen flex antialiased">
-<div class="hidden lg:flex w-1/2 relative bg-surface-container-lowest overflow-hidden">
-<img alt="Concert crowd with atmospheric purple and blue lighting, silhouettes raising hands in a deep immersive venue" class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="silhouetted concert crowd with atmospheric deep purple and blue stage lighting creating an immersive moody music experience" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgyIdFY56svT95N-NYAAAWyeQolHGiBb-o-NYjMjhSMgd_nrC9xoKkFRIz3_2OgrJbOBBeQgTVsRS7LWh8KoCo-4Z8XYNzcvopOnwfDWRUFF_kNIt8JYD8ShmSoKRoc8gG4DsgUFGbENKhnic1ytkXlfM6LLT0RJU_Bt2tDUzjbnDhoTPAjIsr8ZqvNyBSKW07V35P0RE4JBLgL_IGYFl8Qns9L3JiQ2YsLFWXmW9KLkNGyXu5vdt5DnTTVZYkkp_Xy5OREAB91ww"/>
-<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
-<div class="absolute inset-0 flex flex-col justify-between p-12">
-<div class="text-2xl font-black text-[#ede4fa] tracking-tighter font-headline">Sound Lens</div>
-<div>
-<h2 class="text-5xl font-headline font-bold text-on-surface mb-4 leading-tight">Curated for<br/>the Night.</h2>
-<p class="text-on-surface-variant font-body max-w-md text-lg">Immersive listening experiences designed for those who find clarity in the dark.</p>
-</div>
-</div>
-</div>
-<div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 xl:p-24 relative overflow-y-auto">
-<div class="w-full max-w-md">
-<div class="lg:hidden text-2xl font-black text-[#ede4fa] tracking-tighter font-headline mb-12">Sound Lens</div>
-<div class="mb-10">
-<h1 class="text-4xl font-headline font-bold text-on-surface mb-2">Welcome Back</h1>
-<p class="text-on-surface-variant font-body">Sign in to continue your session.</p>
-</div>
-<form class="space-y-6">
-<div>
-<label class="block text-sm font-label font-medium text-on-surface-variant mb-2" for="email">Email</label>
-<input class="w-full bg-surface-container-high text-on-surface border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 font-body placeholder-on-surface-variant/50 transition-colors" id="email" placeholder="Enter your email" type="email"/>
-</div>
-<div>
-<div class="flex justify-between items-center mb-2">
-<label class="block text-sm font-label font-medium text-on-surface-variant" for="password">Password</label>
-<a class="text-sm font-label text-primary hover:text-primary-dim transition-colors" href="#">Forgot Password?</a>
-</div>
-<div class="relative">
-<input class="w-full bg-surface-container-high text-on-surface border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 font-body placeholder-on-surface-variant/50 transition-colors" id="password" placeholder="Enter your password" type="password"/>
-<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-on-surface" type="button">
-<span class="material-symbols-outlined text-xl">visibility_off</span>
-</button>
-</div>
-</div>
-<div class="flex items-center">
-<input class="h-4 w-4 rounded-DEFAULT border-outline-variant bg-surface-container-high text-primary focus:ring-primary focus:ring-offset-background" id="remember-me" type="checkbox"/>
-<label class="ml-3 block text-sm font-label text-on-surface-variant" for="remember-me">
+    <div class="hidden lg:flex w-1/2 relative bg-surface-container-lowest overflow-hidden">
+        <img alt="Concert crowd with atmospheric purple and blue lighting, silhouettes raising hands in a deep immersive venue"
+            class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-luminosity"
+            data-alt="silhouetted concert crowd with atmospheric deep purple and blue stage lighting creating an immersive moody music experience"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgyIdFY56svT95N-NYAAAWyeQolHGiBb-o-NYjMjhSMgd_nrC9xoKkFRIz3_2OgrJbOBBeQgTVsRS7LWh8KoCo-4Z8XYNzcvopOnwfDWRUFF_kNIt8JYD8ShmSoKRoc8gG4DsgUFGbENKhnic1ytkXlfM6LLT0RJU_Bt2tDUzjbnDhoTPAjIsr8ZqvNyBSKW07V35P0RE4JBLgL_IGYFl8Qns9L3JiQ2YsLFWXmW9KLkNGyXu5vdt5DnTTVZYkkp_Xy5OREAB91ww" />
+        <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
+        <div class="absolute inset-0 flex flex-col justify-between p-12">
+            <div class="text-2xl font-black text-[#ede4fa] tracking-tighter font-headline">SoundWave</div>
+            <div>
+                <h2 class="text-5xl font-headline font-bold text-on-surface mb-4 leading-tight">Curated for<br />the
+                    Night.</h2>
+                <p class="text-on-surface-variant font-body max-w-md text-lg">Immersive listening experiences designed
+                    for those who find clarity in the dark.</p>
+            </div>
+        </div>
+    </div>
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 xl:p-24 relative overflow-y-auto">
+        <div class="w-full max-w-md">
+            <div class="lg:hidden text-2xl font-black text-[#ede4fa] tracking-tighter font-headline mb-12">SoundWave
+            </div>
+            <div class="mb-10">
+                <h1 class="text-4xl font-headline font-bold text-on-surface mb-2">Welcome Back</h1>
+                <p class="text-on-surface-variant font-body">Sign in to continue your session.</p>
+            </div>
+            <form class="space-y-6">
+                <div>
+                    <label class="block text-sm font-label font-medium text-on-surface-variant mb-2"
+                        for="email">Email</label>
+                    <input
+                        class="w-full bg-surface-container-high text-on-surface border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 font-body placeholder-on-surface-variant/50 transition-colors"
+                        id="email" placeholder="Enter your email" type="email" />
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-label font-medium text-on-surface-variant"
+                            for="password">Password</label>
+                        <a class="text-sm font-label text-primary hover:text-primary-dim transition-colors"
+                            href="#">Forgot Password?</a>
+                    </div>
+                    <div class="relative">
+                        <input
+                            class="w-full bg-surface-container-high text-on-surface border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 font-body placeholder-on-surface-variant/50 transition-colors"
+                            id="password" placeholder="Enter your password" type="password" />
+                        <button
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-on-surface"
+                            type="button">
+                            <span class="material-symbols-outlined text-xl">visibility_off</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <input
+                        class="h-4 w-4 rounded-DEFAULT border-outline-variant bg-surface-container-high text-primary focus:ring-primary focus:ring-offset-background"
+                        id="remember-me" type="checkbox" />
+                    <label class="ml-3 block text-sm font-label text-on-surface-variant" for="remember-me">
                         Remember me
                     </label>
-</div>
-<button class="w-full bg-gradient-to-r from-primary to-primary-dim text-on-primary-fixed font-label font-semibold py-3 px-4 rounded-full uppercase tracking-wider hover:opacity-90 transition-opacity flex justify-center items-center mt-8" type="submit">
+                </div>
+                <button
+                    class="w-full bg-gradient-to-r from-primary to-primary-dim text-on-primary-fixed font-label font-semibold py-3 px-4 rounded-full uppercase tracking-wider hover:opacity-90 transition-opacity flex justify-center items-center mt-8"
+                    type="submit">
                     Login
                 </button>
-</form>
-<div class="mt-8">
-<div class="relative">
-<div class="absolute inset-0 flex items-center">
-<div class="w-full border-t border-outline-variant/30"></div>
-</div>
-<div class="relative flex justify-center text-sm">
-<span class="px-4 bg-background text-on-surface-variant font-label">Or continue with</span>
-</div>
-</div>
-<div class="mt-6 grid grid-cols-2 gap-4">
-<button class="flex justify-center items-center px-4 py-3 border border-outline-variant/20 rounded-full hover:bg-surface-container transition-colors text-on-surface font-label text-sm">
-<span class="material-symbols-outlined mr-2 text-lg">public</span>
+            </form>
+            <div class="mt-8">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-outline-variant/30"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-background text-on-surface-variant font-label">Or continue with</span>
+                    </div>
+                </div>
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    <button
+                        class="flex justify-center items-center px-4 py-3 border border-outline-variant/20 rounded-full hover:bg-surface-container transition-colors text-on-surface font-label text-sm">
+                        <span class="material-symbols-outlined mr-2 text-lg">public</span>
                         Google
                     </button>
-<button class="flex justify-center items-center px-4 py-3 border border-outline-variant/20 rounded-full hover:bg-surface-container transition-colors text-on-surface font-label text-sm">
-<span class="material-symbols-outlined mr-2 text-lg">laptop_mac</span>
+                    <button
+                        class="flex justify-center items-center px-4 py-3 border border-outline-variant/20 rounded-full hover:bg-surface-container transition-colors text-on-surface font-label text-sm">
+                        <span class="material-symbols-outlined mr-2 text-lg">laptop_mac</span>
                         Apple
                     </button>
-</div>
-</div>
-<p class="mt-10 text-center text-sm font-label text-on-surface-variant">
-                Don't have an account? 
-                <a class="font-medium text-primary hover:text-primary-dim hover:underline underline-offset-4 transition-all" href="#">Sign up</a>
-</p>
-</div>
-</div>
-</body></html>
+                </div>
+            </div>
+            <p class="mt-10 text-center text-sm font-label text-on-surface-variant">
+                Don't have an account?
+                <a class="font-medium text-primary hover:text-primary-dim hover:underline underline-offset-4 transition-all"
+                    href="#">Sign up</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
