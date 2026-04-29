@@ -9,7 +9,7 @@ Architecture:
   - Hybrid Fallback: Audio-based surrogate resolution for OOV (Cold Start)
 
 Artifacts expected:
-  - models/ncf_model.onnx       → ONNX model (exported by 06_export_to_onnx.py)
+  - models/ncf_model.onnx       → ONNX model (exported by export_to_onnx.py)
   - models/item_embeddings.npy  → Pre-extracted item embedding matrix
   - models/item_encoder.pkl     → LabelEncoder for item ID mapping
   - models/user_encoder.pkl     → LabelEncoder for user ID mapping
@@ -110,29 +110,36 @@ class NCFRecommender:
 
     # ──────────────────────────────────────────────────────────────────────
     def _extract_embeddings_from_pytorch(self) -> np.ndarray:
-        """Fallback: extract embeddings directly from PyTorch weights."""
+        """Fallback: extract embeddings directly from PyTorch weights without keeping full state in RAM."""
         import torch
-        from src.modeling.ncf_model import NeuralCollaborativeFiltering
-
-        num_items = len(self.item_encoder.classes_)
-        num_users = 3001
-        if USER_ENC_PATH.exists():
-            with open(USER_ENC_PATH, "rb") as f:
-                num_users = len(pickle.load(f).classes_)
+        import gc
 
         if not WEIGHTS_PATH.exists():
             raise FileNotFoundError(f"Neither ONNX nor PyTorch weights found.")
 
-        model = NeuralCollaborativeFiltering(num_users=num_users, num_items=num_items, item_features_dim=7)
-        state = torch.load(WEIGHTS_PATH, map_location="cpu", weights_only=True)
-        model.load_state_dict(state)
-        model.eval()
+        print(f"[NCF] Extracting embeddings from {WEIGHTS_PATH}...")
+        # Load state dict
+        state = torch.load(WEIGHTS_PATH, map_location="cpu", weights_only=False)
+        
+        # Extract item embeddings directly from state dict
+        # Key name in NeuralCollaborativeFiltering is 'item_embedding.weight'
+        emb_key = "item_embedding.weight"
+        if emb_key not in state:
+            # Try to find it if name changed
+            for k in state.keys():
+                if "item_embedding" in k and "weight" in k:
+                    emb_key = k
+                    break
+        
+        embeddings = state[emb_key].cpu().numpy()
+        
+        # Clear state dict immediately
+        del state
+        gc.collect()
 
-        embeddings = model.item_embedding.weight.data.cpu().numpy()
-
-        # Save for next time so we don't load PyTorch again
+        # Save for next time
         np.save(str(EMBEDDINGS_PATH), embeddings)
-        print(f"[NCF] Embeddings extracted from PyTorch and cached: {embeddings.shape}")
+        print(f"[NCF] Embeddings extracted and cached: {embeddings.shape}")
         return embeddings
 
     # ──────────────────────────────────────────────────────────────────────
