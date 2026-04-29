@@ -58,7 +58,7 @@ def main():
     print("=" * 60)
 
     print("[EVAL] Cargando el catálogo limpio (Dataset V3 CLEAN)...")
-    catalog_path = os.path.join(_BASE_DIR, "dataset_soundwave_CLEAN_V3.csv")
+    catalog_path = os.path.join(_BASE_DIR, "dataset_soundwave_CLEAN_V4.csv")
     if not os.path.exists(catalog_path):
         print(f"❌ Error: {catalog_path} no encontrado.")
         return

@@ -11,6 +11,7 @@ import re
 from pymongo import MongoClient
 from bson import ObjectId
 import bcrypt
+from sklearn.preprocessing import MinMaxScaler 
 
 from src.modeling.recommendation_engine import (
     get_mongodb_data,
@@ -85,6 +86,35 @@ def _load_data():
     if "artist" in _df.columns:
         _df["clean_artist"] = _df["artist"].apply(clean_text)
         
+    # ── NUEVO: PREPARAR DATOS EN MEMORIA PARA LA IA ─────────────────────
+    
+   # 1. One-Hot Encoding de Idiomas (Replicando las 11 columnas de idioma)
+    if "language" in _df.columns:
+        top_idiomas = ['en', 'es', 'fr', 'pt', 'de', 'it', 'ko', 'ja', 'ru', 'tr']
+        _df['lang_clean'] = _df['language'].apply(lambda x: x if x in top_idiomas else 'other')
+        # Es vital que sea idéntico al entrenamiento
+        df_langs = pd.get_dummies(_df[['lang_clean']], columns=['lang_clean'], dtype=float)
+        _df = pd.concat([_df, df_langs], axis=1)
+
+    # 2. Escalar variables numéricas (Añadimos las 3 nuevas para llegar a las 20 dimensiones)
+    scaler = MinMaxScaler()
+    variables_a_escalar = [
+        'danceability', 'energy', 'loudness', 'tempo', 'valence', 
+        'acousticness', 'instrumentalness', 'speechiness', # <-- AÑADIDAS
+        'deezer_rank', 'lang_confidence'
+    ]
+    present_vars = [v for v in variables_a_escalar if v in _df.columns]
+    
+    if present_vars:
+        # Guardamos el tempo real por si el frontend lo necesita
+        if "tempo" in _df.columns:
+            _df["tempo_real"] = _df["tempo"]
+            
+        _df[present_vars] = _df[present_vars].fillna(0)
+        _df[present_vars] = scaler.fit_transform(_df[present_vars])
+        
+    # ────────────────────────────────────────────────────────────────────
+
     print(f"[API] Loaded {len(_df)} songs from data source.")
 
     # Node2Vec embeddings

@@ -1,72 +1,68 @@
+import os
 import pandas as pd
 from pymongo import MongoClient
-import os
 from dotenv import load_dotenv
-from sklearn.preprocessing import MinMaxScaler
 
 load_dotenv()
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client[os.getenv("DB_NAME")]
-collection = db[os.getenv("COLLECTION_NAME", "songs")]
 
-print("⏳ Extrayendo datos: Prioridad Absoluta al IDIOMA...")
+# Rutas de conexión a tu MongoDB local
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+DB_NAME = os.environ.get("DB_NAME", "music_recommendation_db")
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "songs")
 
-# ==========================================
-# 🔍 1. EL FILTRO DURO (Obligatorio Idioma)
-# ==========================================
-# Extraemos SOLO si el idioma existe y es válido.
-# Nos da igual si la popularidad está o no está, ya lo arreglaremos luego.
-query_idioma_obligatorio = {
-    "language": {
-        "$exists": True, 
-        "$nin": ["error", "unknown", None]
+def export_v4_dataset():
+    print("🔌 Conectando a MongoDB...")
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    # 1. FILTRO ESTRICTO: Traer solo canciones procesadas y limpias
+    # Excluimos las que no tienen idioma, dieron error en Genius, o no tienen tempo
+    query = {
+        "language": {"$nin": [None, "unknown", "error"]},
+        "tempo": {"$exists": True, "$ne": None}
     }
-}
+    
+    print("📥 Descargando catálogo limpio de la base de datos...")
+    cursor = collection.find(query)
+    df = pd.DataFrame(list(cursor))
+    
+    if df.empty:
+        print("❌ No se encontraron canciones válidas.")
+        return
 
-cursor = collection.find(query_idioma_obligatorio, {"_id": 0})
-df = pd.DataFrame(list(cursor))
+    # Estandarizar la columna de ID (quitar el _id de Mongo que rompe el JSON)
+    if "_id" in df.columns:
+        df["id"] = df["_id"].astype(str)
+        df.drop(columns=["_id"], inplace=True)
+    elif "track_id" in df.columns:
+        df["id"] = df["track_id"].astype(str)
 
-if df.empty:
-    print("❌ No se encontraron datos válidos.")
-    exit()
+    print(f"📊 Total de canciones Gold Standard descargadas: {len(df):,}")
 
-print(f"✅ Se han extraído {len(df):,} canciones con IDIOMA confirmado.")
-print("🛠️ Fase 2: Reparación Inteligente de Popularidad...")
+    # 2. CURAR EL AGUJERO NEGRO DE LA POPULARIDAD
+    if 'deezer_rank' in df.columns:
+        canciones_rotas = len(df[df['deezer_rank'] == -1])
+        print(f"🔍 Encontradas {canciones_rotas:,} canciones underground (-1).")
 
-# ==========================================
-# 📊 2. IMPUTACIÓN CONDICIONAL (El parche matemático)
-# ==========================================
-# 1. ¿Cuántas no tienen popularidad?
-sin_rank = df['deezer_rank'].isna().sum()
+        # Calcular la MEDIANA ignorando los -1 y los vacíos
+        valid_rank_df = df[(df['deezer_rank'] != -1) & (df['deezer_rank'].notna())]
+        mediana_real = valid_rank_df['deezer_rank'].median()
+        
+        print(f"🧮 La mediana de popularidad comercial es: {mediana_real}")
 
-# 2. Calculamos la mediana usando SOLO las que sí tienen y son comerciales (> -1)
-canciones_con_rank = df[(df['deezer_rank'].notna()) & (df['deezer_rank'] > -1)]['deezer_rank']
-mediana_real = canciones_con_rank.median() if not canciones_con_rank.empty else 50000
+        # Reemplazar los -1 y los vacíos por la mediana
+        df['deezer_rank'] = df['deezer_rank'].replace(-1, mediana_real)
+        df['deezer_rank'] = df['deezer_rank'].fillna(mediana_real)
+        print("🛠️ Agujero negro sellado. Valores actualizados.")
+    else:
+        print("⚠️ Cuidado: No se encontró la columna 'deezer_rank'.")
 
-print(f"   -> Encontradas {sin_rank:,} canciones sin popularidad.")
-print(f"   -> Imputando con la mediana calculada: {mediana_real}")
+    # 3. GUARDAR EL NUEVO DATASET DE PRODUCCIÓN
+    output_path = "dataset_soundwave_CLEAN_V4.csv"
+    df.to_csv(output_path, index=False)
+    print(f"\n✅ ¡ÉXITO! Dataset V4 exportado correctamente a '{output_path}'.")
+    print("👉 Siguiente paso: Generar interacciones apuntando a este CSV.")
 
-# 3. Rellenamos los huecos con esa mediana
-df['deezer_rank'] = df['deezer_rank'].fillna(mediana_real)
-
-# ==========================================
-# 🎛️ 3. NORMALIZACIÓN PARA PYTORCH
-# ==========================================
-print("⚖️ Fase 3: Normalización de Audio (Tempo y Loudness)...")
-cols_to_normalize = ['tempo', 'loudness']
-scaler = MinMaxScaler()
-df[cols_to_normalize] = scaler.fit_transform(df[cols_to_normalize])
-
-# Escudo anti-crashes final
-df = df.fillna(0)
-
-# ==========================================
-# 💾 4. EXPORTACIÓN
-# ==========================================
-nombre_archivo = "dataset_soundwave_CLEAN_V3.csv"
-df.to_csv(nombre_archivo, index=False, encoding='utf-8')
-
-print("\n" + "="*50)
-print(f"🎉 ¡ÉXITO! Dataset de ALTO VALOR listo: {nombre_archivo}")
-print(f"🚀 Total canciones listas para Node2Vec/NCF: {len(df):,}")
-print("="*50)
+if __name__ == "__main__":
+    export_v4_dataset()

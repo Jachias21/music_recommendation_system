@@ -7,17 +7,17 @@ class NeuralCollaborativeFiltering(nn.Module):
         self, 
         num_users: int, 
         num_items: int, 
-        item_features_dim: int = 0, # <--- Dimensión de tus features (tempo, rank, etc.)
-        embedding_dim: int = 64, 
+        item_features_dim: int = 20,  # <--- 7 acústicas + 11 idiomas (Top 10 + 'other')
+        embedding_dim: int = 64,      # <--- ID Cerebro reducido
         hidden_layers: List[int] = [128, 64, 32], 
-        dropout_rate: float = 0.2
+        dropout_rate: float = 0.5
     ) -> None:
         super(NeuralCollaborativeFiltering, self).__init__()
 
         self.user_embedding = nn.Embedding(num_embeddings=num_users, embedding_dim=embedding_dim)
         self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=embedding_dim)
 
-        # Concatenamos: User Embedding + Item Embedding + Features Reales
+        # Concatenamos: User Embedding (16) + Item Embedding (16) + Features Reales (18) = 50 neuronas de entrada
         input_dim = (embedding_dim * 2) + item_features_dim 
         
         mlp_modules = []
