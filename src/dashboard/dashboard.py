@@ -10,7 +10,7 @@ st.set_page_config(page_title="NCF vs Base - Auditoría de Modelos", layout="wid
 # ==========================================
 @st.cache_data
 def load_results():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     res_path = os.path.join(base_dir, "data", "evaluation_results.json")
     if not os.path.exists(res_path):
         return None
@@ -24,7 +24,8 @@ def load_catalog():
     # we can just use pymongo directly
     from pymongo import MongoClient
     
-    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    env_path = os.path.join(base_dir, ".env")
     if os.path.exists(env_path):
         with open(env_path, "r") as f:
             for line in f:
@@ -60,7 +61,7 @@ catalog = load_catalog()
 # ==========================================
 # UI: Cabecera
 # ==========================================
-st.title("Auditoría de Modelos: NCF vs Motores de Contenido")
+st.title("Auditoría de Modelos")
 st.markdown("""
 Este panel interactivo evalúa el rendimiento del sistema de recomendación híbrido.
 Comparamos el motor original (Similitud del Coseno Acústica) con el nuevo modelo de **Neural Collaborative Filtering (NCF)** 

@@ -6,7 +6,7 @@ from pymongo.errors import ConnectionFailure
 # ==========================================
 # CONFIGURACION DE BASE DE DATOS Y RUTAS
 # ==========================================
-_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Intentar cargar variables de entorno desde el archivo .env si existe
 env_path = os.path.join(_BASE_DIR, ".env")

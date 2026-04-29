@@ -9,7 +9,7 @@ import numpy as np
 # ==========================================
 
 # Rutas relativas a la raíz del proyecto (funciona sin importar el CWD)
-_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CSV_PATH = os.path.join(_BASE_DIR, "data", "source", "dataset_spotify.csv")
 
 

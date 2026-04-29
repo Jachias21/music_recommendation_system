@@ -20,5 +20,7 @@ dependencies = [
     "pipeline>=0.1.0",
     "transformers>=5.6.2",
     "faiss-cpu>=1.13.2",
+    "onnx>=1.16.0",
+    "onnxruntime>=1.19.0",
     "bcrypt>=5.0.0",
 ]

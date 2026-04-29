@@ -84,15 +84,24 @@ class NCFRecommender:
         self.ort_session = None
         if ONNX_PATH.exists():
             providers = ["CPUExecutionProvider"]
-            # Use CoreML on macOS if available
-            try:
-                if "CoreMLExecutionProvider" in ort.get_available_providers():
-                    providers.insert(0, "CoreMLExecutionProvider")
-            except Exception:
-                pass
+            # CoreML omitted: FAISS handles ANN retrieval, no GPU needed here
 
-            self.ort_session = ort.InferenceSession(str(ONNX_PATH), providers=providers)
-            print(f"[NCF] ONNX Runtime session initialized. Providers: {self.ort_session.get_providers()}")
+            try:
+                # Load model + external .data file into a single in-memory blob,
+                # then pass bytes to ORT so no CWD-relative path resolution occurs.
+                import onnx as _onnx
+                from onnx.external_data_helper import load_external_data_for_model as _load_ext
+
+                _model_proto = _onnx.load(str(ONNX_PATH), load_external_data=False)
+                _load_ext(_model_proto, str(ONNX_PATH.parent))
+                _model_bytes = _model_proto.SerializeToString()
+
+                self.ort_session = ort.InferenceSession(_model_bytes, providers=providers)
+                print(f"[NCF] ONNX Runtime session initialized. Providers: {self.ort_session.get_providers()}")
+
+            except Exception as _onnx_err:
+                print(f"[NCF] ONNX session failed: {_onnx_err}. FAISS-only mode.")
+                self.ort_session = None
         else:
             print("[NCF] ONNX model not found. FAISS-only mode (no MLP scoring).")
 
