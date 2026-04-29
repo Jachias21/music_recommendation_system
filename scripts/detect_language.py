@@ -18,7 +18,7 @@ logs_dir = os.path.join(base_dir, "logs")
 os.makedirs(logs_dir, exist_ok=True)
 
 # =====================================================================
-# 📝 CONFIGURACIÓN DEL LOGGER DUAL
+# CONFIGURACIÓN DEL LOGGER DUAL
 # =====================================================================
 def clean_text(text):
     return re.sub(r'[^\x00-\x7F]+', '', str(text))
@@ -53,9 +53,6 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client[os.getenv("DB_NAME")]
 collection = db[os.getenv("COLLECTION_NAME", "songs")]
 
-# =====================================================================
-# 🌟 EL TRUCO SENIOR: INYECTAR SESIONES A GENIUS
-# =====================================================================
 custom_session = requests.Session()
 adapter = HTTPAdapter(pool_connections=10, pool_maxsize=10)
 custom_session.mount('https://', adapter)
@@ -78,7 +75,7 @@ TOP_50_LANGUAGES = {
     "el", "sv", "uk", "cs", "hu", "fi", "da", "no", "he", "ca"
 }
 
-logger.info("🤖 Iniciando sistema de IA en la Gráfica...")
+logger.info("Iniciando sistema de IA en la Gráfica...")
 dispositivo = 0 if torch.cuda.is_available() else -1
 language_detector = pipeline(
     "text-classification", 
@@ -135,12 +132,12 @@ def procesar_lote_idiomas_turbo(max_horas, num_hilos):
     porcentaje = (completadas / total_db) * 100 if total_db > 0 else 0
 
     logger.info("\n" + "="*60)
-    logger.info("🚀 MODO TURBO IDIOMAS: SESIONES PERSISTENTES")
+    logger.info("MODO TURBO IDIOMAS: SESIONES PERSISTENTES")
     logger.info("="*60)
-    logger.info(f"   📀 Total en BD:    {total_db:,}")
-    logger.info(f"   ✅ Completadas:    {completadas:,} ({porcentaje:.2f}%)")
-    logger.info(f"   ⏳ Pendientes:     {pendientes:,}")
-    logger.info(f"   ⚙️ Hilos (Threads): {num_hilos}")
+    logger.info(f"Total en BD:    {total_db:,}")
+    logger.info(f"Completadas:    {completadas:,} ({porcentaje:.2f}%)")
+    logger.info(f"Pendientes:     {pendientes:,}")
+    logger.info(f"Hilos (Threads): {num_hilos}")
     logger.info("="*60)
     
     tiempo_inicio = time.time()
@@ -153,13 +150,13 @@ def procesar_lote_idiomas_turbo(max_horas, num_hilos):
     with ThreadPoolExecutor(max_workers=num_hilos) as executor:
         while True:
             if time.time() - tiempo_inicio > max_segundos:
-                logger.info(f"\n\n⏳ ¡Tiempo agotado!")
+                logger.info(f"\n\n¡Tiempo agotado!")
                 break
             
             batch_songs = list(collection.find({"language": {"$exists": False}}).limit(TAMAÑO_LOTE))
             
             if not batch_songs: 
-                logger.info("\n\n✅ ¡No quedan más canciones por procesar!")
+                logger.info("\n\n¡No quedan más canciones por procesar!")
                 break
 
             futuros = [executor.submit(procesar_cancion_individual, c) for c in batch_songs]
@@ -177,12 +174,12 @@ def procesar_lote_idiomas_turbo(max_horas, num_hilos):
             if operaciones_bulk:
                 collection.bulk_write(operaciones_bulk, ordered=False)
                 procesadas_total += len(operaciones_bulk)
-                print("") # Salto de línea después de los puntitos
-                logger.info(f"  | 💾 Lote de {len(operaciones_bulk)} guardado. Total sesión: {procesadas_total}")
+                print("") 
+                logger.info(f"  | Lote de {len(operaciones_bulk)} guardado. Total sesión: {procesadas_total}")
                 
             time.sleep(0.1)
 
-    logger.info(f"\n🎉 Maratón finalizado. Total actualizado esta sesión: {procesadas_total} canciones.")
+    logger.info(f"\nMaratón finalizado. Total actualizado esta sesión: {procesadas_total} canciones.")
 
 if __name__ == "__main__":
     CONFIG = {

@@ -11,7 +11,38 @@
 [NCF] Item embeddings loaded from .npy: (1204022, 64)
 [NCF] ONNX model not found. FAISS-only mode (no MLP scoring).
 [NCF] FAISS index built: 1204022 vectors, dim=64
-  Node2Vec no encontrado (sin pre-entrenar). Se omitirá para agilizar evaluación.
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
   Modelos listos.
 
 [3/4] Evaluando 200 usuarios...
@@ -58,7 +89,7 @@
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
-   40 |   0.125 |   0.000 |   0.025
+   40 |   0.125 |   0.025 |   0.025
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
@@ -99,7 +130,7 @@
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
-   80 |   0.125 |   0.000 |   0.025
+   80 |   0.125 |   0.013 |   0.025
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
@@ -140,7 +171,7 @@
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
-  120 |   0.117 |   0.000 |   0.025
+  120 |   0.117 |   0.017 |   0.025
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
@@ -181,7 +212,7 @@
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
-  160 |   0.113 |   0.000 |   0.031
+  160 |   0.113 |   0.025 |   0.031
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
@@ -222,15 +253,15 @@
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
 [Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
-  200 |   0.105 |   0.000 |   0.030
+  200 |   0.105 |   0.020 |   0.030
 
 ===========================================================================
 METRICA         |        NCF |   Node2Vec |   Baseline
 ---------------------------------------------------------------------------
-HR@K            |     0.1050 |     0.0000 |     0.0300
-NDCG@K          |     0.0199 |     0.0000 |     0.0073
-MRR@K           |     0.0813 |     0.0000 |     0.0300
-Nov             |    14.6076 |     0.0000 |     3.2437
+HR@K            |     0.1050 |     0.0200 |     0.0300
+NDCG@K          |     0.0199 |     0.0044 |     0.0073
+MRR@K           |     0.0813 |     0.0200 |     0.0300
+Nov             |    14.6076 |     2.1555 |     3.2437
 Ser             |     0.0000 |     0.0000 |     0.0000
 Coverage        |     0.0002 |     0.0000 |     0.0000
 ===========================================================================

@@ -132,7 +132,9 @@ El sistema necesita **tres servicios corriendo simultáneamente** en terminales 
 ### Terminal 1 — Backend FastAPI (puerto 8000)
 ```bash
 source .venv/bin/activate
+
 python -m uvicorn src.api.api:app --host 0.0.0.0 --port 8000 --reload
+
 ```
 
 Espera hasta ver:

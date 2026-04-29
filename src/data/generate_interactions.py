@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Configuración del dataset de interacciones (Adaptado a V3 CLEAN)
+# Configuración del dataset de interacciones
 # ─────────────────────────────────────────────────────────────────────────────
 NUM_USERS = 100_000            # 100k usuarios sintéticos
 MIN_POS_INTERACTIONS = 20
@@ -13,7 +13,6 @@ MAX_POS_INTERACTIONS = 50
 NEGATIVE_RATIO = 4
 CHUNK_SIZE = 50_000            # Escritura en chunks para no saturar RAM
 
-# NUEVO: Ruta directa a tu CSV procesado y limpio
 CLEAN_DATASET_PATH = "dataset_soundwave_CLEAN_V3.csv"
 
 def main():
@@ -29,10 +28,8 @@ def main():
         print(f"❌ ERROR: No se encuentra el archivo {CLEAN_DATASET_PATH}")
         return
 
-    # Leemos tu CSV de Oro
     df_all = pd.read_csv(CLEAN_DATASET_PATH)
     
-    # Renombrar track_id a id para mantener compatibilidad con el resto del script
     if 'track_id' in df_all.columns:
         df_all.rename(columns={'track_id': 'id'}, inplace=True)
         
