@@ -36,7 +36,7 @@ We utilize two distinct typefaces to balance character with readability.
 *   **Manrope (The Display Voice):** Used for `display` and `headline` tiers. Manrope’s geometric but open nature provides a modern, premium feel. Use it for artist names, album titles, and hero statements.
 *   **Inter (The Functional Voice):** Used for `title`, `body`, and `label` tiers. Inter provides the technical precision needed for tracklists, metadata, and settings.
 
-**Hierarchy Strategy:** Always maintain at least a 2:1 ratio between your `display-lg` (3.5rem) and `title-lg` (1.375rem). The contrast in size is what creates the "Sound Lens" editorial signature.
+**Hierarchy Strategy:** Always maintain at least a 2:1 ratio between your `display-lg` (3.5rem) and `title-lg` (1.375rem). The contrast in size is what creates the "SoundWave" editorial signature.
 
 ## 4. Elevation & Depth
 In a dark UI, traditional shadows are often invisible. We use **Tonal Layering** and **Ambient Glows**.

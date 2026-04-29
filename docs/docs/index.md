@@ -1,15 +1,67 @@
-# Sistema de Recomendación Musical
+# Visión General y Arquitectura
 
-Bienvenido al portal oficial de la documentación técnica del proyecto.
+SoundWave es un sistema de recomendación musical avanzado que integra técnicas de filtrado basado en contenido, grafos y aprendizaje profundo para ofrecer una experiencia personalizada según el estado emocional del usuario.
 
-Este sistema está dividido modularmente en un pipeline de datos, un motor de recomendación, un backend API y un frontend. A continuación, puedes consultar el índice general para navegar directamente a la documentación de interés:
+## Stack Tecnológico
 
-### 🧩 Módulos del Sistema
+El proyecto ha sido diseñado siguiendo una arquitectura de microservicios desacoplados y moderna:
 
-* **[Extracción de Datos](ingest_data_documentation.md)**: Documentación sobre el script inicial (`src/ingest_data.py`), explicando cómo actúa de capa Bronze descargando, vectorizando masivamente y clasificando emociones desde 1.2M de canciones.
-* **[Carga y Procesamiento](process_data_documentation.md)**: Documentación de `src/process_data.py`, enfocada en cómo se estructuran y cargan las pistas limpias directo a nuestra Base de Datos (MongoDB).
-* **[Motor de Recomendación](recommendator_engine.md)**: La lógica algorítmica y el funcionamiento tras el perfilado de usuarios basados en su ADN Musical usando similitud coseno de Scikit-learn.
-* **[Frontend y Arquitectura (App)](app_documentation.md)**: Toda la arquitectura explicada sobre nuestra interfaz final en Angular 21 y la conexión con FastAPI.
+- **Frontend:** [Angular 21](https://angular.io/) — Single Page Application (SPA) reactiva utilizando Signals para la gestión del estado y TypeScript 5.
+- **Backend:** [FastAPI](https://fastapi.tiangolo.com/) — Framework de alto rendimiento en Python 3.13 que sirve como capa REST y orquestador de modelos.
+- **Base de Datos:** [MongoDB](https://www.mongodb.com/) — Motor NoSQL para el almacenamiento de 1.2M de canciones, usuarios y perfiles de onboarding.
+- **Entorno y Dependencias:** [uv](https://github.com/astral-sh/uv) — Gestor de paquetes ultrarrápido para Python.
+- **IA/ML Stack:** PyTorch, Scikit-learn, FAISS, ONNX Runtime y Gensim.
 
 ---
-<small>¿Problemas técnicos levantando este sitio web? Consulta nuestra sección de **[Ayuda de MkDocs](help-mkdocs.md)** para listar los comandos básicos de ejecución.</small>
+
+## Arquitectura del Sistema
+
+La arquitectura sigue un flujo de datos bidireccional donde el cliente solicita recomendaciones contextuales y el servidor selecciona el motor de inferencia más adecuado según la disponibilidad de datos.
+
+```mermaid
+graph TD
+    subgraph Cliente ["Capa Cliente (Angular 21)"]
+        UI[Interfaz de Usuario]
+        SP[Spotify OAuth PKCE]
+    end
+
+    subgraph API ["Capa de Servicio (FastAPI)"]
+        RO[Orquestador / Router]
+        AU[Módulo Auth / Users]
+    end
+
+    subgraph IA ["Capa de Inteligencia Artificial"]
+        NCF[NCF Inference - ONNX/FAISS]
+        N2V[Node2Vec Engine - Graph Embeddings]
+        CBF[Content-Based - Cosine Similarity]
+    end
+
+    subgraph Persistencia ["Capa de Datos"]
+        DB[(MongoDB)]
+        DS[(Dataset CSV/JSON)]
+    end
+
+    %% Flujos
+    UI <--> SP
+    UI -- Solicitud de Recs --> RO
+    SP -- Token / Profile --> UI
+    
+    RO -- Consulta Usuarios --> AU
+    AU -- Persistencia User --> DB
+    
+    RO -- Fallback Híbrido --> IA
+    NCF -- K-NN Search --> DB
+    N2V -- Topología Grafo --> DB
+    CBF -- Audio Features --> DB
+    
+    RO -- Respuesta JSON --> UI
+```
+
+## Organización del Repositorio
+
+- `src/api/`: Definición de la API REST y seguridad.
+- `src/modeling/`: Implementación de los tres motores de recomendación y scripts de exportación.
+- `src/data/`: Pipeline de ingeniería de datos e ingesta masiva.
+- `src/evaluation/`: Protocolos de evaluación científica y métricas.
+- `frontend/`: Aplicación cliente en Angular.
+- `docs/`: Documentación técnica (esta wiki).

@@ -1,0 +1,269 @@
+===========================================================================
+  EVALUACIÓN DE ALTO RENDIMIENTO: NCF (RE-ENTRENADO) vs OTHERS
+===========================================================================
+
+[1/4] Preparando pool de evaluación...
+  Collecting items for 200 users...
+  Pool size: 98,726 unique items.
+  [DB] Fetching 98,726 documents from MongoDB...
+
+[2/4] Inicializando modelos...
+[NCF] Item embeddings loaded from .npy: (1204022, 64)
+[NCF] ONNX model not found. FAISS-only mode (no MLP scoring).
+[NCF] FAISS index built: 1204022 vectors, dim=64
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+  Modelos listos.
+
+[3/4] Evaluando 200 usuarios...
+ User |  NCF_HR |  N2V_HR |  BAS_HR
+---------------------------------------------
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+    1 |   0.000 |   0.000 |   0.000
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+   40 |   0.125 |   0.025 |   0.025
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+   80 |   0.125 |   0.013 |   0.025
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+  120 |   0.117 |   0.017 |   0.025
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+  160 |   0.113 |   0.025 |   0.031
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Neutro'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Energico'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Triste'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+[Engine] Pre-filtrado MongoDB: 25000 candidatos para emoción 'Alegre'.
+  200 |   0.105 |   0.020 |   0.030
+
+===========================================================================
+METRICA         |        NCF |   Node2Vec |   Baseline
+---------------------------------------------------------------------------
+HR@K            |     0.1050 |     0.0200 |     0.0300
+NDCG@K          |     0.0199 |     0.0044 |     0.0073
+MRR@K           |     0.0813 |     0.0200 |     0.0300
+Nov             |    14.6076 |     2.1555 |     3.2437
+Ser             |     0.0000 |     0.0000 |     0.0000
+Coverage        |     0.0002 |     0.0000 |     0.0000
+===========================================================================
+
+Resultados guardados en /Users/jachias/Documents/MA_IA&BIGDATA/P4/music_recommendation_system/data/evaluation_results.json

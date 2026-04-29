@@ -70,13 +70,13 @@ export class Playlist implements OnInit {
       if (this.isSpotifyUser()) {
         const url = await this.spotifyService.createPlaylist(
           this.recommendations().map(r => r.track_id || r.id),
-          `Mi Playlist · Sound Lens — ${this.emotion()}`
+          `Mi Playlist · SoundWave — ${this.emotion()}`
         );
         window.open(url, '_blank');
       } else {
         // Fallback: Export to CSV
         const bom = "\uFEFF";
-        const csvContent = "Título,Artista,Afinidad\n" + 
+        const csvContent = "Título,Artista,Afinidad\n" +
           this.recommendations().map(e => `"${e.name.replace(/"/g, '""')}","${e.artist.replace(/"/g, '""')}",${this.getScorePercent(e.similarity_score)}%`).join("\n");
         const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);

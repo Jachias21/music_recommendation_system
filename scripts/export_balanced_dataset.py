@@ -9,10 +9,10 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client[os.getenv("DB_NAME")]
 collection = db[os.getenv("COLLECTION_NAME", "songs")]
 
-print("⏳ Extrayendo datos: Prioridad Absoluta al IDIOMA...")
+print("Extrayendo datos: Prioridad Absoluta al IDIOMA...")
 
 # ==========================================
-# 🔍 1. EL FILTRO DURO (Obligatorio Idioma)
+# 1. FILTRO 
 # ==========================================
 # Extraemos SOLO si el idioma existe y es válido.
 # Nos da igual si la popularidad está o no está, ya lo arreglaremos luego.
@@ -27,14 +27,14 @@ cursor = collection.find(query_idioma_obligatorio, {"_id": 0})
 df = pd.DataFrame(list(cursor))
 
 if df.empty:
-    print("❌ No se encontraron datos válidos.")
+    print("No se encontraron datos válidos.")
     exit()
 
-print(f"✅ Se han extraído {len(df):,} canciones con IDIOMA confirmado.")
-print("🛠️ Fase 2: Reparación Inteligente de Popularidad...")
+print(f" Se han extraído {len(df):,} canciones con IDIOMA confirmado.")
+print(" Fase 2: Reparación Inteligente de Popularidad...")
 
 # ==========================================
-# 📊 2. IMPUTACIÓN CONDICIONAL (El parche matemático)
+# 2. IMPUTACIÓN CONDICIONAL
 # ==========================================
 # 1. ¿Cuántas no tienen popularidad?
 sin_rank = df['deezer_rank'].isna().sum()
@@ -50,9 +50,9 @@ print(f"   -> Imputando con la mediana calculada: {mediana_real}")
 df['deezer_rank'] = df['deezer_rank'].fillna(mediana_real)
 
 # ==========================================
-# 🎛️ 3. NORMALIZACIÓN PARA PYTORCH
+# 3. NORMALIZACIÓN PARA PYTORCH
 # ==========================================
-print("⚖️ Fase 3: Normalización de Audio (Tempo y Loudness)...")
+print("Fase 3: Normalización de Audio (Tempo y Loudness)...")
 cols_to_normalize = ['tempo', 'loudness']
 scaler = MinMaxScaler()
 df[cols_to_normalize] = scaler.fit_transform(df[cols_to_normalize])
@@ -61,12 +61,12 @@ df[cols_to_normalize] = scaler.fit_transform(df[cols_to_normalize])
 df = df.fillna(0)
 
 # ==========================================
-# 💾 4. EXPORTACIÓN
+# 4. EXPORTACIÓN
 # ==========================================
 nombre_archivo = "dataset_soundwave_CLEAN_V3.csv"
 df.to_csv(nombre_archivo, index=False, encoding='utf-8')
 
 print("\n" + "="*50)
-print(f"🎉 ¡ÉXITO! Dataset de ALTO VALOR listo: {nombre_archivo}")
-print(f"🚀 Total canciones listas para Node2Vec/NCF: {len(df):,}")
+print(f"¡ÉXITO! Dataset de ALTO VALOR listo: {nombre_archivo}")
+print(f"Total canciones listas para Node2Vec/NCF: {len(df):,}")
 print("="*50)

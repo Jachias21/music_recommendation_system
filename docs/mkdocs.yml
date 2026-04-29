@@ -5,8 +5,13 @@ theme:
 
 nav:
   - Home: index.md
-  - Extracción de Datos: ingest_data_documentation.md
-  - Carga y Procesamiento: process_data_documentation.md
-  - Motor de Recomendación: recommendator_engine.md
-  - Frontend (App): app_documentation.md
+  - Manual de Usuario: manual_usuario.md
+  - Guía de Despliegue: manual_despliegue.md
+  - Ingeniería de Datos: data_engineering.md
+  - Modelos de IA: ai_models.md
+  - API Backend: backend_api.md
+  - Frontend Angular: frontend_angular.md
+  - MLOps y Evaluación: mlops_evaluation.md
   - Ayuda MkDocs: help-mkdocs.md
+
+

@@ -1,4 +1,4 @@
-# Design System Strategy: The Sound Lens
+# Design System Strategy: The SoundWave
 
 ## 1. Overview & Creative North Star
 **Creative North Star: "The Synesthetic Stage"**

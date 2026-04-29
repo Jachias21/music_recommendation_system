@@ -9,7 +9,7 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client[os.getenv("DB_NAME")]
 collection = db[os.getenv("COLLECTION_NAME", "songs")]
 
-print("⏳ Extrayendo datos limpios de MongoDB...")
+print("Extrayendo datos limpios de MongoDB...")
 
 # QUERYS DE FILTRADO: Solo sacamos las que tengan un idioma válido y popularidad calculada
 query_limpia = {
@@ -24,4 +24,4 @@ cursor = collection.find(query_limpia, {"_id": 0})
 df = pd.DataFrame(list(cursor))
 df.to_csv("dataset_soundwave_limpio.csv", index=False, encoding='utf-8')
 
-print(f"✅ ¡Exportación completada! Se han extraído {len(df)} canciones listas para PyTorch.")
+print(f"¡Exportación completada! Se han extraído {len(df)} canciones listas para PyTorch.")

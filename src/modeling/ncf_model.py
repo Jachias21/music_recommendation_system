@@ -7,7 +7,7 @@ class NeuralCollaborativeFiltering(nn.Module):
         self, 
         num_users: int, 
         num_items: int, 
-        item_features_dim: int = 0, # <--- Dimensión de tus features (tempo, rank, etc.)
+        item_features_dim: int = 0,
         embedding_dim: int = 64, 
         hidden_layers: List[int] = [128, 64, 32], 
         dropout_rate: float = 0.2
@@ -17,7 +17,7 @@ class NeuralCollaborativeFiltering(nn.Module):
         self.user_embedding = nn.Embedding(num_embeddings=num_users, embedding_dim=embedding_dim)
         self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=embedding_dim)
 
-        # Concatenamos: User Embedding + Item Embedding + Features Reales
+        #User Embedding + Item Embedding + Features Reales
         input_dim = (embedding_dim * 2) + item_features_dim 
         
         mlp_modules = []

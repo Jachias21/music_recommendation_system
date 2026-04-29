@@ -22,6 +22,7 @@ build/
 data/source/
 data/raw/
 data/processed/
+data/processed_v2/
 
 # ─── Jupyter ───────────────────────────────────────────────────
 .ipynb_checkpoints/

@@ -1,266 +1,323 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Sound Lens | Audio Features Analysis</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "on-error-container": "#ffd2c8",
-              "inverse-on-surface": "#555458",
-              "tertiary": "#aebaff",
-              "error-dim": "#d53d18",
-              "surface-container": "#19191d",
-              "tertiary-container": "#9facf4",
-              "surface-container-low": "#131316",
-              "primary": "#ff9157",
-              "tertiary-dim": "#929fe6",
-              "on-tertiary-fixed-variant": "#263474",
-              "surface-bright": "#2c2c30",
-              "on-secondary-fixed-variant": "#006069",
-              "on-surface": "#f0edf1",
-              "outline": "#767579",
-              "primary-fixed": "#ff7a2c",
-              "inverse-surface": "#fcf8fd",
-              "inverse-primary": "#a04200",
-              "on-primary-fixed-variant": "#4f1d00",
-              "secondary-fixed": "#89e9f6",
-              "on-error": "#450900",
-              "on-surface-variant": "#acaaae",
-              "on-secondary-container": "#e6fcff",
-              "on-primary-fixed": "#000000",
-              "secondary": "#89e9f6",
-              "on-secondary": "#00555d",
-              "on-primary": "#531e00",
-              "surface-container-highest": "#25252a",
-              "primary-fixed-dim": "#f46800",
-              "on-tertiary-fixed": "#000f4f",
-              "surface": "#0e0e11",
-              "secondary-container": "#006972",
-              "secondary-dim": "#7adae7",
-              "surface-container-lowest": "#000000",
-              "on-tertiary": "#283575",
-              "surface-dim": "#0e0e11",
-              "primary-container": "#ff7a2c",
-              "error": "#ff7351",
-              "secondary-fixed-dim": "#7adae7",
-              "primary-dim": "#ff7520",
-              "surface-container-high": "#1f1f23",
-              "surface-tint": "#ff9157",
-              "error-container": "#b92902",
-              "surface-variant": "#25252a",
-              "on-background": "#f0edf1",
-              "tertiary-fixed": "#9facf4",
-              "on-primary-container": "#401600",
-              "on-secondary-fixed": "#004147",
-              "background": "#0e0e11",
-              "outline-variant": "#48474b",
-              "tertiary-fixed-dim": "#929fe6",
-              "on-tertiary-container": "#1d2b6a"
-            },
-            fontFamily: {
-              "headline": ["Inter"],
-              "body": ["Inter"],
-              "label": ["Inter"]
-            },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>SoundWave | Audio Features Analysis</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-error-container": "#ffd2c8",
+            "inverse-on-surface": "#555458",
+            "tertiary": "#aebaff",
+            "error-dim": "#d53d18",
+            "surface-container": "#19191d",
+            "tertiary-container": "#9facf4",
+            "surface-container-low": "#131316",
+            "primary": "#ff9157",
+            "tertiary-dim": "#929fe6",
+            "on-tertiary-fixed-variant": "#263474",
+            "surface-bright": "#2c2c30",
+            "on-secondary-fixed-variant": "#006069",
+            "on-surface": "#f0edf1",
+            "outline": "#767579",
+            "primary-fixed": "#ff7a2c",
+            "inverse-surface": "#fcf8fd",
+            "inverse-primary": "#a04200",
+            "on-primary-fixed-variant": "#4f1d00",
+            "secondary-fixed": "#89e9f6",
+            "on-error": "#450900",
+            "on-surface-variant": "#acaaae",
+            "on-secondary-container": "#e6fcff",
+            "on-primary-fixed": "#000000",
+            "secondary": "#89e9f6",
+            "on-secondary": "#00555d",
+            "on-primary": "#531e00",
+            "surface-container-highest": "#25252a",
+            "primary-fixed-dim": "#f46800",
+            "on-tertiary-fixed": "#000f4f",
+            "surface": "#0e0e11",
+            "secondary-container": "#006972",
+            "secondary-dim": "#7adae7",
+            "surface-container-lowest": "#000000",
+            "on-tertiary": "#283575",
+            "surface-dim": "#0e0e11",
+            "primary-container": "#ff7a2c",
+            "error": "#ff7351",
+            "secondary-fixed-dim": "#7adae7",
+            "primary-dim": "#ff7520",
+            "surface-container-high": "#1f1f23",
+            "surface-tint": "#ff9157",
+            "error-container": "#b92902",
+            "surface-variant": "#25252a",
+            "on-background": "#f0edf1",
+            "tertiary-fixed": "#9facf4",
+            "on-primary-container": "#401600",
+            "on-secondary-fixed": "#004147",
+            "background": "#0e0e11",
+            "outline-variant": "#48474b",
+            "tertiary-fixed-dim": "#929fe6",
+            "on-tertiary-container": "#1d2b6a"
           },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
         },
-      }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .tonal-transition { background: linear-gradient(to bottom, rgba(25, 25, 29, 0.4), rgba(14, 14, 17, 0)); }
-        .glass-panel { backdrop-filter: blur(24px); }
-        .radar-grid { background-image: radial-gradient(circle, #48474b 1px, transparent 1px); background-size: 32px 32px; }
-    </style>
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .tonal-transition {
+      background: linear-gradient(to bottom, rgba(25, 25, 29, 0.4), rgba(14, 14, 17, 0));
+    }
+
+    .glass-panel {
+      backdrop-filter: blur(24px);
+    }
+
+    .radar-grid {
+      background-image: radial-gradient(circle, #48474b 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+  </style>
 </head>
+
 <body class="bg-surface text-on-surface font-body overflow-x-hidden">
-<!-- TopAppBar Component -->
-<header class="fixed top-0 w-full z-50 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-full">
-<div class="text-2xl font-black tracking-tighter text-orange-500">Sound Lens</div>
-<div class="flex items-center gap-8">
-<nav class="hidden md:flex gap-6 items-center">
-<a class="text-zinc-400 font-['Inter'] tracking-tight hover:text-orange-400 transition-colors duration-300" href="#">Análisis</a>
-<a class="text-zinc-400 font-['Inter'] tracking-tight hover:text-orange-400 transition-colors duration-300" href="#">Archivo</a>
-<a class="text-orange-500 font-bold font-['Inter'] tracking-tight" href="#">Psicometría</a>
-</nav>
-<div class="flex items-center gap-4 text-zinc-100">
-<button class="scale-95 active:scale-90 transition-transform"><span class="material-symbols-outlined">mood</span></button>
-<button class="scale-95 active:scale-90 transition-transform"><span class="material-symbols-outlined">notifications</span></button>
-<button class="scale-95 active:scale-90 transition-transform"><span class="material-symbols-outlined">account_circle</span></button>
-</div>
-</div>
-</header>
-<!-- SideNavBar Component -->
-<aside class="h-screen w-64 fixed left-0 top-0 border-r border-zinc-800/10 flex flex-col py-8 px-4 gap-y-6 hidden md:flex z-40 pt-24 bg-background-dark">
-<div class="px-2 mb-4">
-<h2 class="text-orange-500 font-black font-['Inter'] text-sm uppercase tracking-widest">EL ESCENARIO SINESTÉSICO</h2>
-<p class="text-zinc-500 text-xs mt-1">Estado de Ánimo Actual: Animado</p>
-</div>
-<nav class="flex-1 flex flex-col gap-1">
-<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">dashboard</span> Panel de Control</a>
-<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">explore</span> Explorador de Ánimos</a>
-<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">library_music</span> Lista de Descubrimiento</a>
-<a class="flex items-center gap-3 px-4 py-3 bg-orange-500/10 text-orange-500 rounded-lg font-bold transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">insights</span> Análisis de Rendimiento</a>
-</nav>
-<div class="pt-6 border-t border-zinc-900 flex flex-col gap-1">
-<button class="w-full py-3 px-4 bg-primary text-on-primary rounded-full font-bold text-sm mb-4 scale-95 active:scale-90 transition-transform">Sorpréndeme</button>
-<a class="flex items-center gap-3 px-4 py-2 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">settings</span> Ajustes</a>
-<a class="flex items-center gap-3 px-4 py-2 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm font-medium" href="#"><span class="material-symbols-outlined">help</span> Soporte</a>
-</div>
-</aside>
-<!-- Main Content Canvas -->
-<main class="md:pl-64 pt-24 pb-32 px-8 min-h-screen">
-<!-- Header Section -->
-<div class="mb-12">
-<span class="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-2 block">MOTOR DE LÓGICA ACÚSTICA V4.2</span>
-<h1 class="text-5xl font-black tracking-tight mb-4">Análisis de Características de Audio</h1>
-<p class="text-on-surface-variant max-w-2xl leading-relaxed">Interpretando la entrada semántica <span class="text-tertiary italic">"{{input_chat_usuario}}"</span> en parámetros psicoacústicos.</p>
-</div>
-<!-- Bento Grid Analysis Layout -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-<!-- Radar Chart Section -->
-<div class="lg:col-span-7 bg-surface-container-low rounded-3xl p-8 flex flex-col justify-between border border-outline-variant/10 relative overflow-hidden">
-<div class="absolute inset-0 radar-grid opacity-10"></div>
-<div class="relative z-10">
-<div class="flex justify-between items-start mb-12">
-<div>
-<h3 class="text-xl font-bold">Perfil Psicométrico</h3>
-<p class="text-on-surface-variant text-sm">Mapeo de resonancia emocional</p>
-</div>
-<span class="bg-secondary/10 text-secondary text-[10px] font-black px-2 py-1 rounded tracking-tighter uppercase">ALTA FIDELIDAD</span>
-</div>
-<!-- Simplified Radar Illustration -->
-<div class="h-64 flex items-center justify-center relative my-8">
-<div class="absolute inset-0 border border-outline-variant/20 rounded-full scale-[0.3]"></div>
-<div class="absolute inset-0 border border-outline-variant/20 rounded-full scale-[0.6]"></div>
-<div class="absolute inset-0 border border-outline-variant/20 rounded-full scale-[1.0]"></div>
-<!-- Radar Shape -->
-<svg class="w-full h-full drop-shadow-[0_0_15px_rgba(255,145,87,0.3)]" viewbox="0 0 100 100">
-<polygon fill="rgba(255, 145, 87, 0.2)" points="50,10 85,35 75,85 25,85 15,35" stroke="#ff9157" stroke-width="1.5"></polygon>
-<circle cx="50" cy="10" fill="#ff9157" r="1.5"></circle>
-<circle cx="85" cy="35" fill="#ff9157" r="1.5"></circle>
-<circle cx="75" cy="85" fill="#ff9157" r="1.5"></circle>
-<circle cx="25" cy="85" fill="#ff9157" r="1.5"></circle>
-<circle cx="15" cy="35" fill="#ff9157" r="1.5"></circle>
-</svg>
-<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 text-[10px] font-bold text-on-surface-variant">ENERGÍA</div>
-<div class="absolute top-1/4 right-0 translate-x-4 text-[10px] font-bold text-on-surface-variant">VALENCIA</div>
-<div class="absolute bottom-0 right-1/4 translate-x-4 translate-y-4 text-[10px] font-bold text-on-surface-variant">BAILABILIDAD</div>
-<div class="absolute bottom-0 left-1/4 -translate-x-4 translate-y-4 text-[10px] font-bold text-on-surface-variant">ACÚSTICA</div>
-<div class="absolute top-1/4 left-0 -translate-x-4 text-[10px] font-bold text-on-surface-variant">TEMPO</div>
-</div>
-</div>
-</div>
-<!-- Metric Breakdown Cards -->
-<div class="lg:col-span-5 grid grid-rows-2 gap-6">
-<!-- Energy & Tempo Breakdown -->
-<div class="bg-surface-container rounded-3xl p-6 border border-outline-variant/5">
-<h4 class="text-sm font-bold text-primary mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-sm">bolt</span> Métricas Cinéticas</h4>
-<div class="space-y-6">
-<div>
-<div class="flex justify-between text-xs mb-2">
-<span class="font-medium text-on-surface-variant uppercase tracking-widest">ENERGÍA</span>
-<span class="font-bold text-on-surface">0.82</span>
-</div>
-<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-<div class="h-full bg-primary rounded-full" style="width: 82%"></div>
-</div>
-</div>
-<div>
-<div class="flex justify-between text-xs mb-2">
-<span class="font-medium text-on-surface-variant uppercase tracking-widest">Tempo</span>
-<span class="font-bold text-on-surface">128 BPM</span>
-</div>
-<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-<div class="h-full bg-secondary rounded-full" style="width: 68%"></div>
-</div>
-</div>
-</div>
-</div>
-<!-- Emotional Tone Breakdown -->
-<div class="bg-surface-container-high rounded-3xl p-6 border border-outline-variant/5 flex flex-col justify-center">
-<div class="flex items-center gap-4 mb-4">
-<div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
-<span class="material-symbols-outlined">psychology</span>
-</div>
-<div>
-<h4 class="font-bold">Mapeo Neuronal</h4>
-<p class="text-xs text-on-surface-variant">Sentimiento derivado de la entrada del chat</p>
-</div>
-</div>
-<p class="text-sm italic text-tertiary-dim bg-tertiary/5 p-4 rounded-xl border border-tertiary/10">"La entrada del usuario sugiere una alta preferencia rítmica con un trasfondo armónico melancólico, desplazando los pesos terciarios hacia Indigo-Triste."</p>
-</div>
-</div>
-<!-- Deep Feature Breakdown (Long Horizontal) -->
-<div class="lg:col-span-12 bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10">
-<div class="flex items-end justify-between mb-10">
-<div>
-<h3 class="text-xl font-bold">Descomposición Espectral</h3>
-<p class="text-on-surface-variant text-sm">Microanálisis de propiedades acústicas</p>
-</div>
-<div class="flex gap-2">
-<button class="px-4 py-2 bg-surface-container-highest text-xs font-bold rounded-lg border border-outline-variant/20">DATOS BRUTOS</button>
-<button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded-lg">EXPORTAR ANÁLISIS</button>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-<div class="space-y-4">
-<div class="flex items-center gap-3">
-<span class="w-2 h-2 rounded-full bg-primary"></span>
-<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">VALENCIA</span>
-</div>
-<div class="h-32 flex items-end gap-1.5">
-<div class="w-full bg-surface-container-highest rounded-t-sm h-[30%]"></div>
-<div class="w-full bg-surface-container-highest rounded-t-sm h-[45%]"></div>
-<div class="w-full bg-primary/40 rounded-t-sm h-[60%]"></div>
-<div class="w-full bg-primary rounded-t-sm h-[85%]"></div>
-<div class="w-full bg-primary/20 rounded-t-sm h-[40%]"></div>
-</div>
-<p class="text-[10px] text-on-surface-variant leading-relaxed">Afecto positivo detectado. El mapeo indica una textura sonora "luminosa".</p>
-</div>
-<div class="space-y-4">
-<div class="flex items-center gap-3">
-<span class="w-2 h-2 rounded-full bg-secondary"></span>
-<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">ACÚSTICA</span>
-</div>
-<div class="h-32 flex items-end gap-1.5">
-<div class="w-full bg-secondary rounded-t-sm h-[15%]"></div>
-<div class="w-full bg-surface-container-highest rounded-t-sm h-[10%]"></div>
-<div class="w-full bg-surface-container-highest rounded-t-sm h-[12%]"></div>
-<div class="w-full bg-surface-container-highest rounded-t-sm h-[8%]"></div>
-<div class="w-full bg-surface-container-highest rounded-t-sm h-[14%]"></div>
-</div>
-<p class="text-[10px] text-on-surface-variant leading-relaxed">Dominancia sintética. Detectada alta frecuencia de osciladores electrónicos.</p>
-</div>
-<div class="space-y-4">
-<div class="flex items-center gap-3">
-<span class="w-2 h-2 rounded-full bg-tertiary"></span>
-<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">BAILABILIDAD</span>
-</div>
-<div class="h-32 flex items-end gap-1.5">
-<div class="w-full bg-tertiary/20 rounded-t-sm h-[50%]"></div>
-<div class="w-full bg-tertiary/40 rounded-t-sm h-[70%]"></div>
-<div class="w-full bg-tertiary rounded-t-sm h-[95%]"></div>
-<div class="w-full bg-tertiary/60 rounded-t-sm h-[80%]"></div>
-<div class="w-full bg-tertiary/20 rounded-t-sm h-[40%]"></div>
-</div>
-<p class="text-[10px] text-on-surface-variant leading-relaxed">Fuerte consistencia rítmica. Alineación con la rejilla de compás confirmada.</p>
-</div>
-</div>
-</div>
-</div>
-</main>
-<!-- BottomNavBar (Player Controls Style) -->
-</body></html>
+  <!-- TopAppBar Component -->
+  <header
+    class="fixed top-0 w-full z-50 bg-zinc-950/60 backdrop-blur-xl flex justify-between items-center px-8 h-20 w-full">
+    <div class="text-2xl font-black tracking-tighter text-orange-500">SoundWave</div>
+    <div class="flex items-center gap-8">
+      <nav class="hidden md:flex gap-6 items-center">
+        <a class="text-zinc-400 font-['Inter'] tracking-tight hover:text-orange-400 transition-colors duration-300"
+          href="#">Análisis</a>
+        <a class="text-zinc-400 font-['Inter'] tracking-tight hover:text-orange-400 transition-colors duration-300"
+          href="#">Archivo</a>
+        <a class="text-orange-500 font-bold font-['Inter'] tracking-tight" href="#">Psicometría</a>
+      </nav>
+      <div class="flex items-center gap-4 text-zinc-100">
+        <button class="scale-95 active:scale-90 transition-transform"><span
+            class="material-symbols-outlined">mood</span></button>
+        <button class="scale-95 active:scale-90 transition-transform"><span
+            class="material-symbols-outlined">notifications</span></button>
+        <button class="scale-95 active:scale-90 transition-transform"><span
+            class="material-symbols-outlined">account_circle</span></button>
+      </div>
+    </div>
+  </header>
+  <!-- SideNavBar Component -->
+  <aside
+    class="h-screen w-64 fixed left-0 top-0 border-r border-zinc-800/10 flex flex-col py-8 px-4 gap-y-6 hidden md:flex z-40 pt-24 bg-background-dark">
+    <div class="px-2 mb-4">
+      <h2 class="text-orange-500 font-black font-['Inter'] text-sm uppercase tracking-widest">EL ESCENARIO SINESTÉSICO
+      </h2>
+      <p class="text-zinc-500 text-xs mt-1">Estado de Ánimo Actual: Animado</p>
+    </div>
+    <nav class="flex-1 flex flex-col gap-1">
+      <a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium"
+        href="#"><span class="material-symbols-outlined">dashboard</span> Panel de Control</a>
+      <a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium"
+        href="#"><span class="material-symbols-outlined">explore</span> Explorador de Ánimos</a>
+      <a class="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:bg-zinc-900 rounded-lg transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium"
+        href="#"><span class="material-symbols-outlined">library_music</span> Lista de Descubrimiento</a>
+      <a class="flex items-center gap-3 px-4 py-3 bg-orange-500/10 text-orange-500 rounded-lg font-bold transition-all hover:translate-x-1 font-['Inter'] text-sm font-medium"
+        href="#"><span class="material-symbols-outlined">insights</span> Análisis de Rendimiento</a>
+    </nav>
+    <div class="pt-6 border-t border-zinc-900 flex flex-col gap-1">
+      <button
+        class="w-full py-3 px-4 bg-primary text-on-primary rounded-full font-bold text-sm mb-4 scale-95 active:scale-90 transition-transform">Sorpréndeme</button>
+      <a class="flex items-center gap-3 px-4 py-2 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm font-medium"
+        href="#"><span class="material-symbols-outlined">settings</span> Ajustes</a>
+      <a class="flex items-center gap-3 px-4 py-2 text-zinc-500 hover:bg-zinc-900 rounded-lg font-['Inter'] text-sm font-medium"
+        href="#"><span class="material-symbols-outlined">help</span> Soporte</a>
+    </div>
+  </aside>
+  <!-- Main Content Canvas -->
+  <main class="md:pl-64 pt-24 pb-32 px-8 min-h-screen">
+    <!-- Header Section -->
+    <div class="mb-12">
+      <span class="text-primary text-xs font-bold uppercase tracking-[0.2em] mb-2 block">MOTOR DE LÓGICA ACÚSTICA
+        V4.2</span>
+      <h1 class="text-5xl font-black tracking-tight mb-4">Análisis de Características de Audio</h1>
+      <p class="text-on-surface-variant max-w-2xl leading-relaxed">Interpretando la entrada semántica <span
+          class="text-tertiary italic">"{{input_chat_usuario}}"</span> en parámetros psicoacústicos.</p>
+    </div>
+    <!-- Bento Grid Analysis Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Radar Chart Section -->
+      <div
+        class="lg:col-span-7 bg-surface-container-low rounded-3xl p-8 flex flex-col justify-between border border-outline-variant/10 relative overflow-hidden">
+        <div class="absolute inset-0 radar-grid opacity-10"></div>
+        <div class="relative z-10">
+          <div class="flex justify-between items-start mb-12">
+            <div>
+              <h3 class="text-xl font-bold">Perfil Psicométrico</h3>
+              <p class="text-on-surface-variant text-sm">Mapeo de resonancia emocional</p>
+            </div>
+            <span
+              class="bg-secondary/10 text-secondary text-[10px] font-black px-2 py-1 rounded tracking-tighter uppercase">ALTA
+              FIDELIDAD</span>
+          </div>
+          <!-- Simplified Radar Illustration -->
+          <div class="h-64 flex items-center justify-center relative my-8">
+            <div class="absolute inset-0 border border-outline-variant/20 rounded-full scale-[0.3]"></div>
+            <div class="absolute inset-0 border border-outline-variant/20 rounded-full scale-[0.6]"></div>
+            <div class="absolute inset-0 border border-outline-variant/20 rounded-full scale-[1.0]"></div>
+            <!-- Radar Shape -->
+            <svg class="w-full h-full drop-shadow-[0_0_15px_rgba(255,145,87,0.3)]" viewbox="0 0 100 100">
+              <polygon fill="rgba(255, 145, 87, 0.2)" points="50,10 85,35 75,85 25,85 15,35" stroke="#ff9157"
+                stroke-width="1.5"></polygon>
+              <circle cx="50" cy="10" fill="#ff9157" r="1.5"></circle>
+              <circle cx="85" cy="35" fill="#ff9157" r="1.5"></circle>
+              <circle cx="75" cy="85" fill="#ff9157" r="1.5"></circle>
+              <circle cx="25" cy="85" fill="#ff9157" r="1.5"></circle>
+              <circle cx="15" cy="35" fill="#ff9157" r="1.5"></circle>
+            </svg>
+            <div
+              class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 text-[10px] font-bold text-on-surface-variant">
+              ENERGÍA</div>
+            <div class="absolute top-1/4 right-0 translate-x-4 text-[10px] font-bold text-on-surface-variant">VALENCIA
+            </div>
+            <div
+              class="absolute bottom-0 right-1/4 translate-x-4 translate-y-4 text-[10px] font-bold text-on-surface-variant">
+              BAILABILIDAD</div>
+            <div
+              class="absolute bottom-0 left-1/4 -translate-x-4 translate-y-4 text-[10px] font-bold text-on-surface-variant">
+              ACÚSTICA</div>
+            <div class="absolute top-1/4 left-0 -translate-x-4 text-[10px] font-bold text-on-surface-variant">TEMPO
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Metric Breakdown Cards -->
+      <div class="lg:col-span-5 grid grid-rows-2 gap-6">
+        <!-- Energy & Tempo Breakdown -->
+        <div class="bg-surface-container rounded-3xl p-6 border border-outline-variant/5">
+          <h4 class="text-sm font-bold text-primary mb-6 flex items-center gap-2"><span
+              class="material-symbols-outlined text-sm">bolt</span> Métricas Cinéticas</h4>
+          <div class="space-y-6">
+            <div>
+              <div class="flex justify-between text-xs mb-2">
+                <span class="font-medium text-on-surface-variant uppercase tracking-widest">ENERGÍA</span>
+                <span class="font-bold text-on-surface">0.82</span>
+              </div>
+              <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                <div class="h-full bg-primary rounded-full" style="width: 82%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-2">
+                <span class="font-medium text-on-surface-variant uppercase tracking-widest">Tempo</span>
+                <span class="font-bold text-on-surface">128 BPM</span>
+              </div>
+              <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                <div class="h-full bg-secondary rounded-full" style="width: 68%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Emotional Tone Breakdown -->
+        <div
+          class="bg-surface-container-high rounded-3xl p-6 border border-outline-variant/5 flex flex-col justify-center">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+              <span class="material-symbols-outlined">psychology</span>
+            </div>
+            <div>
+              <h4 class="font-bold">Mapeo Neuronal</h4>
+              <p class="text-xs text-on-surface-variant">Sentimiento derivado de la entrada del chat</p>
+            </div>
+          </div>
+          <p class="text-sm italic text-tertiary-dim bg-tertiary/5 p-4 rounded-xl border border-tertiary/10">"La entrada
+            del usuario sugiere una alta preferencia rítmica con un trasfondo armónico melancólico, desplazando los
+            pesos terciarios hacia Indigo-Triste."</p>
+        </div>
+      </div>
+      <!-- Deep Feature Breakdown (Long Horizontal) -->
+      <div class="lg:col-span-12 bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10">
+        <div class="flex items-end justify-between mb-10">
+          <div>
+            <h3 class="text-xl font-bold">Descomposición Espectral</h3>
+            <p class="text-on-surface-variant text-sm">Microanálisis de propiedades acústicas</p>
+          </div>
+          <div class="flex gap-2">
+            <button
+              class="px-4 py-2 bg-surface-container-highest text-xs font-bold rounded-lg border border-outline-variant/20">DATOS
+              BRUTOS</button>
+            <button class="px-4 py-2 bg-primary text-on-primary text-xs font-bold rounded-lg">EXPORTAR ANÁLISIS</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">VALENCIA</span>
+            </div>
+            <div class="h-32 flex items-end gap-1.5">
+              <div class="w-full bg-surface-container-highest rounded-t-sm h-[30%]"></div>
+              <div class="w-full bg-surface-container-highest rounded-t-sm h-[45%]"></div>
+              <div class="w-full bg-primary/40 rounded-t-sm h-[60%]"></div>
+              <div class="w-full bg-primary rounded-t-sm h-[85%]"></div>
+              <div class="w-full bg-primary/20 rounded-t-sm h-[40%]"></div>
+            </div>
+            <p class="text-[10px] text-on-surface-variant leading-relaxed">Afecto positivo detectado. El mapeo indica
+              una textura sonora "luminosa".</p>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-secondary"></span>
+              <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">ACÚSTICA</span>
+            </div>
+            <div class="h-32 flex items-end gap-1.5">
+              <div class="w-full bg-secondary rounded-t-sm h-[15%]"></div>
+              <div class="w-full bg-surface-container-highest rounded-t-sm h-[10%]"></div>
+              <div class="w-full bg-surface-container-highest rounded-t-sm h-[12%]"></div>
+              <div class="w-full bg-surface-container-highest rounded-t-sm h-[8%]"></div>
+              <div class="w-full bg-surface-container-highest rounded-t-sm h-[14%]"></div>
+            </div>
+            <p class="text-[10px] text-on-surface-variant leading-relaxed">Dominancia sintética. Detectada alta
+              frecuencia de osciladores electrónicos.</p>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+              <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">BAILABILIDAD</span>
+            </div>
+            <div class="h-32 flex items-end gap-1.5">
+              <div class="w-full bg-tertiary/20 rounded-t-sm h-[50%]"></div>
+              <div class="w-full bg-tertiary/40 rounded-t-sm h-[70%]"></div>
+              <div class="w-full bg-tertiary rounded-t-sm h-[95%]"></div>
+              <div class="w-full bg-tertiary/60 rounded-t-sm h-[80%]"></div>
+              <div class="w-full bg-tertiary/20 rounded-t-sm h-[40%]"></div>
+            </div>
+            <p class="text-[10px] text-on-surface-variant leading-relaxed">Fuerte consistencia rítmica. Alineación con
+              la rejilla de compás confirmada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- BottomNavBar (Player Controls Style) -->
+</body>
+
+</html>

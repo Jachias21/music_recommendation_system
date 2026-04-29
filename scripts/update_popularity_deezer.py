@@ -14,7 +14,7 @@ logs_dir = os.path.join(base_dir, "logs")
 os.makedirs(logs_dir, exist_ok=True)
 
 # =====================================================================
-# 📝 CONFIGURACIÓN DEL LOGGER DUAL
+# CONFIGURACIÓN DEL LOGGER DUAL
 # =====================================================================
 def clean_text(text):
     return re.sub(r'[^\x00-\x7F]+', '', str(text))
@@ -93,11 +93,11 @@ def procesar_maraton_turbo_deezer(max_horas, num_hilos):
     porcentaje = (completadas / total_db) * 100 if total_db > 0 else 0
 
     logger.info("\n" + "="*60)
-    logger.info(f"🚀 MODO HYPER-TURBO DEEZER: {num_hilos} HILOS + DB INDEX")
+    logger.info(f"MODO HYPER-TURBO DEEZER: {num_hilos} HILOS + DB INDEX")
     logger.info("="*60)
-    logger.info(f"   📀 Total en BD:    {total_db:,}")
-    logger.info(f"   ✅ Completadas:    {completadas:,} ({porcentaje:.2f}%)")
-    logger.info(f"   ⏳ Pendientes:     {pendientes:,}")
+    logger.info(f"Total en BD:    {total_db:,}")
+    logger.info(f"Completadas:    {completadas:,} ({porcentaje:.2f}%)")
+    logger.info(f"Pendientes:     {pendientes:,}")
     logger.info("="*60)
 
     tiempo_inicio = time.time()
@@ -135,11 +135,11 @@ def procesar_maraton_turbo_deezer(max_horas, num_hilos):
                 collection.bulk_write(operaciones_bulk, ordered=False)
                 procesadas_total += len(operaciones_bulk)
                 print("") # Salto de línea para que el log quede debajo
-                logger.info(f"  | 💾 Lote de {len(operaciones_bulk)} guardado. Total sesión: {procesadas_total}")
+                logger.info(f"  | Lote de {len(operaciones_bulk)} guardado. Total sesión: {procesadas_total}")
 
             time.sleep(0.1) 
 
-    logger.info(f"\n🎉 ¡Maratón finalizado! Total escaneado esta sesión: {procesadas_total} canciones.")
+    logger.info(f"\n¡Maratón finalizado! Total escaneado esta sesión: {procesadas_total} canciones.")
 
 if __name__ == "__main__":
     CONFIG = {
